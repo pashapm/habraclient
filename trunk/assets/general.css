@@ -1,0 +1,41 @@
+body{
+	background: black;
+}
+
+.hentry .content a:visited{
+	color:#990099;
+}
+.hentry .content a:visited:hover,.content a:visited:hover{
+	color:#C266C2;
+}
+.hentry .content .habracut a:visited{
+	color:#6DA3BD;
+}
+.hentry .content .habracut a:visited:hover{
+	color:#939393;
+}
+
+.title a.topic:visited{
+	color:#B0B0B0;
+}
+.title a.topic:visited:hover{
+	color:#939393;
+}
+.tags {
+	padding: .2em 0 .1em 18px;
+	clear:both;
+	list-style: none;
+	background: #fff url(http://habrahabr.ru/i/bg-tags2.gif) no-repeat 0 50%;
+}
+.tags li {
+	display: inline;
+}
+.tags li a {
+	font-size: .83em;
+}
+.tags li a{
+	color: #666;
+}
+.tags li a:hover {
+	color:#A3A3A3;
+}
