@@ -1,0 +1,70 @@
+TODO для Habrahabr.apk 
+Описание: Клиент для хабра под android 1.5+ или (если не получится) android 2.1+
+
+План захвата мира:
+
+	Хабр:
+		[ ] Авторизация на сайте
+			( ) HabraLogin
+		[/] Чтение постов
+			[ ] Добавление в избранное
+			[ ] Изменение/просмотр рейтига поста
+			[ ] Отправка ссылок посты (стандартным методом дроида)
+			(X) HabraTopic
+			(X) HabraCutTopicParser
+			( ) HabraFullTopicParser
+		[ ] Написание постов
+			( ) HabraTopicWriter
+		[ ] Чтение комментариев
+			[ ] Изменение рейтинга комментария
+			( ) HabraComment
+			( ) HabraCommentParser
+		[ ] Написание комментариев
+			( ) HabraCommentWriter
+		[ ] Чтение вопросов
+			[ ] Изменение рейтинга вопросов
+			( ) HabraQuest
+			( ) HabraShortQuestParser
+			( ) HabraFullQuestParser
+		[ ] Написание вопросов
+			( ) HabraQuestWriter
+		[ ] Чтение ответов
+			[ ] Изменение рейтинга ответов
+			[ ] Комментирование ответов
+				( ) HabraAnswerCommentWriter :
+			( ) HabraAnswer
+			( ) HabraAnswerParser
+		[ ] Написание ответов
+			( ) HabraAnswerWriter
+		[ ] Просмотр списка блогов
+			[ ] Поиск блогов
+			( ) HabraBlog
+			( ) HabraBlogParser
+		[ ] Просмотр списка хабраюзеров
+			( ) HabraUserListParser
+		[ ] Просмотр профилей хаброюзеров
+			[ ] Изменение кармы хабраюзеров
+			[ ] Написание заметок о хабраюзерах
+			( ) HabraUser
+			( ) HabraUserInfoParser
+		[ ] Просмотр списка компаний
+			( ) HabraCompany
+			( ) HabraCompanyListParser
+			( ) HabraCompanyInfoParser
+		[ ] Просмотр личной почты
+			( ) HabraMessage
+			( ) HabraMessageParser
+		[ ] Написание личных сообщений
+			( ) HabraMessageWriter
+		[ ] Редактирование настроек профиля
+			( ) HabraSettings
+		[ ] Поиск по сайту
+			( ) HabraSearchResult
+			( ) HabraSearchResultParser
+	
+	Приложение:
+		[/] Вывод на стартовом экране выбранной страницы (Лента, Главная, Мобильная главная, Q&A, Блоги, Люди, Мой профиль)
+			(/) Habrahabr
+		[ ] Мастер настройки при первом запуске
+		[ ] Настройки
+		
