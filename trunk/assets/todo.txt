@@ -11,8 +11,7 @@ TODO для Habrahabr.apk
 			[ ] Изменение/просмотр рейтига поста
 			[ ] Отправка ссылок посты (стандартным методом дроида)
 			(X) HabraTopic
-			(X) HabraCutTopicParser
-			( ) HabraFullTopicParser
+			(X) HabraTopicParser
 		[ ] Написание постов
 			( ) HabraTopicWriter
 		[ ] Чтение комментариев
@@ -24,8 +23,7 @@ TODO для Habrahabr.apk
 		[ ] Чтение вопросов
 			[ ] Изменение рейтинга вопросов
 			( ) HabraQuest
-			( ) HabraShortQuestParser
-			( ) HabraFullQuestParser
+			( ) HabraQuestParser
 		[ ] Написание вопросов
 			( ) HabraQuestWriter
 		[ ] Чтение ответов
@@ -67,4 +65,4 @@ TODO для Habrahabr.apk
 			(/) Habrahabr
 		[ ] Мастер настройки при первом запуске
 		[ ] Настройки
-		
+		[ ] Поставлять вместе с приложением статические картинки и CSS

@@ -4,14 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
@@ -42,9 +36,10 @@ public class Habrahabr extends Activity {
         
         String filesDir = copyInFilesDir("general.css"); 
         Log.d("general.css", filesDir);
-        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"file://" + filesDir + "\" rel=\"stylesheet\" media=\"all\"/></head>";
-        //String data = urlClient.getURL("http://habrahabr.ru/?fl=all");
-        byte[] bb = urlClient.getURLAsBytes("http://habrahabr.ru/core/captcha/");
+        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"http://habrahabr.ru/css/1302523449/all.css\" rel=\"stylesheet\" media=\"all\"/></head>";
+        String data = urlClient.getURL("http://habrahabr.ru/?fl=all");
+        
+        /*byte[] bb = urlClient.getURLAsBytes("http://habrahabr.ru/core/captcha/");
         
         String imgCa = getFilesDir().getAbsolutePath() + "/code.png";
         Log.i("imgCa", imgCa);
@@ -56,23 +51,18 @@ public class Habrahabr extends Activity {
 			Log.e("IOException", e.getMessage());
 		}
 		
-		String[] l = getFilesDir().list();
-		for(int i = 0; i < l.length; i++)
-			Log.d("List", l[i]);
-        
-        out = "<img src=\"file://"+imgCa+"\"/>";
-        
         String[][] post = new String[][]{{"act","login"}, {"redirect_url","http://habrahabr.ru/"},
         		{"login","WNeZRoS"},{"password","123456"},{"captcha",""}};
         
-        //data = urlClient.postURL("http://habrahabr.ru/ajax/auth/", post);
+        data = urlClient.postURL("http://habrahabr.ru/ajax/auth/", post);*/
         
-        /*HabraCutTopicParser parser = new HabraCutTopicParser(data);
+        HabraTopicParser parser = new HabraTopicParser(data);
         HabraTopic topic = null;
-        while((topic = parser.parseTopic()) != null)
+        while((topic = parser.parseTopicFromList()) != null)
         {
+        	Log.d("while", topic.title);
         	out += URLClient.encode(RemoveImage.remove(topic.getTopicDataAsHTML()));
-        }*/
+        }
             
         mResultView.loadData(out, "text/html", "utf-8");
         

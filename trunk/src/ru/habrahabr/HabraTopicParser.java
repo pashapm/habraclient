@@ -3,7 +3,7 @@ package ru.habrahabr;
 import android.util.Log;
 import ru.habrahabr.HabraTopic.HabraTopicType;
 
-public class HabraCutTopicParser 
+public class HabraTopicParser 
 {
 	String mData = null;		// Данные страницы
 	int mStartPosition = 0;		// Конечная позиция последнего поиска
@@ -12,17 +12,17 @@ public class HabraCutTopicParser
 	 * Парсер топиков с главной страницы
 	 * @param data Код страницы
 	 */
-	public HabraCutTopicParser(String data)
+	public HabraTopicParser(String data)
 	{
 		mData = data;
 		mStartPosition = 0;
 	}
 	
 	/**
-	 * Получаем следующий топик
+	 * Получаем следующий топик из списка
 	 * @return данные топика
 	 */
-	public HabraTopic parseTopic()
+	public HabraTopic parseTopicFromList()
 	{
 		if(mData == null || mStartPosition == -1) return null;
 		
@@ -64,6 +64,7 @@ public class HabraCutTopicParser
     		{
     		case 't': topic.type = HabraTopicType.Translate; break;
     		case 'l': topic.type = HabraTopicType.Link; break;
+    		case 'p': topic.type = HabraTopicType.Podcast; break;
     		}
     	}
     	
@@ -103,12 +104,22 @@ public class HabraCutTopicParser
     	
     	Log.d("TopicParser", "Parse Content");
     	lastIndex = topicData.indexOf("<div class=\"content\">", lastIndex) + 21;
-    	topic.content = new String(topicData.substring(lastIndex, lastIndex = topicData.indexOf("<ul class=\"tags\">", lastIndex)));
+    	int endIndex = topicData.indexOf("<ul class=\"tags\">", lastIndex);
+    	if(endIndex == -1) 
+    	{
+    		endIndex = topicData.indexOf("<div class=\"entry-info", lastIndex);
+    		topic.content = new String(topicData.substring(lastIndex, endIndex));
+    		topic.tags = "";
+    	}
+    	else
+    	{
+    		topic.content = new String(topicData.substring(lastIndex, endIndex));
+    		Log.d("TopicParser", "Parse tags");
+        	endIndex += 17;
+        	topic.tags = new String(topicData.substring(endIndex, lastIndex = topicData.indexOf("</ul>", endIndex)));
+    	}
     	
-    	Log.d("TopicParser", "Parse tags");
-    	lastIndex += 17;
-    	topic.tags = new String(topicData.substring(lastIndex, lastIndex = topicData.indexOf("</ul>", lastIndex)));
-    	
+
     	Log.d("TopicParser", "Parse rating");
     	topic.rating = new String(topicData.substring(
     			lastIndex = (topicData.indexOf('>', (topicData.indexOf("mark\">", lastIndex) + 6)) + 1), 
@@ -151,5 +162,115 @@ public class HabraCutTopicParser
 		return topic;
 	}
 	
-	
+	/**
+	 * Получаем полный топик
+	 * @return данные топика
+	 */
+	public HabraTopic parseFullTopic()
+	{
+		if(mData == null) return null;
+		
+		Log.d("TopicParser", "Find post");
+		
+		// Находим начало поста
+    	int startPosition = mData.indexOf("<div class=\"hentry ");
+    	if(startPosition == -1) return null;
+    	
+    	HabraTopic topic = new HabraTopic();
+    	
+    	Log.d("TopicParser", "Parse data");
+    	// Парсим данные поста
+    	int lastIndex = startPosition + 19;
+    	
+    	Log.d("TopicParser", "Parse Type");
+    	String type = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("\"", lastIndex)));
+    	if(type != null)
+    	{
+    		Log.i("TopicData", type);
+    		// blogs [XxX] | corporative [XxX]
+    		// XxX: translation link
+    		
+    		if(type.charAt(0) == 'c') topic.isCorporativeBlog = true;
+    		
+    		int indexAfterSpace = type.indexOf(' ', 5) + 1;
+    		if(indexAfterSpace == 0)
+    			topic.type = HabraTopicType.Post;
+    		else switch(type.charAt(indexAfterSpace))
+    		{
+    		case 't': topic.type = HabraTopicType.Translate; break;
+    		case 'l': topic.type = HabraTopicType.Link; break;
+    		case 'p': topic.type = HabraTopicType.Podcast; break;
+    		}
+    	}
+    	
+    	Log.d("TopicParser", "Parse Blog Data");
+    	int blogIndex = mData.indexOf("class=\"blog-header\">") + 20;
+    	String blog = new String(mData.substring(
+    			blogIndex = mData.indexOf("<a ", blogIndex), 
+    			blogIndex = mData.indexOf("</a>", blogIndex)));
+    	
+    	if(topic.isCorporativeBlog)
+    	{
+	    	int subIndex = blog.indexOf("/company/") + 9;
+	    	topic.blogID = new String(blog.substring(subIndex, blog.indexOf('/', subIndex)));
+    	}
+    	else
+    	{
+    		int subIndex = blog.indexOf("/blogs/") + 7;
+	    	topic.blogID = new String(blog.substring(subIndex, blog.indexOf('/', subIndex)));
+    	}
+    	topic.blogName = new String(blog.substring(blog.indexOf("\">") + 2));
+    	
+    	Log.i("TopicData", topic.blogID);
+    	Log.i("TopicData", topic.blogName);
+    	
+    	Log.d("TopicGet", topic.getBlogURL());
+    	
+    	Log.d("TopicParser", "Parse ID and Title");
+    	String ids = mData.substring(
+    			lastIndex = (mData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
+    			lastIndex = mData.indexOf('/', lastIndex));
+    	Log.i("TopicData", ids == null ? "null" : ids);
+    	topic.id = Integer.parseInt(ids);
+
+    	topic.title = new String(mData.substring(
+    			lastIndex = (mData.indexOf('>', lastIndex) + 1), 
+    			lastIndex = mData.indexOf('<', lastIndex)));
+    	Log.i("TopicData", topic.title);
+    	
+    	Log.d("TopicParser", "Parse Content");
+    	lastIndex = mData.indexOf("<div class=\"content\">", lastIndex) + 21;
+    	topic.content = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("<ul class=\"tags\">", lastIndex)));
+    	
+    	Log.d("TopicParser", "Parse tags");
+    	lastIndex += 17;
+    	topic.tags = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("</ul>", lastIndex)));
+    	
+    	Log.d("TopicParser", "Parse rating");
+    	topic.rating = new String(mData.substring(
+    			lastIndex = (mData.indexOf('>', (mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
+    			lastIndex = mData.indexOf('<', lastIndex)));
+    	
+    	Log.d("TopicParser", "Parse date");
+    	topic.date = new String(mData.substring(
+    			lastIndex = (mData.indexOf("<span>", mData.indexOf("<div class=\"published\">", lastIndex)) + 6),
+    			lastIndex = mData.indexOf('<', lastIndex)));
+    	
+    	Log.d("TopicParser", "Parse favorites");
+    	String favs = mData.substring(
+    			lastIndex = (mData.indexOf('>', mData.indexOf("<div class=\"favs", lastIndex)) + 1), 
+    			lastIndex = mData.indexOf('<', lastIndex));
+    	if(favs.length() > 0) topic.favorites = Integer.parseInt(favs);
+    	else topic.favorites = 0;
+    	
+    	Log.d("TopicParser", "Parse author");
+    	topic.author = new String(mData.substring(
+    			lastIndex = (mData.indexOf("url\"><span>", lastIndex) + 11), 
+    			lastIndex = mData.indexOf('<', lastIndex)));
+    	
+    	topic.commentsCount = 0;
+    	topic.commentsDiff = 0;
+    	
+    	return topic;
+	}
 }
