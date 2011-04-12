@@ -1,5 +1,5 @@
-body{
-	background: black;
+body {
+	background:white;
 }
 
 .hentry .content a:visited{
@@ -15,10 +15,10 @@ body{
 	color:#939393;
 }
 
-.title a.topic:visited{
+.entity-title a.topic:visited{
 	color:#B0B0B0;
 }
-.title a.topic:visited:hover{
+.entity-title a.topic:visited:hover{
 	color:#939393;
 }
 .tags {
