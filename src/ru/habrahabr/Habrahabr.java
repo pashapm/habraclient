@@ -36,7 +36,7 @@ public class Habrahabr extends Activity {
         
         String filesDir = copyInFilesDir("general.css"); 
         Log.d("general.css", filesDir);
-        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"http://habrahabr.ru/css/1302523449/all.css\" rel=\"stylesheet\" media=\"all\"/></head>";
+        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
         String data = urlClient.getURL("http://habrahabr.ru/?fl=all");
         
         /*byte[] bb = urlClient.getURLAsBytes("http://habrahabr.ru/core/captcha/");
@@ -61,10 +61,11 @@ public class Habrahabr extends Activity {
         while((topic = parser.parseTopicFromList()) != null)
         {
         	Log.d("while", topic.title);
-        	out += URLClient.encode(RemoveImage.remove(topic.getTopicDataAsHTML()));
+        	out += RemoveImage.remove(topic.getTopicDataAsHTML());
         }
-            
-        mResultView.loadData(out, "text/html", "utf-8");
+          
+        mResultView.loadDataWithBaseURL("file:///android_asset/", out, "text/html", "utf-8", null);
+        //mResultView.loadData(out, "text/html", "utf-8");
         
         final Button go = (Button) findViewById(R.id.go);
         final EditText url = (EditText) findViewById(R.id.url);

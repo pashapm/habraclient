@@ -91,15 +91,27 @@ public class HabraTopicParser
     	Log.d("TopicGet", topic.getBlogURL());
     	
     	Log.d("TopicParser", "Parse ID and Title");
-    	String ids = topicData.substring(
-    			lastIndex = (topicData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
-    			lastIndex = topicData.indexOf('/', lastIndex));
-    	Log.i("TopicData", ids == null ? "null" : ids);
-    	topic.id = Integer.parseInt(ids);
+    	if(topic.type != HabraTopicType.Link)
+    	{
+	    	String ids = topicData.substring(
+	    			lastIndex = (topicData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
+	    			lastIndex = topicData.indexOf('/', lastIndex));
+	    	Log.i("TopicData", ids == null ? "null" : ids);
+	    	topic.id = Integer.parseInt(ids);
+    	}
+    	else
+    	{
+    		String ids = topicData.substring(
+	    			lastIndex = (topicData.indexOf("/linker/go/", lastIndex) + 11), 
+	    			lastIndex = topicData.indexOf('/', lastIndex));
+	    	Log.i("TopicData", ids == null ? "null" : ids);
+	    	topic.id = Integer.parseInt(ids);
+    	}
 
     	topic.title = new String(topicData.substring(
     			lastIndex = (topicData.indexOf('>', lastIndex) + 1), 
-    			lastIndex = topicData.indexOf('<', lastIndex)));
+    			lastIndex = topicData.indexOf("</a>", lastIndex)));
+  
     	Log.i("TopicData", topic.title);
     	
     	Log.d("TopicParser", "Parse Content");
@@ -137,10 +149,17 @@ public class HabraTopicParser
     	if(favs.length() > 0) topic.favorites = Integer.parseInt(favs);
     	else topic.favorites = 0;
     	
-    	Log.d("TopicParser", "Parse author");
-    	topic.author = new String(topicData.substring(
-    			lastIndex = (topicData.indexOf("url\"><span>", lastIndex) + 11), 
-    			lastIndex = topicData.indexOf('<', lastIndex)));
+    	if(topicData.indexOf("class=\"vcard", lastIndex) != -1)
+    	{
+	    	Log.d("TopicParser", "Parse author");
+	    	topic.author = new String(topicData.substring(
+	    			lastIndex = (topicData.indexOf("url\"><span>", lastIndex) + 11), 
+	    			lastIndex = topicData.indexOf('<', lastIndex)));
+    	}
+    	else
+    	{
+    		topic.author = "";
+    	}
     	
     	Log.d("TopicParser", "Parse comments");
     	String comments = topicData.substring(
