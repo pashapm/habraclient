@@ -7,6 +7,7 @@ public class HabraTopic
 		Post,		// Простой пост
 		Link,		// Ссылка
 		Translate,	// Перевод
+		Podcast,	// Подкаст
 	}
 	
 	HabraTopicType type = HabraTopicType.Post;	// Тип топика
@@ -51,12 +52,12 @@ public class HabraTopic
 	 */
 	public String getTopicDataAsHTML()
 	{
-		return "<div class=\"hentry\"><h2 class=\"title\"><a href=\"" + 
+		return "<div class=\"hentry\"><h2 class=\"entry-title\"><a href=\"" + 
 			getBlogURL() + "\" class=\"blog\">" + blogName + "</a> &rarr; <a href=\"" + 
 			getTopicURL() + "\" class=\"topic\">" + title + "</a></h2><div class=\"content\">" + 
-			content + "</div><ul class=\"tags\">" + tags + "</ul><div class=\"infopanel\"><div class=\"corner tl\"></div><div class=\"corner tr\"></div><div class=\"info\"><div class=\"voting\">" + 
-			rating + "</div><div class=\"published\"><span>" + date + "</span></div><div class=\"favs\">" + 
-			Integer.toString(favorites) + "</div><div class=\"author\"><a href=\"http://" + author + ".habrahabr.ru/\" class=\"nickname url\"><span>" + 
+			content + "</div><ul class=\"tags\">" + tags + "</ul><div class=\"entry-info\"><div class=\"corner tl\"></div><div class=\"corner tr\"></div><div class=\"entry-info-wrap\"><div class=\"mark\">" + 
+			rating + "</div><div class=\"published\"><span>" + date + "</span></div><div class=\"favs_count\">" + 
+			Integer.toString(favorites) + "</div><div class=\"vcard author full\"><a href=\"http://" + author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + 
 			author + "</span></a></div><div class=\"comments\"><a href=\"" + getTopicURL() + "#comments\"><span class=\"all\">" + 
 			Integer.toString(commentsCount) + "</span> <span class=\"new\">+ " + Integer.toString(commentsDiff) + 
 			"</span></a></div></div><div class=\"corner bl\"></div><div class=\"corner br\"></div></div></div>";
