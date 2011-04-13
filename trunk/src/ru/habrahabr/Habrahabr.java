@@ -34,11 +34,6 @@ public class Habrahabr extends Activity {
         mResultView.getSettings().setJavaScriptEnabled(true);
         mResultView.loadData("Loading...", "text/html", "utf-8");
         
-        String filesDir = copyInFilesDir("general.css"); 
-        Log.d("general.css", filesDir);
-        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
-        String data = urlClient.getURL("http://habrahabr.ru/?fl=all");
-        
         /*byte[] bb = urlClient.getURLAsBytes("http://habrahabr.ru/core/captcha/");
         
         String imgCa = getFilesDir().getAbsolutePath() + "/code.png";
@@ -56,12 +51,31 @@ public class Habrahabr extends Activity {
         
         data = urlClient.postURL("http://habrahabr.ru/ajax/auth/", post);*/
         
+        /*String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
+        String data = urlClient.getURL("http://habrahabr.ru/?fl=all");
+        
         HabraTopicParser parser = new HabraTopicParser(data);
         HabraTopic topic = null;
         while((topic = parser.parseTopicFromList()) != null)
         {
         	Log.d("while", topic.title);
         	out += RemoveImage.remove(topic.getTopicDataAsHTML());
+        }*/
+        
+        String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
+        String data = urlClient.getURL("http://habrahabr.ru/blogs/java/117386/");
+        
+        HabraTopicParser parser = new HabraTopicParser(data);
+        HabraTopic topic = parser.parseFullTopic();
+        
+        out += topic.getTopicDataAsHTML();
+        out += "<hr>";
+        
+        HabraComment comment = null;
+        HabraCommentParser comParser = new HabraCommentParser(data);
+        while((comment = comParser.parseComment()) != null)
+        {
+        	out += "<div style='margin-left:"+(comment.padding*10)+"px;border:1px solid blue;'>"+comment.getCommentAsHTML()+"</div>";
         }
           
         mResultView.loadDataWithBaseURL("file:///android_asset/", out, "text/html", "utf-8", null);

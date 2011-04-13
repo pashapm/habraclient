@@ -202,7 +202,8 @@ public class HabraTopicParser
     	int lastIndex = startPosition + 19;
     	
     	Log.d("TopicParser", "Parse Type");
-    	String type = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("\"", lastIndex)));
+    	int endIndex = mData.indexOf("\"", lastIndex);
+    	String type = (lastIndex == endIndex ? null : new String(mData.substring(lastIndex, endIndex)));
     	if(type != null)
     	{
     		Log.i("TopicData", type);
@@ -259,11 +260,20 @@ public class HabraTopicParser
     	
     	Log.d("TopicParser", "Parse Content");
     	lastIndex = mData.indexOf("<div class=\"content\">", lastIndex) + 21;
-    	topic.content = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("<ul class=\"tags\">", lastIndex)));
-    	
-    	Log.d("TopicParser", "Parse tags");
-    	lastIndex += 17;
-    	topic.tags = new String(mData.substring(lastIndex, lastIndex = mData.indexOf("</ul>", lastIndex)));
+    	endIndex = mData.indexOf("<ul class=\"tags\">", lastIndex);
+    	if(endIndex == -1) 
+    	{
+    		endIndex = mData.indexOf("<div class=\"entry-info", lastIndex);
+    		topic.content = new String(mData.substring(lastIndex, endIndex));
+    		topic.tags = "";
+    	}
+    	else
+    	{
+    		topic.content = new String(mData.substring(lastIndex, endIndex));
+    		Log.d("TopicParser", "Parse tags");
+        	endIndex += 17;
+        	topic.tags = new String(mData.substring(endIndex, lastIndex = mData.indexOf("</ul>", endIndex)));
+    	}
     	
     	Log.d("TopicParser", "Parse rating");
     	topic.rating = new String(mData.substring(
@@ -282,12 +292,25 @@ public class HabraTopicParser
     	if(favs.length() > 0) topic.favorites = Integer.parseInt(favs);
     	else topic.favorites = 0;
     	
-    	Log.d("TopicParser", "Parse author");
-    	topic.author = new String(mData.substring(
-    			lastIndex = (mData.indexOf("url\"><span>", lastIndex) + 11), 
-    			lastIndex = mData.indexOf('<', lastIndex)));
+    	if(mData.indexOf("class=\"vcard", lastIndex) != -1)
+    	{
+	    	Log.d("TopicParser", "Parse author");
+	    	topic.author = new String(mData.substring(
+	    			lastIndex = (mData.indexOf("url\"><span>", lastIndex) + 11), 
+	    			lastIndex = mData.indexOf('<', lastIndex)));
+    	}
+    	else
+    	{
+    		topic.author = "";
+    	}
     	
-    	topic.commentsCount = 0;
+    	lastIndex = mData.indexOf("js-comments-count\">", lastIndex) + 19;
+    	if(lastIndex != 18)
+    	{
+    		topic.commentsCount = Integer.parseInt(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
+    	}
+    	else topic.commentsCount = 0;
+    	
     	topic.commentsDiff = 0;
     	
     	return topic;
