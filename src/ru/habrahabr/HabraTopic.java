@@ -11,8 +11,8 @@ public class HabraTopic
 	}
 	
 	HabraTopicType type = HabraTopicType.Post;	// Тип топика
-	String title = null;					// Заголовок
-	String content = null;					// Текст топика
+	String title = null;						// Заголовок
+	String content = null;						// Текст топика
 	String tags = null;							// Тэги
 	// TODO: replace tag to String[]
 	String author = null;						// Автор
