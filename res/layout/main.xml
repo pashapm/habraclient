@@ -6,9 +6,10 @@
     >
     <ScrollView android:layout_width="match_parent" android:id="@+id/scrollView1" android:layout_height="match_parent">
         <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_height="match_parent" android:orientation="vertical">
-            <EditText android:layout_width="match_parent" android:hint="URL" android:layout_height="wrap_content" android:id="@+id/url"></EditText>
-            <Button android:text="Go" android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/go"></Button>
-            <ListView android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/data"></ListView>
+            <EditText android:hint="Login" android:layout_width="match_parent" android:id="@+id/login" android:layout_height="wrap_content"/>
+            <EditText android:hint="Password" android:layout_width="match_parent" android:id="@+id/password" android:layout_height="wrap_content"/>
+            <EditText android:layout_width="match_parent" android:hint="Captcha" android:layout_height="wrap_content" android:id="@+id/code"/>
+            <Button android:text="Go" android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/go"/>
         	<WebView android:id="@+id/result" android:layout_width="match_parent" android:layout_height="match_parent"/>
         </LinearLayout>
     </ScrollView>
