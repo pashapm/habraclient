@@ -1,5 +1,9 @@
 package ru.habrahabr;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.habrahabr.HabraQuest.Comment;
 import android.util.Log;
 
 public class HabraQuestParser 
@@ -155,18 +159,12 @@ public class HabraQuestParser
     			lastIndex = mData.indexOf('"', lastIndex)));
     	
     	Log.d("QuestParser", "Parse rating");
-    	quest.rating = Integer.parseInt(mData.substring(
+    	String rs = mData.substring(
     			lastIndex = (mData.indexOf('>', (mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-    			lastIndex = mData.indexOf('<', lastIndex)));
-    	
-    	Log.d("QuestParser", "Parse answers count");
-    	int aci = (mData.indexOf("#comments\">", lastIndex) + 11);
-    	if(aci != 10)
-    	{
-	    	String acs = mData.substring(aci, lastIndex = mData.indexOf(' ', aci));
-	    	Log.d("acs", String.valueOf(acs.codePointAt(0)));
-	    	quest.answerCount = Integer.parseInt(acs);
-    	}
+    			lastIndex = mData.indexOf('<', lastIndex));
+    	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
+    	rs = "0" + rs.substring(1);
+    	quest.rating *= Integer.parseInt(rs);
     	
     	Log.d("QuestParser", "Parse date");
     	quest.date = new String(mData.substring(
@@ -188,13 +186,54 @@ public class HabraQuestParser
     			lastIndex = (mData.indexOf("url\"><span>", lastIndex) + 11), 
     			lastIndex = mData.indexOf('<', lastIndex)));
     	    	
+    	Log.d("QuestParser", "Parse comments");
+    	lastIndex = mData.indexOf("<ul class=\"hentry hsubentry", lastIndex);
+    	if(lastIndex > 0)
+    	{
+    		String commentsData = new String(mData.substring(lastIndex, mData.indexOf("<div class=\"hsublevel", lastIndex)));
+    		Comment comment = null;
+    		List<Comment> commentsList = new ArrayList<Comment>();
+    		
+    		Log.i("commentsList", String.valueOf(commentsList != null) + commentsList.toString());
+    		
+    		int subIndex = 0;
+    		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1)
+    		{
+    			Log.d("QuestParser", "new Comment");
+    			comment = new Comment();
+    			subIndex += 16;
+    			Log.d("QuestParser", "Parse comment.id");
+    			comment.id = Integer.parseInt(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
+    			Log.d("QuestParser", "Parse comment.text");
+    			comment.text = new String(commentsData.substring(
+    					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
+    					subIndex = commentsData.indexOf("&nbsp;<span class=\"fn", subIndex)));
+    			Log.d("QuestParser", "Parse comment.author");
+    			comment.author = new String(commentsData.substring(
+    					subIndex = (commentsData.indexOf("http://", subIndex) + 7), 
+    					subIndex = commentsData.indexOf('.', subIndex)));
+    			Log.d("QuestParser", "Parse comment.date");
+    			comment.date = new String(commentsData.substring(
+    					subIndex = (commentsData.indexOf('>', commentsData.indexOf("<abbr", subIndex)) + 1), 
+    					subIndex = commentsData.indexOf("</abbr", subIndex)));
+    			
+    			Log.d("QuestParser", "add(comment)");
+    			commentsList.add(comment);
+    			Log.d("QuestParser", "do while");
+    		}
+    		
+    		Log.d("QuestParser", "toArray");
+    		quest.comments = commentsList.toArray(new Comment[0]);
+    	}
+
+    	
     	lastIndex = mData.indexOf("js-comments-count\">", lastIndex) + 19;
     	if(lastIndex != 18)
     	{
     		quest.answerCount = Integer.parseInt(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
     	}
     	else quest.answerCount = 0;
-    	
+    	    	
     	return quest;
 	}
 }

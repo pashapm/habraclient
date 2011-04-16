@@ -54,16 +54,14 @@ public class Habrahabr extends Activity {
         Log.d("onCreate", "Load data");
         
         String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
-        String data = urlClient.getURL("http://habrahabr.ru/qa/");
+        String data = urlClient.getURL("http://habrahabr.ru/qa/6804/");
         
         HabraQuestParser parser = new HabraQuestParser(data);
-        HabraQuest quest = null;
+        HabraQuest quest = parser.parseFullQuest();
         
-        while((quest = parser.parseQuestFromList()) != null)
-        {
-	        out += quest.getDataAsHTML();
-	        out += "<hr>";
-        }
+        out += quest.getDataAsHTML();
+        out += "<hr>";
+        out += quest.getCommentsAsHTML();
         
         mResultView.loadDataWithBaseURL("file:///android_asset/", out, "text/html", "utf-8", null);
         

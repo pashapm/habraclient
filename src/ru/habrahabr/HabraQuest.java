@@ -2,6 +2,25 @@ package ru.habrahabr;
 
 public class HabraQuest 
 {
+	public static class Comment
+	{
+		int id;
+		String text;
+		String author;
+		String date;
+		
+		public Comment()
+		{
+			
+		}
+		
+		public String getDataAsHTML()
+		{
+			return "<div id=\"comment_" + String.valueOf(id) + "\" class=\"comment_holder vote_holder\"><div class=\"entry-content\"><div class=\"entry-content-only\">" + text + 
+	          "&nbsp;<span class=\"fn comm\"><a href=\"http://" + author + ".habrahabr.ru/\">" + author + "</a>,&nbsp;<abbr class=\"published\">" + date + "</abbr></span></div></div></div>";
+		}
+	}
+	
 	int id = 0;					// ID
 	String title = null;		// Заголовок
 	String text = null;			// Текст вопроса
@@ -13,6 +32,7 @@ public class HabraQuest
 	int answerCount = 0;		// Кол-во ответов
 	boolean inFavs = false; 	// В избранном
 	boolean accepted = false;	// Вопрос решён
+	Comment[] comments = null;
 	
 	public boolean voteUp(URLClient url)
 	{
@@ -64,4 +84,17 @@ public class HabraQuest
 		"</span></div><div class=\"favs_count\">" + favsCount + "</div><div class=\"vcard author full\"><a href=\"http://" + 
 		author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + author + "</span></a></div></div><div class=\"corner bl\"></div><div class=\"corner br\"></div></div></div>";
 	}	
+	
+	public String getCommentsAsHTML()
+	{
+		String data = "";
+		if(comments == null) return data;
+
+        for(int i = 0; i < comments.length; i++)
+        {
+          data += comments[i].getDataAsHTML();
+        }
+			
+		return data;
+	}
 }
