@@ -54,23 +54,17 @@ public class Habrahabr extends Activity {
         Log.d("onCreate", "Load data");
         
         String out = "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\" media=\"all\"/></head>";
-        String data = urlClient.getURL("http://habrahabr.ru/blogs/java/117386/");
+        String data = urlClient.getURL("http://habrahabr.ru/qa/");
         
-        HabraTopicParser parser = new HabraTopicParser(data);
-        HabraTopic topic = parser.parseFullTopic();
+        HabraQuestParser parser = new HabraQuestParser(data);
+        HabraQuest quest = null;
         
-        if(topic == null) Log.w("onCreate", "topic == null");
-        
-        out += topic.getTopicDataAsHTML();
-        out += "<hr>";
-        
-        HabraComment comment = null;
-        HabraCommentParser comParser = new HabraCommentParser(data);
-        while((comment = comParser.parseComment()) != null)
+        while((quest = parser.parseQuestFromList()) != null)
         {
-        	out += "<div style='margin-left:"+(comment.padding*10)+"px;border:1px solid blue;'>"+comment.getCommentAsHTML()+"</div>";
+	        out += quest.getDataAsHTML();
+	        out += "<hr>";
         }
-          
+        
         mResultView.loadDataWithBaseURL("file:///android_asset/", out, "text/html", "utf-8", null);
         
         final Button go = (Button) findViewById(R.id.go);
