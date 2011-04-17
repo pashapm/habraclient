@@ -62,6 +62,18 @@ public class Habrahabr extends Activity {
         out += quest.getDataAsHTML();
         out += "<hr>";
         out += quest.getCommentsAsHTML();
+        out += "<hr>";
+        
+        HabraAnswerParser aParser = new HabraAnswerParser(data);
+        HabraAnswer answer = null;
+        
+        while((answer = aParser.parseAnswer()) != null)
+        {
+        	out += answer.getDataAsHTML();
+        	out += "<div style='margin-left:20px;'>";
+        	out += answer.getCommentsAsHTML();
+        	out += "</div><hr>";
+        }
         
         mResultView.loadDataWithBaseURL("file:///android_asset/", out, "text/html", "utf-8", null);
         

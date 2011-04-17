@@ -22,18 +22,20 @@ TODO для Habrahabr.apk
 			(X) HabraCommentParser
 		[ ] Написание комментариев
 			( ) HabraCommentWriter
-		[/] Чтение вопросов
+		[X] Чтение вопросов
 			[X] Изменение рейтинга
+			[ ] Комментирование вопроса
+				( ) HabraQuestCommentWriter
 			(X) HabraQuest
-			(/) HabraQuestParser
+			(X) HabraQuestParser
 		[ ] Написание вопросов
 			( ) HabraQuestWriter
-		[ ] Чтение ответов
-			[ ] Изменение рейтинга
+		[/] Чтение ответов
+			[/] Изменение рейтинга
 			[ ] Комментирование ответов
-				( ) HabraAnswerCommentWriter :
-			( ) HabraAnswer
-			( ) HabraAnswerParser
+				( ) HabraAnswerCommentWriter
+			(X) HabraAnswer
+			(X) HabraAnswerParser
 		[ ] Написание ответов
 			( ) HabraAnswerWriter
 		[ ] Просмотр списка блогов

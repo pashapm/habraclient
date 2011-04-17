@@ -2,8 +2,6 @@ package ru.habrahabr;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import ru.habrahabr.HabraQuest.Comment;
 import android.util.Log;
 
 public class HabraQuestParser 
@@ -191,8 +189,8 @@ public class HabraQuestParser
     	if(lastIndex > 0)
     	{
     		String commentsData = new String(mData.substring(lastIndex, mData.indexOf("<div class=\"hsublevel", lastIndex)));
-    		Comment comment = null;
-    		List<Comment> commentsList = new ArrayList<Comment>();
+    		HabraQAComment comment = null;
+    		List<HabraQAComment> commentsList = new ArrayList<HabraQAComment>();
     		
     		Log.i("commentsList", String.valueOf(commentsList != null) + commentsList.toString());
     		
@@ -200,7 +198,7 @@ public class HabraQuestParser
     		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1)
     		{
     			Log.d("QuestParser", "new Comment");
-    			comment = new Comment();
+    			comment = new HabraQAComment();
     			subIndex += 16;
     			Log.d("QuestParser", "Parse comment.id");
     			comment.id = Integer.parseInt(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
@@ -223,7 +221,7 @@ public class HabraQuestParser
     		}
     		
     		Log.d("QuestParser", "toArray");
-    		quest.comments = commentsList.toArray(new Comment[0]);
+    		quest.comments = commentsList.toArray(new HabraQAComment[0]);
     	}
 
     	
