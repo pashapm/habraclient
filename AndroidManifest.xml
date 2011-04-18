@@ -17,6 +17,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+	        android:name=".HabraPreferences"
+	        android:label="@string/preferences">
+		</activity>
+		<activity
+	        android:name=".HabraLoginForm"
+	        android:label="@string/login_form">
+		</activity>
 
     </application>
 </manifest>

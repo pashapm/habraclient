@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<Preference
+		android:title="@string/login_form"
+		android:summary="@string/login_form_summary"
+		android:key="prefLoginForm" />
+	<ListPreference
+		android:title="@string/main_screen_content"
+		android:summary="@string/main_screen_content_summary"
+		android:key="prefMainScreenContent"
+		android:defaultValue="2"
+		android:dialogTitle="@string/main_screen_content"
+		android:entries="@array/name_main_screen_content"
+		android:entryValues="@array/value_main_screen_content" />        
+	<ListPreference
+		android:title="@string/load_images"
+		android:summary="@string/load_images_summary"
+		android:key="prefLoadImages"
+		android:defaultValue="2"
+		android:dialogTitle="@string/load_images"
+		android:entries="@array/name_load_images"
+		android:entryValues="@array/value_load_images" />
+</PreferenceScreen>

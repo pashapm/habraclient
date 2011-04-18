@@ -3,10 +3,13 @@ package ru.habrahabr;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -16,6 +19,7 @@ public class Habrahabr extends Activity {
     
 	WebView mResultView = null;
 	URLClient urlClient = null;
+	CookieSaver cookieSaver = null;
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,7 +31,8 @@ public class Habrahabr extends Activity {
         //SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         //SharedPreferences.Editor preferencesEditor = preferences.edit();
         
-        urlClient = new URLClient();
+        cookieSaver = new CookieSaver(this);
+        urlClient = new URLClient(cookieSaver.getCookies());
         
         Log.d("onCreate", "mResultView");
         
@@ -120,47 +125,35 @@ public class Habrahabr extends Activity {
 				}
 			}
 		});
-        
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) 
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) 
+    {
+        switch (item.getItemId()) 
+        {
+        case R.id.menuPreferences:
+        	startActivity(new Intent(getBaseContext(),HabraPreferences.class));
+        	return true;
+        case R.id.menuExit:
+        	onBackPressed();
+        	finish();
+        	return true;
+        default:
+            return super.onOptionsItemSelected(item);
+        }
     }
     
     public void onBackPressed()
     {
-    
-    }
-    
-    /**
-     * Копирует файл из assets в ~/files/
-     * @param file Файл для копирования
-     * @return путь до файла в папке files
-     */
-    public String copyInFilesDir(String file)
-    {
-    	String filePath = getFilesDir().getAbsolutePath() + "/" + file;
-    	Log.d("copyFile", filePath);
-    	
-    	File fileDesc = new File(filePath);
-    	
-    	if(fileDesc.exists()) return filePath;
-    	
-		try {
-			InputStream inputStream = getAssets().open(file);
-			FileOutputStream outputStream = new FileOutputStream(fileDesc);
-			
-	    	byte buf[] = new byte[1024];
-	    	
-	    	int len = 0;
-    		while ((len = inputStream.read(buf)) != -1) 
-			{
-				outputStream.write(buf, 0, len);
-			}
-			
-			outputStream.close();
-			inputStream.close();
-		} catch (IOException e) {
-			Log.e("IOException", e.getMessage());
-			return null;
-	    }
-    
-    	return filePath;
+    	cookieSaver.putCookies(urlClient.getCookies());
     }
 }
