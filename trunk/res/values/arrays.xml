@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="name_main_screen_content">
+        <item>Лента</item>
+        <item>Главная страница</item>
+        <item>Новые посты</item>
+        <item>Q&amp;A</item>
+        <item>Мой профиль</item>
+    </string-array>
+    <string-array name="value_main_screen_content">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="name_load_images">
+        <item>Загружать</item>
+        <item>Загружать только по Wi-Fi</item>
+        <item>Не загружать</item>
+    </string-array>
+    <string-array name="value_load_images">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+</resources>

@@ -164,6 +164,11 @@ public class URLClient
 		return null;
     }
 	
+	public Cookie[] getCookies()
+	{
+		return httpClient.getCookieStore().getCookies().toArray(new Cookie[0]);
+	}
+	
 	/**
 	 * Кодирование строки для загрузки в WebView
 	 * @param code инпут
