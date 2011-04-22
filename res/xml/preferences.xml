@@ -20,4 +20,8 @@
 		android:dialogTitle="@string/load_images"
 		android:entries="@array/name_load_images"
 		android:entryValues="@array/value_load_images" />
+	<CheckBoxPreference 
+		android:key="prefFullScreen" 
+		android:defaultValue="false" 
+		android:title="@string/fullscreen"/>
 </PreferenceScreen>

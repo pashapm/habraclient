@@ -6,13 +6,10 @@
     >
     <ScrollView android:layout_width="match_parent" android:id="@+id/scrollView1" android:layout_height="match_parent">
         <LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout1" android:layout_height="match_parent" android:orientation="vertical">
-            <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout2" android:layout_width="match_parent">
-            	<EditText android:hint="Login" android:id="@+id/login" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-	            <EditText android:hint="Password" android:id="@+id/password" android:layout_height="wrap_content" android:layout_width="wrap_content"/>
-	            <EditText android:hint="Captcha" android:layout_height="wrap_content" android:id="@+id/code" android:layout_width="wrap_content"/>
-	            <Button android:text="Go" android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/go"/>
-            </LinearLayout>
         	<WebView android:id="@+id/result" android:layout_width="match_parent" android:layout_height="match_parent"/>
+        	<HorizontalScrollView android:id="@+id/horizontalScrollView1" android:layout_width="wrap_content" android:layout_height="wrap_content">
+        		<LinearLayout android:layout_width="match_parent" android:id="@+id/linearLayout3" android:layout_height="match_parent" android:orientation="horizontal"></LinearLayout>
+        	</HorizontalScrollView>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

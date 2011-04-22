@@ -1,28 +1,21 @@
 #header-wrapper {
 position:relative;
-min-width:760px;
 }	
 
 #wrapper {
-width: 95%;
-min-width: 725px;
 clear: both;
-margin:0 auto;
+margin:0;
 }
 #inner {
-margin:0 auto;
-max-width: 1200px;
+margin:0;
 }
 
-#main-content {
+ {
 	float: left;
-	width: 66%;
 	clear: left;
-	margin-right: 2%;
 }
 #sidebar {
 	float: left;
-	width: 31%;
 }
 
 body, html {
@@ -855,7 +848,7 @@ padding:35px 0 20px 0;
 		background: #dfe9e8 url(/i/bg-description-top-left.gif) no-repeat 0 0;
 	}
 
-		.blog-info #description #inner {
+		.blog-info #description {
 			padding: 20px 10px;
 		}
 		.blog-info #description p {
@@ -1091,37 +1084,37 @@ padding-left:35px;
 .user_profile_edit_holder{
 padding-left:35px;
 }
-.profile   #main-content .userinfo,
-.company #main-content .userinfo {
+.profile .userinfo,
+.company .userinfo {
 width:auto;
 padding-left:35px;
 }
-.profile #main-content .user-recommend-user{padding-left:35px;}
-.profile #main-content .items,
-.profile #main-content .live{
+.profile .user-recommend-user{padding-left:35px;}
+.profile  .items,
+.profile  .live{
 margin-left:35px !important;
 width:auto;
 }
 .site-settings{
 padding-left:35px;
 }
-#main-content
+
 .hentry
 .summary{
 
 margin-left:35px !important;
 }
-.profile #main-content .items
+.profile  .items
 .entry-title ,
-.profile #main-content .items
+.profile  .items
 .content,
-.profile #main-content .items
+.profile  .items
 .entry-info{
 
 padding-left:0;
 margin-left:0;
 }
-.profile #main-content .items
+.profile  .items
 .tags{
 margin-left:0;
 }
@@ -1134,7 +1127,7 @@ padding-left:35px;
 #js-topic-form-swither{
 padding-left:35px;
 }
-#js-topic-form-holder,.add-new-blog #main-content{
+#js-topic-form-holder,.add-new-blog {
 padding-left:35px;
 }
 .job-content,
@@ -1977,24 +1970,24 @@ clear: both;
 		color: #fff;
 	}
 .blogs
-#main-content
+
 .page-nav,
 .company
-#main-content
+
 .page-nav,
 .profile
-#main-content
+
 .page-nav,
 .users-list-container{
 padding-left:35px;
 }
 /*Страница со всеми тегами*/
 
-.all-tags-page #main-content {
+.all-tags-page  {
 width: 100%;
 margin-bottom:120px;
 }
-	.all-tags-page #main-content h2 {
+	.all-tags-page  h2 {
 		font: 26px/110% Verdana, sans-serif;
 		color: #999;
 		margin-bottom: 10px;
@@ -2812,7 +2805,7 @@ ul.hentry .entry-content-only {
 		margin: 5px 0 0;
 		font: .85em Tahoma,Arial, sans-serif;/*11/13*/
 	}
-		ul.hentry .entry-content .bad a { /*Ссылка Показать плохой комментарий*/
+		ul.hentry .entry-content .bad a {
 			color: #ccc;
 		}
 
@@ -3372,7 +3365,7 @@ padding:10px 22px;
 float: left;
 margin-right: 20px;
 }
-.ponchiki #main-content {
+.ponchiki  {
 width: 95%;
 }
 .ponchiki .checkbox, .ponchiki .radio {
@@ -3476,7 +3469,7 @@ line-height: 1.54em;
 margin-bottom:0.5em;
 }
 
-.help #main-content ul {
+.help  ul {
 line-height: 1.54em;
 }
 
@@ -3641,7 +3634,7 @@ li.bookmark, li.to-favs, li.down-to-child,.up-to-parent
 {display:none;}
 
 
-#wrapper, #main-content {
+#wrapper,  {
 width: auto;
 border: 0;
 margin: 0 2%;
@@ -3650,13 +3643,6 @@ float: none !important;
 }
 
 
-div.hentry {
-clear:both;
-float:none;
-margin:0 0 40px;
-width:auto;
-}
-}
 .habrauserava{
 height:48px;
 width:48px;

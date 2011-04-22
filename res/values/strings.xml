@@ -17,4 +17,6 @@
     <string name="main_screen_content">Главный экран</string>
     <string name="main_screen_content_summary">Позволяет выбрать страницу для отображения на главном экране</string>
     <string name="captcha">Капча</string>
+    <string name="fullscreen">Полный экран</string>
+    <string name="refresh">Обновить</string>
 </resources>
