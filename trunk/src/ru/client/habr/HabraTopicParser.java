@@ -93,19 +93,15 @@ public class HabraTopicParser
     	Log.d("TopicParser", "Parse ID and Title");
     	if(topic.type != HabraTopicType.Link)
     	{
-	    	String ids = topicData.substring(
+	    	topic.id = Integer.valueOf(topicData.substring(
 	    			lastIndex = (topicData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
-	    			lastIndex = topicData.indexOf('/', lastIndex));
-	    	Log.i("TopicData", ids == null ? "null" : ids);
-	    	topic.id = Integer.parseInt(ids);
+	    			lastIndex = topicData.indexOf('/', lastIndex)));
     	}
     	else
     	{
-    		String ids = topicData.substring(
+	    	topic.id = Integer.valueOf(topicData.substring(
 	    			lastIndex = (topicData.indexOf("/linker/go/", lastIndex) + 11), 
-	    			lastIndex = topicData.indexOf('/', lastIndex));
-	    	Log.i("TopicData", ids == null ? "null" : ids);
-	    	topic.id = Integer.parseInt(ids);
+	    			lastIndex = topicData.indexOf('/', lastIndex)));
     	}
 
     	topic.title = new String(topicData.substring(
@@ -149,7 +145,7 @@ public class HabraTopicParser
     	String favs = topicData.substring(
     			lastIndex = (topicData.indexOf('>', topicData.indexOf("<div class=\"favs", lastIndex)) + 1), 
     			lastIndex = topicData.indexOf('<', lastIndex));
-    	if(favs.length() > 0) topic.favorites = Integer.parseInt(favs);
+    	if(favs.length() > 0) topic.favorites = Integer.valueOf(favs);
     	else topic.favorites = 0;
     	
     	if(topicData.indexOf("class=\"vcard", lastIndex) != -1)
@@ -169,12 +165,12 @@ public class HabraTopicParser
     			lastIndex = (topicData.indexOf("<span class=\"all\">", lastIndex) + 18), 
     			lastIndex = topicData.indexOf('<', lastIndex));
     	Log.i("TopicData", comments + "(" + comments.codePointAt(0) + ")");
-    	if(comments.codePointAt(0) != 1082) topic.commentsCount = Integer.parseInt(comments);
+    	if(comments.codePointAt(0) != 1082) topic.commentsCount = Integer.valueOf(comments);
     	else topic.commentsCount = 0;
     	
     	lastIndex = topicData.indexOf("<span class=\"new\">", lastIndex);
     	if(lastIndex == -1) topic.commentsDiff = 0;
-    	else topic.commentsDiff = Integer.parseInt(topicData.substring(
+    	else topic.commentsDiff = Integer.valueOf(topicData.substring(
     			lastIndex += 18, 
     			lastIndex = topicData.indexOf('<', lastIndex)));
     	
@@ -250,11 +246,9 @@ public class HabraTopicParser
     	Log.d("TopicGet", topic.getBlogURL());
     	
     	Log.d("TopicParser", "Parse ID and Title");
-    	String ids = mData.substring(
+    	topic.id = Integer.valueOf(mData.substring(
     			lastIndex = (mData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
-    			lastIndex = mData.indexOf('/', lastIndex));
-    	Log.i("TopicData", ids == null ? "null" : ids);
-    	topic.id = Integer.parseInt(ids);
+    			lastIndex = mData.indexOf('/', lastIndex)));
 
     	topic.title = new String(mData.substring(
     			lastIndex = (mData.indexOf('>', lastIndex) + 1), 
@@ -295,7 +289,7 @@ public class HabraTopicParser
     	String favs = mData.substring(
     			lastIndex = (mData.indexOf('>', mData.indexOf("<div class=\"favs", lastIndex)) + 1), 
     			lastIndex = mData.indexOf('<', lastIndex));
-    	if(favs.length() > 0) topic.favorites = Integer.parseInt(favs);
+    	if(favs.length() > 0) topic.favorites = Integer.valueOf(favs);
     	else topic.favorites = 0;
     	
     	if(mData.indexOf("class=\"vcard", lastIndex) != -1)
@@ -313,7 +307,7 @@ public class HabraTopicParser
     	lastIndex = mData.indexOf("js-comments-count\">", lastIndex) + 19;
     	if(lastIndex != 18)
     	{
-    		topic.commentsCount = Integer.parseInt(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
+    		topic.commentsCount = Integer.valueOf(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
     	}
     	else topic.commentsCount = 0;
     	

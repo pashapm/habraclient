@@ -26,6 +26,7 @@ import android.util.Log;
 public class URLClient 
 {
 	private DefaultHttpClient mHttpClient = null;
+	boolean locked = false;
 	
 	private static URLClient mUrlClient = null;
 	public static URLClient getUrlClient()
@@ -86,7 +87,14 @@ public class URLClient
     { 
 		HttpGet httpGet = new HttpGet(url);
 		
+		try {
+			while(locked) Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			Log.e("URLClient.getURL", "InterruptedException: " + e1.getMessage());
+		}
+		
         try {
+        	locked = true;
         	Log.d("URLClient.getURL", "try");
 			HttpResponse httpResponse = mHttpClient.execute(httpGet);
 			Log.d("URLClient.getURL", "execute(httpGet)");
@@ -95,6 +103,7 @@ public class URLClient
 			if(httpEntity != null)
 			{
 				Log.d("URLClient.getURL", "if(httpEntity != null)");
+				locked = false;
 				return EntityUtils.toString(httpEntity);
 			}
 		} catch (ClientProtocolException e) {
@@ -102,6 +111,7 @@ public class URLClient
 		} catch (IOException e) {
 			Log.e("URLClient.getURL", "IOException: " + e.getMessage());
 		}
+		locked = false;
 		return null;
     }
 	
@@ -114,7 +124,14 @@ public class URLClient
     { 
 		HttpGet httpGet = new HttpGet(url);
 		
+		try {
+			while(locked) Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			Log.e("URLClient.getURL", "InterruptedException: " + e1.getMessage());
+		}
+		
         try {
+        	locked = true;
         	Log.d("URLClient.getURLAsBytes", "try");
 			HttpResponse httpResponse = mHttpClient.execute(httpGet);
 			Log.d("URLClient.getURLAsBytes", "execute(httpGet)");
@@ -123,6 +140,7 @@ public class URLClient
 			if(httpEntity != null)
 			{
 				Log.d("URLClient.getURLAsBytes", "if(httpEntity != null)");
+				locked = false;
 				return EntityUtils.toByteArray(httpEntity);
 			}
 		} catch (ClientProtocolException e) {
@@ -130,6 +148,7 @@ public class URLClient
 		} catch (IOException e) {
 			Log.e("URLClient.getURLAsBytes", "IOException: " + e.getMessage());
 		}
+		locked = false;
 		return null;
     }
 	
@@ -159,7 +178,14 @@ public class URLClient
 			}
 		}
 		
+		try {
+			while(locked) Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			Log.e("URLClient.getURL", "InterruptedException: " + e1.getMessage());
+		}
+		
         try {
+        	locked = true;
         	Log.d("URLClient.postURL", "try");
 			HttpResponse httpResponse = mHttpClient.execute(httpPost);
 			Log.d("URLClient.postURL", "execute(httpGet)");
@@ -169,6 +195,7 @@ public class URLClient
 			{
 				Log.d("loadURL", "if(httpEntity != null)");
 				String httpResult = EntityUtils.toString(httpEntity);
+				locked = false;
 				return httpResult == null ? "null" : httpResult;
 			}
 		} catch (ClientProtocolException e) {
@@ -176,6 +203,7 @@ public class URLClient
 		} catch (IOException e) {
 			Log.e("URLClient.postURL", "IOException: " + e.getMessage());
 		}
+		locked = false;
 		return null;
     }
 	

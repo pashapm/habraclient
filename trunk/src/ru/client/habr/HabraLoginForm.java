@@ -6,18 +6,19 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class HabraLoginForm extends Activity 
 {
 	EditText textUserName, textPassword, textCaptcha;
 	Button buttonLogin, buttonSkip;
-	WebView viewCaptcha;
+	ImageView imageCaptcha;
 	TextView titleError;
 	LinearLayout layoutCaptcha;
 	CheckBox checkSavePassword;
@@ -34,7 +35,7 @@ public class HabraLoginForm extends Activity
         textUserName = (EditText) findViewById(R.id.textUserName);
         textPassword = (EditText) findViewById(R.id.textPassword);
         layoutCaptcha = (LinearLayout) findViewById(R.id.layoutCaptcha);
-        viewCaptcha = (WebView) findViewById(R.id.viewCaptcha);
+        imageCaptcha = (ImageView) findViewById(R.id.imageCaptcha);
         textCaptcha = (EditText) findViewById(R.id.textCaptcha);
         checkSavePassword = (CheckBox) findViewById(R.id.checkSavePassword);
         buttonLogin = (Button) findViewById(R.id.buttonLogin);
@@ -52,9 +53,8 @@ public class HabraLoginForm extends Activity
     	textUserName.setText(preferences.getString("prefUserName", ""));
     	textPassword.setText(preferences.getString("prefPassword", ""));
     	checkSavePassword.setChecked(preferences.getBoolean("prefSavePassword", false));
-		
-    	viewCaptcha.getSettings().setAllowFileAccess(true);
-		viewCaptcha.loadUrl("file://" + HabraLogin.getHabraLogin().getCaptcha());
+    	
+		updateCaptcha();
 	}
 	
 	public void onClickLogin(View v)
@@ -83,6 +83,9 @@ public class HabraLoginForm extends Activity
 			preferencesEditor.putBoolean("prefSavePassword", checkSavePassword.isChecked());
 			preferencesEditor.commit();
 			
+			HabraLogin.getHabraLogin().parseUserData();
+			Toast.makeText(getApplicationContext(), getString(R.string.logged), Toast.LENGTH_LONG).show();
+			
 			onBackPressed();
 		}
 		else
@@ -93,8 +96,7 @@ public class HabraLoginForm extends Activity
 			textCaptcha.setText("");
 			textCaptcha.requestFocus();
 			
-			viewCaptcha.getSettings().setAllowFileAccess(true);
-			viewCaptcha.loadUrl("file://" + HabraLogin.getHabraLogin().getCaptcha());
+			updateCaptcha();
 		}
 		Log.d("HabraLoginForm.onClickLogin", "end");
 	}
@@ -102,6 +104,7 @@ public class HabraLoginForm extends Activity
 	public void onClickSkip(View v)
 	{
 		Log.d("HabraLoginForm.onClickSkip", "called");
+		Toast.makeText(getApplicationContext(), getString(R.string.skip_login_text), Toast.LENGTH_LONG).show();
 		onBackPressed();
 	}
 	
@@ -112,5 +115,10 @@ public class HabraLoginForm extends Activity
 		preferencesEditor.commit();
 		
 		finish();
+	}
+	
+	public void updateCaptcha()
+	{
+		new AsyncCaptchaLoader().execute(imageCaptcha);
 	}
 }

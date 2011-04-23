@@ -19,4 +19,26 @@
     <string name="captcha">Капча</string>
     <string name="fullscreen">Полный экран</string>
     <string name="refresh">Обновить</string>
+    <string name="private_mail">Личная почта</string>
+    <string name="favorites">Избранное</string>
+    <string name="mark">Оценка</string>
+    <string name="user_mark">Карма</string>
+    <string name="rating">Рейтинг</string>
+    <string name="user_bar_summary">Настройки польовательского бара</string>
+    <string name="user_bar">Пользовательский бар</string>
+    <string name="user_bar_hide">Скрыть UserBar</string>
+    <string name="user_bar_hide_summary">Скрыть пользовательский бар</string>
+    <string name="user_bar_hide_mark">Скрыть карму</string>
+    <string name="user_bar_hide_force">Скрыть ХабраСилу</string>
+    <string name="user_bar_hide_favorites">Скрыть избранное</string>
+    <string name="user_bar_hide_pm">Скрыть личную почту</string>
+    <string name="user_bar_hide_mark_summary"></string>
+    <string name="user_bar_hide_force_summary"></string>
+    <string name="user_bar_hide_favorites_summary"></string>
+    <string name="user_bar_hide_pm_summary"></string>
+    <string name="logout_summary">Выйти с хабра</string>
+    <string name="logout_success">Вы вышли с хабра</string>
+    <string name="logout_fail">Дверь закрыта, выйти не получилось.</string>
+    <string name="skip_login_text">Вы можете зайти в свой аккаунт через настройки</string>
+    <string name="logged">Вы зашли в свой аккаунт</string>
 </resources>

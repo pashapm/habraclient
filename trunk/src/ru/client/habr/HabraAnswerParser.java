@@ -35,9 +35,7 @@ public class HabraAnswerParser
 		
 		Log.d("AnswerParser", "Parse ID");
 		int lastIndex = 15;
-		String ids = new String(answerData.substring(lastIndex, lastIndex = answerData.indexOf('"', lastIndex)));
-		Log.i("AnswerData", ids);
-		answer.id = Integer.parseInt(ids);
+		answer.id = Integer.valueOf(answerData.substring(lastIndex, lastIndex = answerData.indexOf('"', lastIndex)));
 		
 		Log.d("AnswerParser", "Parse Avatar");
 		answer.avatar = new String(answerData.substring(
@@ -54,12 +52,9 @@ public class HabraAnswerParser
 				lastIndex = answerData.indexOf('<', lastIndex)));
 		
 		Log.d("AnswerParser", "Parse Rating");
-		String ratings = new String(answerData.substring(
+		answer.rating *= Integer.valueOf(answerData.substring(
 				lastIndex = (answerData.indexOf("mark\"><span>", lastIndex) + 12), 
 				lastIndex = (answerData.indexOf('<', lastIndex))));
-		answer.rating = ratings.charAt(0) == '-' ? -1 : 1;
-		Log.i("AnswerData", ratings);
-		answer.rating *= Integer.parseInt("0"+ratings.substring(1));
 		
 		Log.d("AnswerParser", "Parse Text");
 		answer.text = new String(answerData.substring(
@@ -80,7 +75,7 @@ public class HabraAnswerParser
 			comment = new HabraQAComment();
 			subIndex += 16;
 			Log.d("QuestParser", "Parse comment.id");
-			comment.id = Integer.parseInt(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
+			comment.id = Integer.valueOf(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
 			Log.d("QuestParser", "Parse comment.text");
 			comment.text = new String(commentsData.substring(
 					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
