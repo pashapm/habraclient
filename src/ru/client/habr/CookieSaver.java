@@ -57,6 +57,7 @@ public class CookieSaver extends SQLiteOpenHelper
 		if(!c.moveToFirst()) 
 		{
 			c.close();
+			db.close();
 			return null;
 		}
 		
@@ -87,7 +88,8 @@ public class CookieSaver extends SQLiteOpenHelper
 		} 
 		while (c.moveToNext());
 		c.close();
-
+		db.close();
+		
 		Log.d("CookieSaver", "return cookies");
 		
 		return cookies.toArray(new Cookie[0]);
@@ -105,7 +107,6 @@ public class CookieSaver extends SQLiteOpenHelper
 		Log.i("CookieSaver.putCookie", "Ver: " + cook.getVersion());
 		
 		SQLiteDatabase db = getWritableDatabase();
-		
 		try
 		{
 		db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME + " VALUES ('" + cook.getName() + "',  '" + cook.getValue() + 
@@ -115,6 +116,7 @@ public class CookieSaver extends SQLiteOpenHelper
 		{
 			Log.w("CookieSaver.putCookie", "SQLException: " + e.getMessage());
 		}
+		db.close();
 	}
 	
 	public void putCookies(Cookie[] cooks)
@@ -127,5 +129,11 @@ public class CookieSaver extends SQLiteOpenHelper
 	{
 		SQLiteDatabase db = getWritableDatabase();
 		db.execSQL("DELETE FROM " + TABLE_NAME + ";");
+		db.close();
+	}
+	
+	public void close()
+	{
+		mCookieSaver = null;
 	}
 }

@@ -52,9 +52,7 @@ public class HabraCommentParser
 		
 		Log.d("CommentParser", "Parse ID");
 		int lastIndex = 16;
-		String ids = new String(commentData.substring(lastIndex, lastIndex = commentData.indexOf('"', lastIndex)));
-		Log.i("CommentData", ids);
-		comment.id = Integer.parseInt(ids);
+		comment.id = Integer.valueOf(commentData.substring(lastIndex, lastIndex = commentData.indexOf('"', lastIndex)));
 		
 		Log.d("CommentParser", "Parse Avatar");
 		comment.avatar = new String(commentData.substring(
@@ -73,12 +71,9 @@ public class HabraCommentParser
 		comment.inFavs = commentData.indexOf("class=\"fav_added", lastIndex) != -1;
 		
 		Log.d("CommentParser", "Parse Rating");
-		String ratings = new String(commentData.substring(
+		comment.rating = Integer.valueOf(commentData.substring(
 				lastIndex = (commentData.indexOf("mark\"><span>", lastIndex) + 12), 
 				lastIndex = (commentData.indexOf('<', lastIndex))));
-		int mul = ratings.charAt(0) == '-' ? -1 : 1;
-		Log.i("CommentData", ratings);
-		comment.rating = Integer.parseInt("0"+ratings.substring(1)) * mul;
 		
 		Log.d("CommentParser", "Parse Text");
 		int endIndex = commentData.indexOf("<p class=\"reply", lastIndex);

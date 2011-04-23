@@ -66,17 +66,14 @@ public class HabraQuestParser
     	quest.accepted = questData.indexOf("answer-accepted", lastIndex) != -1;
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse ID");
-    	quest.id = Integer.parseInt(questData.substring(
+    	quest.id = Integer.valueOf(questData.substring(
     			lastIndex = (questData.indexOf("id=\"infopanel", lastIndex) + 13), 
     			lastIndex = questData.indexOf('"', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse rating");
-    	String rs = questData.substring(
+    	quest.rating = Integer.valueOf(questData.substring(
     			lastIndex = (questData.indexOf('>', (questData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-    			lastIndex = questData.indexOf('<', lastIndex));
-    	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
-    	rs = "0" + rs.substring(1);
-    	quest.rating *= Integer.parseInt(rs);
+    			lastIndex = questData.indexOf('<', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse answers count");
     	int aci = (questData.indexOf("#comments\">", lastIndex) + 11);
@@ -84,7 +81,7 @@ public class HabraQuestParser
     	{
 	    	String acs = questData.substring(aci, lastIndex = questData.indexOf(' ', aci));
 	    	if(acs.codePointAt(0) == 1073) quest.answerCount = 0;
-	    	else quest.answerCount = Integer.parseInt(acs);
+	    	else quest.answerCount = Integer.valueOf(acs);
     	}
     	
     	
@@ -100,7 +97,7 @@ public class HabraQuestParser
     	String favs = questData.substring(
     			lastIndex = (questData.indexOf('>', questData.indexOf("<div class=\"favs", lastIndex)) + 1), 
     			lastIndex = questData.indexOf('<', lastIndex));
-    	if(favs.length() > 0) quest.favsCount = Integer.parseInt(favs);
+    	if(favs.length() > 0) quest.favsCount = Integer.valueOf(favs);
     	else quest.favsCount = 0;
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse author");
@@ -151,17 +148,14 @@ public class HabraQuestParser
     	quest.accepted = mData.indexOf("answer-accepted", lastIndex) != -1;
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse ID");
-    	quest.id = Integer.parseInt(mData.substring(
+    	quest.id = Integer.valueOf(mData.substring(
     			lastIndex = (mData.indexOf("id=\"infopanel", lastIndex) + 13), 
     			lastIndex = mData.indexOf('"', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse rating");
-    	String rs = mData.substring(
+    	quest.rating = Integer.valueOf(mData.substring(
     			lastIndex = (mData.indexOf('>', (mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-    			lastIndex = mData.indexOf('<', lastIndex));
-    	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
-    	rs = "0" + rs.substring(1);
-    	quest.rating *= Integer.parseInt(rs);
+    			lastIndex = mData.indexOf('<', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse date");
     	quest.date = new String(mData.substring(
@@ -175,7 +169,7 @@ public class HabraQuestParser
     	String favs = mData.substring(
     			lastIndex = (mData.indexOf('>', mData.indexOf("<div class=\"favs", lastIndex)) + 1), 
     			lastIndex = mData.indexOf('<', lastIndex));
-    	if(favs.length() > 0) quest.favsCount = Integer.parseInt(favs);
+    	if(favs.length() > 0) quest.favsCount = Integer.valueOf(favs);
     	else quest.favsCount = 0;
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse author");
@@ -200,7 +194,7 @@ public class HabraQuestParser
     			comment = new HabraQAComment();
     			subIndex += 16;
     			Log.d("HabraQuestParser.parseFullQuest", "Parse comment.id");
-    			comment.id = Integer.parseInt(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
+    			comment.id = Integer.valueOf(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
     			Log.d("HabraQuestParser.parseFullQuest", "Parse comment.text");
     			comment.text = new String(commentsData.substring(
     					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
@@ -227,7 +221,7 @@ public class HabraQuestParser
     	lastIndex = mData.indexOf("js-comments-count\">", lastIndex) + 19;
     	if(lastIndex != 18)
     	{
-    		quest.answerCount = Integer.parseInt(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
+    		quest.answerCount = Integer.valueOf(mData.substring(lastIndex, mData.indexOf('<', lastIndex)));
     	}
     	else quest.answerCount = 0;
     	    	

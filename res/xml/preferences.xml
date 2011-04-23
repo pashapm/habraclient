@@ -4,6 +4,10 @@
 		android:title="@string/login_form"
 		android:summary="@string/login_form_summary"
 		android:key="prefLoginForm" />
+	<Preference
+		android:title="@string/logout"
+		android:summary="@string/logout_summary"
+		android:key="prefLogout" />
 	<ListPreference
 		android:title="@string/main_screen_content"
 		android:summary="@string/main_screen_content_summary"
@@ -24,4 +28,35 @@
 		android:key="prefFullScreen" 
 		android:defaultValue="false" 
 		android:title="@string/fullscreen"/>
+	<PreferenceScreen 
+		xmlns:android="http://schemas.android.com/apk/res/android" 
+		android:summary="@string/user_bar_summary" 
+		android:key="prefUserBar" 
+		android:title="@string/user_bar">
+		<CheckBoxPreference 
+			android:key="prefUserBarHide" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_hide"
+			android:summary="@string/user_bar_hide_summary"/>
+		<CheckBoxPreference 
+			android:key="prefUserBarHideMark" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_hide_mark"
+			android:summary="@string/user_bar_hide_mark_summary"/>
+		<CheckBoxPreference 
+			android:key="prefUserBarHideForce" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_hide_force"
+			android:summary="@string/user_bar_hide_force_summary"/>
+		<CheckBoxPreference 
+			android:key="prefUserBarHideFavorites" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_hide_favorites"
+			android:summary="@string/user_bar_hide_favorites_summary"/>
+		<CheckBoxPreference 
+			android:key="prefUserBarHidePM" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_hide_pm"
+			android:summary="@string/user_bar_hide_pm_summary"/>
+	</PreferenceScreen>
 </PreferenceScreen>
