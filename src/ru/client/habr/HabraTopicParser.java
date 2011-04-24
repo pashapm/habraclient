@@ -171,7 +171,7 @@ public class HabraTopicParser
     	lastIndex = topicData.indexOf("<span class=\"new\">", lastIndex);
     	if(lastIndex == -1) topic.commentsDiff = 0;
     	else topic.commentsDiff = Integer.valueOf(topicData.substring(
-    			lastIndex += 18, 
+    			lastIndex += 19, 
     			lastIndex = topicData.indexOf('<', lastIndex)));
     	
     	Log.d("TopicParser", "Save position");

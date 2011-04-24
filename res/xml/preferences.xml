@@ -59,4 +59,45 @@
 			android:title="@string/user_bar_hide_pm"
 			android:summary="@string/user_bar_hide_pm_summary"/>
 	</PreferenceScreen>
+	<PreferenceScreen 
+		xmlns:android="http://schemas.android.com/apk/res/android" 
+		android:summary="@string/hide_post_element_summary" 
+		android:key="prefHidePostElement" 
+		android:title="@string/hide_post_element">
+		<CheckBoxPreference 
+			android:key="prefHidePostContent" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_content"
+			android:summary="@string/hide_post_content_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostTags" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_tags"
+			android:summary="@string/hide_post_tags_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostMark" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_mark"
+			android:summary="@string/hide_post_mark_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostDate" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_date"
+			android:summary="@string/hide_post_date_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostFavs" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_favs"
+			android:summary="@string/hide_post_favs_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostAuthor" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_author"
+			android:summary="@string/hide_post_author_summary"/>
+		<CheckBoxPreference 
+			android:key="prefHidePostComments" 
+			android:defaultValue="false" 
+			android:title="@string/hide_post_comments"
+			android:summary="@string/hide_post_comments_summary"/>
+	</PreferenceScreen>
 </PreferenceScreen>

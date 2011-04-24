@@ -41,4 +41,25 @@
     <string name="logout_fail">Дверь закрыта, выйти не получилось.</string>
     <string name="skip_login_text">Вы можете зайти в свой аккаунт через настройки</string>
     <string name="logged">Вы зашли в свой аккаунт</string>
+    <string name="posts">Посты</string>
+    <string name="q_a">Q&amp;A</string>
+    <string name="blogs">Блоги</string>
+    <string name="companies">Компании</string>
+    <string name="people">Люди</string>
+    <string name="hide_post_element">Скрыть элементы поста</string>
+    <string name="hide_post_content">Скрыть текст поста</string>
+    <string name="hide_post_tags">Скрыть теги</string>
+    <string name="hide_post_mark">Скрыть оценку</string>
+    <string name="hide_post_date">Скрыть дату</string>
+    <string name="hide_post_favs">Скрыть избранное</string>
+    <string name="hide_post_author">Скрыть автора</string>
+    <string name="hide_post_comments">Скрыть кол-во комментариев</string>
+    <string name="hide_post_element_summary">При просмотре списка постов</string>
+    <string name="hide_post_content_summary"></string>
+    <string name="hide_post_tags_summary"></string>
+    <string name="hide_post_mark_summary"></string>
+    <string name="hide_post_date_summary"></string>
+    <string name="hide_post_favs_summary"></string>
+    <string name="hide_post_author_summary"></string>
+    <string name="hide_post_comments_summary"></string>
 </resources>
