@@ -48,8 +48,8 @@ public class URLClient
 	{
 		Log.d("URLClient.URLClient", "construct");
 		HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams, 10000);
-		HttpConnectionParams.setSoTimeout(httpParams, 25000);
+		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
+		HttpConnectionParams.setSoTimeout(httpParams, 90000);
 	    mHttpClient = new DefaultHttpClient(httpParams);
 	    mHttpClient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Linux; Android) AppleWebKit (KHTML, like Gecko) HabraClient 1.0");
 	}

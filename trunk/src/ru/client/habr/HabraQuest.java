@@ -56,13 +56,13 @@ public class HabraQuest
 	
 	public String getDataAsHTML()
 	{
-		return "<div class=\"hentry question_hentry\"><h2 class=\"entry-title single-entry-title\"><a href=\"" + 
+		return "<div class=\"hentry question_hentry\"><h2 class=\"entry-title\"><a href=\"" + 
 		getQuestURL() + "\" class=\"topic\">" + title + "</a></h2><div class=\"content\">" + text +
 		"</div><ul class=\"tags\">" + tags + "</ul><div class=\"entry-info vote_holder answer-positive\">" + 
 		"<div class=\"corner tl\"></div><div class=\"corner tr\"></div><div class=\"entry-info-wrap\"><div class=\"mark\"><span>" + 
 		( rating > 0 ? "+" : "" ) + String.valueOf(rating) + "</span></div><div class=\"informative\"><span>" + 
 		String.valueOf(answerCount) + " ответа</span></div><div class=\"published\"><span>" + date + 
-		"</span></div><div class=\"favs_count\">" + favsCount + "</div><div class=\"vcard author full\"><a href=\"http://" + 
+		"</span></div><div class=\"favs_count\"><span>" + favsCount + "</span></div><div class=\"vcard author full\"><a href=\"http://" + 
 		author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + author + "</span></a></div></div><div class=\"corner bl\"></div><div class=\"corner br\"></div></div></div>";
 	}	
 	

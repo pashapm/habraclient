@@ -58,11 +58,29 @@ public class HabraTopic
 			getTopicURL() + "\" class=\"topic\">" + title + "</a></h2><div class=\"content\">" + content + "</div>" + 
 			(tags.length() > 1 ? "<ul class=\"tags\">" + tags + "</ul>" : "") + 
 			"<div class=\"entry-info\"><div class=\"corner tl\"></div><div class=\"corner tr\"></div><div class=\"entry-info-wrap\"><div class=\"mark\">" + 
-			rating + "</div><div class=\"published\"><span>" + date + "</span></div><div class=\"favs_count\">" + 
-			Integer.toString(favorites) + "</div><div class=\"vcard author full\"><a href=\"http://" + author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + 
+			rating + "</div><div class=\"published\"><span>" + date + "</span></div><div class=\"favs_count\"><span>" + 
+			Integer.toString(favorites) + "</span></div><div class=\"vcard author full\"><a href=\"http://" + author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + 
 			author + "</span></a></div><div class=\"comments\"><a href=\"" + getTopicURL() + "#comments\"><span class=\"all\">" + 
-			Integer.toString(commentsCount) + "</span>" + (commentsDiff > 0 ? "<span class=\"new\">+ " + Integer.toString(commentsDiff) + "</span>" : "") + 
-			"</a></div></div><div class=\"corner bl\"></div><div class=\"corner br\"></div></div></div><hr>";
+			Integer.toString(commentsCount) + "</span>" + (commentsDiff > 0 ? " <span class=\"new\">+" + Integer.toString(commentsDiff) + "</span>" : "") + 
+			"</a></div></div><div class=\"corner bl\"></div><div class=\"corner br\"></div></div></div>";
+	}
+	
+	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, boolean noDate, boolean noFavs, boolean noAuthor, boolean noComments)
+	{
+		return "<div class=\"hentry\"><h2 class=\"entry-title\"><a href=\"" + 
+			getBlogURL() + "\" class=\"blog\">" + blogName + "</a> &rarr; <a href=\"" + 
+			getTopicURL() + "\" class=\"topic\">" + title + "</a></h2>" + 
+			(noContent ? "" : "<div class=\"content\">" + content + "</div>") + 
+			(tags.length() > 1 && !noTags ? "<ul class=\"tags\">" + tags + "</ul>" : "") + 
+			(noMark && noDate && noFavs && noAuthor && noComments ? "" :
+			"<div class=\"entry-info\"><div class=\"corner tl\"></div><div class=\"corner tr\"></div><div class=\"entry-info-wrap\">" +
+			(noMark ? "" : "<div class=\"mark\">" + rating + "</div>") +
+			(noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>") + 
+			(noFavs ? "" : "<div class=\"favs_count\"><span>" + String.valueOf(favorites) + "</span></div>") + 
+			(noAuthor ? "" : "<div class=\"vcard author full\"><a href=\"http://" + author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + author + "</span></a></div>") + 
+			(noComments ? "" : "<div class=\"comments\"><a href=\"" + getTopicURL() + "#comments\"><span class=\"all\">" + 
+			Integer.toString(commentsCount) + "</span>" + (commentsDiff > 0 ? " <span class=\"new\">+" + Integer.toString(commentsDiff) + "</span>" : "") + "</a></div>") + 
+			"</div><div class=\"corner bl\"></div><div class=\"corner br\"></div>") + "</div></div>";
 	}
 	
 	public boolean voteUp(URLClient url)

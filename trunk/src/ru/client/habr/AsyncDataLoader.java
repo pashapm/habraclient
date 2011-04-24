@@ -11,16 +11,16 @@ public class AsyncDataLoader
 		protected boolean force = false;
 		
 		public LoaderData(String url, boolean force) { this.url = url; this.force = force; }
-		public abstract void start();
-		public abstract void update(String data);
-		public abstract void finish(String data);
+		public void start() { }
+		public String update(String data) { return data; }
+		public void finish(String data) { }
 	}
 	
 	public class AsyncLoader extends AsyncTask<Integer, Integer, Integer>
 	{
 		protected void onProgressUpdate(Integer... progress) 
 	    {
-	    	mLoaderData.update(mData);
+	    	
 	    }
 	
 	    protected void onPostExecute(Integer result) 
@@ -34,6 +34,7 @@ public class AsyncDataLoader
 		{
 			Log.d("AsyncLoader.doInBackground", "called");
 			mData = URLClient.getUrlClient().getURL(mLoaderData.url);
+			mData = mLoaderData.update(mData);
 			return 0;
 		}
 	}
@@ -82,9 +83,42 @@ public class AsyncDataLoader
 		mAsyncLoader = new AsyncLoader().execute();
 	}
 	
-	public void reload()
+	public boolean reload()
 	{
+		if(mLoaderData == null) return false;
+		if(mLastURL == null) return false;
+		
 		mAsyncLoader = new AsyncLoader().execute();
+		return true;
+	}
+	
+	public void repeat(LoaderData data)
+	{
+		Log.d("AsyncDataLoader.repeat", "called");
+		
+		if(mLastURL == null)
+		{
+			execute(data);
+		}
+		else
+		{
+			data.finish(mLoaderData.update(mData));
+		}
+	}
+	
+	public void repeat(LoaderData data, boolean notUpdate)
+	{
+		Log.d("AsyncDataLoader.repeat", "called");
+		
+		if(mLastURL == null)
+		{
+			execute(data);
+		}
+		else
+		{
+			if(notUpdate) data.finish(mData);
+			else data.finish(mLoaderData.update(mData));
+		}
 	}
 	
 	/**

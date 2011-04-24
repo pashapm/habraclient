@@ -6,7 +6,6 @@ import ru.client.habr.AsyncDataLoader.LoaderData;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -21,12 +20,15 @@ import android.widget.TextView;
 public class Habrahabr extends Activity {
     
 	WebView mResultView = null;
+	SharedPreferences preferences = null;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         
         new CookieSaver(this);
         URLClient.getUrlClient().insertCookies(CookieSaver.getCookieSaver().getCookies());
@@ -50,6 +52,31 @@ public class Habrahabr extends Activity {
         mResultView.getSettings().setAllowFileAccess(true);
         mResultView.getSettings().setJavaScriptEnabled(true);
         
+        /*final HorizontalScrollView scrollNavPanel = (HorizontalScrollView) findViewById(R.id.scrollNavPanel);
+        final LinearLayout layoutData = (LinearLayout) findViewById(R.id.layoutData);
+        
+        bottom.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+				if(arg1) {
+					LayoutParams params1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				    params1.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+				    scrollNavPanel.setLayoutParams(params1);
+				    
+				    LayoutParams params2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				    params2.bottomMargin = 60;
+				    layoutData.setLayoutParams(params2);
+				} else {
+					LayoutParams params1 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				    params1.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+				    scrollNavPanel.setLayoutParams(params1);
+				    
+				    LayoutParams params2 = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+				    params2.topMargin = 60;
+				    layoutData.setLayoutParams(params2);
+				}
+			}
+        });*/
         /*Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.setType("text/plain");
         sendIntent.putExtra(Intent.EXTRA_TEXT, "It's send?");
@@ -99,17 +126,12 @@ public class Habrahabr extends Activity {
     public void onStart()
     {
     	super.onStart();
-    	
-    	SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-    	
     	updateUserBar();
         
         if(preferences.getBoolean("prefFullScreen", false))
         {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
-        
-        loadData(false);
     }
     
     public void onDestroy()
@@ -122,20 +144,7 @@ public class Habrahabr extends Activity {
     {
     	super.onResume();
     	updateUserBar();
-    }
-    
-    public void onConfigurationChanged(Configuration newConfig)
-    {
-    	if(newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
-    	{
-    		// Это бужет нужно для панели навигации:
-    		// Сверху/Снизу в портретном режиме
-    		// Справа/Слева в ланшафтном
-    	}
-    	else
-    	{
-    		
-    	}
+    	loadData(true);
     }
     
     public void onClickUserName(View v)
@@ -151,6 +160,78 @@ public class Habrahabr extends Activity {
     public void onClickPM(View v)
     {
     	
+    }
+    
+    public void onClickNav(View v)
+    {
+    	switch(v.getId())
+    	{
+    	case R.id.buttonNavPost:
+    		AsyncDataLoader.getDataLoader().execute(new LoaderData("http://habrahabr.ru/", true) {
+    			@Override
+    			public void finish(String data) {
+    				finishLoading(data);
+    			}
+    			public String update(String pageData) {
+    				String data = "";
+    				HabraTopicParser parser = new HabraTopicParser(pageData);
+    				HabraTopic topic = null;
+    				
+    				boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+    				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+    				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+    				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+    				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+    				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+    				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+    				
+    				while((topic = parser.parseTopicFromList()) != null)
+    				{
+    					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+    				}
+    		        return data;
+    			}
+    			@Override
+    			public void start() {
+    				startLoading();
+    			}
+            });
+    		break;
+    	case R.id.buttonNavQA:
+    		AsyncDataLoader.getDataLoader().execute(new LoaderData("http://habrahabr.ru/qa/", true) {
+    			@Override
+    			public void finish(String data) {
+    				finishLoading(data);
+    			}
+    			public String update(String pageData) {
+    				String data = "";
+    				HabraQuestParser parser = new HabraQuestParser(pageData);
+    				HabraQuest quest = null;
+    				while((quest = parser.parseQuestFromList()) != null)
+    				{
+    					data += quest.getDataAsHTML();
+    				}
+    				return data;
+    			}
+    			@Override
+    			public void start() {
+    				startLoading();
+    			}
+            });
+    		break;
+    	case R.id.buttonNavPeople:
+    		mResultView.loadData("Coming soon...", "text/html", "utf-8");
+    		break;
+    	case R.id.buttonNavBlog:
+    		mResultView.loadData("Coming soon...", "text/html", "utf-8");
+    		break;
+    	case R.id.buttonNavCompany:
+    		mResultView.loadData("Coming soon...", "text/html", "utf-8");
+    		break;
+    	default: 
+    		mResultView.loadData("WTF o_O", "text/html", "utf-8");
+    		break;
+    	}
     }
     
     public void updateUserBar()
@@ -169,8 +250,6 @@ public class Habrahabr extends Activity {
 	    	titleName.setText(HabraLogin.getHabraLogin().getUserName());
 	    	titleKarma.setText(String.valueOf(HabraLogin.getHabraLogin().getUserKarma()));
 	    	titleForce.setText(String.valueOf(HabraLogin.getHabraLogin().getUserRating()));
-	    
-	    	SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 	    	
 	    	findViewById(R.id.scrollUserBar).setVisibility(preferences.getBoolean("prefUserBarHide", false) ? View.GONE : View.VISIBLE);
 	    	titleKarma.setVisibility(preferences.getBoolean("prefUserBarHideMark", false) ? View.GONE : View.VISIBLE);
@@ -180,23 +259,50 @@ public class Habrahabr extends Activity {
     	}
     }
     
-    public void loadData(boolean force)
+    public void startLoading()
     {
-    	Log.d("onCreate", "Load data");
-        
-        AsyncDataLoader.getDataLoader().execute(new LoaderData("http://habrahabr.ru/", force) {
-			@Override
+    	mResultView.loadData("<style>body {background:black;margin:0 0 0 0;padding: 0 0 0 0; width:100%25;}</style>", "text/plain", "utf-8");
+		findViewById(R.id.procLoading).setVisibility(View.VISIBLE);
+    }
+    
+    public void finishLoading(String data)
+    {
+    	mResultView.loadDataWithBaseURL("file:///android_asset/", "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\"/></head>" + data, "text/html", "utf-8", null);
+		findViewById(R.id.procLoading).setVisibility(View.GONE);
+    }
+    
+    public void loadData(boolean notUpdate)
+    {
+    	Log.d("onCreate", "Load data"); 
+    	
+    	AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/", notUpdate) {
+        	@Override
 			public void finish(String data) {
-		        mResultView.loadDataWithBaseURL("file:///android_asset/", "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\"/></head>" + data, "text/html", "utf-8", null);
-				findViewById(R.id.procLoading).setVisibility(View.GONE);
+		        finishLoading(data);
 			}
+        	public String update(String pageData) {
+        		String data = "";
+        		HabraTopicParser parser = new HabraTopicParser(pageData);
+				HabraTopic topic = null;
+				
+		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+				
+				while((topic = parser.parseTopicFromList()) != null)
+				{
+					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+				}
+				return data;
+        	}
 			@Override
 			public void start() {
-				mResultView.loadData("<style>body {background:black;margin:0 0 0 0;padding: 0 0 0 0; width:100%25;}</style>", "text/plain", "utf-8");
-				findViewById(R.id.procLoading).setVisibility(View.VISIBLE);
+				startLoading();
 			}
-			@Override
-			public void update(String data) {}
-        });
+        }, true);
     }
 }

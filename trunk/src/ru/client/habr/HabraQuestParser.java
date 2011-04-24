@@ -71,9 +71,12 @@ public class HabraQuestParser
     			lastIndex = questData.indexOf('"', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse rating");
-    	quest.rating = Integer.valueOf(questData.substring(
-    			lastIndex = (questData.indexOf('>', (questData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-    			lastIndex = questData.indexOf('<', lastIndex)));
+    	String rs = questData.substring(
+    			lastIndex = (questData.indexOf('>', (questData.indexOf("mark\">", lastIndex) + 6)) + 1),
+    			lastIndex = questData.indexOf('<', lastIndex));
+    	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
+    	rs = "0" + rs.substring(1);
+    	quest.rating *= Integer.valueOf(rs);
     	
     	Log.d("HabraQuestParser.parseQuestFromList", "Parse answers count");
     	int aci = (questData.indexOf("#comments\">", lastIndex) + 11);
@@ -153,9 +156,11 @@ public class HabraQuestParser
     			lastIndex = mData.indexOf('"', lastIndex)));
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse rating");
-    	quest.rating = Integer.valueOf(mData.substring(
-    			lastIndex = (mData.indexOf('>', (mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-    			lastIndex = mData.indexOf('<', lastIndex)));
+    	String rs = mData.substring(lastIndex = (mData.indexOf('>', (mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
+    			lastIndex = mData.indexOf('<', lastIndex));
+    	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
+    	rs = "0" + rs.substring(1);
+    	quest.rating *= Integer.parseInt(rs);
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse date");
     	quest.date = new String(mData.substring(
