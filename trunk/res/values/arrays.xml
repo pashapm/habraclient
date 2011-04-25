@@ -2,8 +2,8 @@
 <resources>
     <string-array name="name_main_screen_content">
         <item>Лента</item>
-        <item>Главная страница</item>
-        <item>Новые посты</item>
+        <item>Все</item>
+        <item>Все новые посты</item>
         <item>Q&amp;A</item>
         <item>Мой профиль</item>
     </string-array>

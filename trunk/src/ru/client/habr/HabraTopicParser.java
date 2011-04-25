@@ -223,7 +223,13 @@ public class HabraTopicParser
     	}
     	
     	Log.d("TopicParser", "Parse Blog Data");
-    	int blogIndex = mData.indexOf("class=\"blog-header\">") + 20;
+    	int blogIndex = mData.indexOf("class=\"blog-header");
+    	if(blogIndex == -1) 
+    	{
+    		blogIndex = mData.indexOf("class=\"profile-header");
+    		topic.isCorporativeBlog = true;
+    	}
+    	
     	String blog = new String(mData.substring(
     			blogIndex = mData.indexOf("<a ", blogIndex), 
     			blogIndex = mData.indexOf("</a>", blogIndex)));
@@ -249,11 +255,21 @@ public class HabraTopicParser
     	topic.id = Integer.valueOf(mData.substring(
     			lastIndex = (mData.indexOf(topic.getBlogURL(), lastIndex) + topic.getBlogURL().length()), 
     			lastIndex = mData.indexOf('/', lastIndex)));
-
+    	
+    	Log.i("TopicData", "ID: " + topic.id);
+    	
     	topic.title = new String(mData.substring(
     			lastIndex = (mData.indexOf('>', lastIndex) + 1), 
     			lastIndex = mData.indexOf('<', lastIndex)));
-    	Log.i("TopicData", topic.title);
+    	
+    	while(topic.title.length() == 0)
+    	{
+    		topic.title = new String(mData.substring(
+        			lastIndex = (mData.indexOf('>', lastIndex) + 1), 
+        			lastIndex = mData.indexOf('<', lastIndex)));
+    	}
+    	
+    	Log.i("TopicData", "Title[" + topic.title.length() + "]: " + topic.title);
     	
     	Log.d("TopicParser", "Parse Content");
     	lastIndex = mData.indexOf("<div class=\"content\">", lastIndex) + 21;

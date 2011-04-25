@@ -160,7 +160,7 @@ public class HabraQuestParser
     			lastIndex = mData.indexOf('<', lastIndex));
     	if(rs.charAt(0) == '-') quest.rating = -1; else quest.rating = 1;
     	rs = "0" + rs.substring(1);
-    	quest.rating *= Integer.parseInt(rs);
+    	quest.rating *= Integer.valueOf(rs);
     	
     	Log.d("HabraQuestParser.parseFullQuest", "Parse date");
     	quest.date = new String(mData.substring(

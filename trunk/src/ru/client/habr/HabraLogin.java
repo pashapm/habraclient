@@ -184,4 +184,9 @@ public class HabraLogin
 	{
 		return mUserName;
 	}
+	
+	public String getProfileURL()
+	{
+		return "http://" + mUserName + ".habrahabr.ru/";
+	}
 }

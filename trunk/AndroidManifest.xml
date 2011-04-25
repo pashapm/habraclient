@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="ru.client.habr"
       android:versionCode="1"
-      android:versionName="1.0">
+      android:versionName="1.0" android:installLocation="auto">
     <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="8"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -16,6 +16,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data android:scheme="http" android:host="habrahabr.ru"/>
+				<data android:scheme="http" android:host="m.habrahabr.ru"/>
+				<data android:scheme="http" android:host="habr.ru"/>
+				<data android:scheme="http" android:host="m.habr.ru"/>
+			</intent-filter>
         </activity>
         <activity
 	        android:name=".HabraPreferences"
