@@ -16,8 +16,9 @@ public class AsyncDataLoader
 		public void finish(String data) { }
 	}
 	
-	public class AsyncLoader extends AsyncTask<Integer, Integer, Integer>
+	private class AsyncLoader extends AsyncTask<Integer, Integer, Integer>
 	{
+		private String mUpdateData = null;
 		protected void onProgressUpdate(Integer... progress) 
 	    {
 	    	
@@ -26,7 +27,8 @@ public class AsyncDataLoader
 	    protected void onPostExecute(Integer result) 
 	    {
 	    	mLastURL = mLoaderData.url;
-	    	mLoaderData.finish(mData);
+	    	mIsFinished = true;
+	    	mLoaderData.finish(mUpdateData);
 	    }
 	    
 		@Override
@@ -34,7 +36,7 @@ public class AsyncDataLoader
 		{
 			Log.d("AsyncLoader.doInBackground", "called");
 			mData = URLClient.getUrlClient().getURL(mLoaderData.url);
-			mData = mLoaderData.update(mData);
+			mUpdateData = mLoaderData.update(mData);
 			return 0;
 		}
 	}
@@ -50,10 +52,13 @@ public class AsyncDataLoader
 		return asyncDataLoader;
 	}
 
+	/****************************************************************************************/
+	
 	private String mLastURL = null;
 	private String mData = null;
 	private LoaderData mLoaderData = null;
 	private AsyncTask<Integer, Integer, Integer> mAsyncLoader = null;
+	private boolean mIsFinished = true;
 	
 	/**
 	 * 
@@ -76,10 +81,11 @@ public class AsyncDataLoader
 		if(mLoaderData.url.equals(mLastURL) && !mLoaderData.force) 
 		{
 			Log.d("AsyncDataLoader.execute", "double load");
-			mLoaderData.finish(mData);
+			mLoaderData.finish(mLoaderData.update(mData));
 			return;
 		}
 		
+		mIsFinished = false;
 		mAsyncLoader = new AsyncLoader().execute();
 	}
 	
@@ -119,6 +125,11 @@ public class AsyncDataLoader
 			if(notUpdate) data.finish(mData);
 			else data.finish(mLoaderData.update(mData));
 		}
+	}
+	
+	public boolean isFinished()
+	{
+		return mIsFinished;
 	}
 	
 	/**

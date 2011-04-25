@@ -21,6 +21,7 @@ public class Habrahabr extends Activity {
     
 	WebView mResultView = null;
 	SharedPreferences preferences = null;
+	boolean isStartCalled = false;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -121,6 +122,7 @@ public class Habrahabr extends Activity {
     	CookieSaver.getCookieSaver().putCookies(URLClient.getUrlClient().getCookies());
     	CookieSaver.getCookieSaver().close();
     	finish();
+    	System.exit(0);
     }
     
     public void onStart()
@@ -132,19 +134,26 @@ public class Habrahabr extends Activity {
         {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
+        
+        loadData(true);
+        isStartCalled = true;
+    }
+    
+    public void onResume()
+    {
+    	super.onResume();
+    	if(!isStartCalled)
+    	{
+	    	updateUserBar();
+	    	loadData(false);
+    	}
+    	else isStartCalled = false;
     }
     
     public void onDestroy()
     {
     	super.onDestroy();
     	AsyncDataLoader.getDataLoader().cancel(true);
-    }
-    
-    public void onResume()
-    {
-    	super.onResume();
-    	updateUserBar();
-    	loadData(true);
     }
     
     public void onClickUserName(View v)
@@ -275,34 +284,223 @@ public class Habrahabr extends Activity {
     {
     	Log.d("onCreate", "Load data"); 
     	
-    	AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/", notUpdate) {
-        	@Override
-			public void finish(String data) {
-		        finishLoading(data);
-			}
-        	public String update(String pageData) {
-        		String data = "";
-        		HabraTopicParser parser = new HabraTopicParser(pageData);
-				HabraTopic topic = null;
-				
-		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
-				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
-				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
-				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
-				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
-				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
-				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
-				
-				while((topic = parser.parseTopicFromList()) != null)
-				{
-					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
-				}
-				return data;
-        	}
-			@Override
-			public void start() {
-				startLoading();
-			}
-        }, true);
+    	// To load requered data use getIntent().getData()
+    	
+    	if(getIntent().getData() != null)
+    	{
+    		String[] path = getIntent().getData().getPathSegments().toArray(new String[0]);
+    		if(path.length == 0 || path[0].equals("new"))
+    		{
+    			Log.d("Habrahabr.loadData", "CODE: path.length == 0 || path[0].equals(\"new\")");
+    			Log.d("Habrahabr.loadData", "PATH: " + getIntent().getData().toString());
+    			AsyncDataLoader.getDataLoader().execute(new LoaderData(getIntent().getData().toString(), false) {
+                	public void finish(String data) { finishLoading(data); }
+                	public String update(String pageData) {
+                		String data = "";
+                		HabraTopicParser parser = new HabraTopicParser(pageData);
+        				HabraTopic topic = null;
+        				
+        		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+        				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+        				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+        				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+        				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+        				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+        				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+        				
+        				while((topic = parser.parseTopicFromList()) != null)
+        				{
+        					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+        				}
+        				return data;
+                	}
+        			public void start() { startLoading(); }
+        		});
+    		}
+    		else if((path.length == 1 && path[0].equals("qa")) || (path.length == 2 && path[1].equals("new")))
+    		{
+    			Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"qa\") || (path.length == 2 && path[1].equals(\"new\"))");
+    			Log.d("Habrahabr.loadData", "PATH: " + getIntent().getData().toString());
+    			AsyncDataLoader.getDataLoader().execute(new LoaderData(getIntent().getData().toString(), false) {
+                	public void finish(String data) { finishLoading(data); }
+                	public String update(String pageData) {
+                		String data = "";
+                		HabraQuestParser parser = new HabraQuestParser(pageData);
+        				HabraQuest quest = null;
+        				
+        				while((quest = parser.parseQuestFromList()) != null)
+        				{
+        					data += quest.getDataAsHTML();
+        				}
+        				return data;
+                	}
+        			public void start() { startLoading(); }
+        		});
+    		}
+    		else if(path[0].equals("qa"))
+    		{
+    			Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"qa\")");
+    			Log.d("Habrahabr.loadData", "PATH: " + getIntent().getData().toString());
+    			AsyncDataLoader.getDataLoader().execute(new LoaderData(getIntent().getData().toString(), false) {
+                	public void finish(String data) { finishLoading(data); }
+                	public String update(String pageData) {
+                		HabraQuestParser parser = new HabraQuestParser(pageData);
+        				HabraQuest quest = parser.parseFullQuest();
+        				String data = quest.getDataAsHTML();
+        				data += quest.getCommentsAsHTML();
+        				
+        				HabraAnswerParser answerParser = new HabraAnswerParser(pageData);
+        				HabraAnswer answer = null;
+        				
+        				while((answer = answerParser.parseAnswer()) != null)
+        				{
+        					data += answer.getDataAsHTML();
+        					data += answer.getCommentsAsHTML();
+        				}
+        				return data;
+                	}
+        			public void start() { startLoading(); }
+        		});
+    		}
+    		else if(path[0].equals("post") || path[0].equals("blogs") || path[0].equals("linker") || path[0].equals("company"))
+    		{
+    			Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"post\") || path[0].equals(\"blogs\")...");
+    			Log.d("Habrahabr.loadData", "PATH: " + getIntent().getData().toString());
+    			String url = "http://habrahabr.ru/post/";
+    			if(path.length == 3) url += path[2]; // blogs/.../{ID} OR linker/go/{ID}
+    			else if(path.length == 4) url += path[3]; // company/blog/.../{ID}
+    			else url += path[1]; // post/{ID}
+    			url += "/";
+    			if(getIntent().getData().getQuery() != null) url += "?" + getIntent().getData().getQuery();
+    			if(getIntent().getData().getFragment() != null) url += "#" + getIntent().getData().getFragment();
+    			
+    			AsyncDataLoader.getDataLoader().execute(new LoaderData(url, false) {
+                	public void finish(String data) { finishLoading(data); }
+                	public String update(String pageData) {
+                		HabraTopicParser parser = new HabraTopicParser(pageData);
+        				HabraTopic topic = parser.parseFullTopic();
+        				String data = topic.getDataAsHTML();
+        				
+        				HabraCommentParser commentParser = new HabraCommentParser(pageData);
+        				HabraComment comment = null;
+        				
+        				while((comment = commentParser.parseComment()) != null)
+        				{
+        					data += comment.getCommentAsHTML();
+        				}
+        		    	
+        				return data;
+                	}
+        			public void start() { startLoading(); }
+    			});
+    		}
+    	}
+    	else
+    	{
+    		Log.i("pref", preferences.getString("prefMainScreenContent", "000"));
+	    	switch(Integer.valueOf(preferences.getString("prefMainScreenContent", "2")))
+	    	{
+	    	case 1: // LENTA
+	    		if(!HabraLogin.getHabraLogin().isLogged())
+	    			finishLoading("Ленту могут видеть только авторизированные пользователи хабра.");
+	    		else AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/?fl=hl", false) {
+	            	public void finish(String data) { finishLoading(data); }
+	            	public String update(String pageData) {
+	            		String data = "";
+	            		HabraTopicParser parser = new HabraTopicParser(pageData);
+	    				HabraTopic topic = null;
+	    				
+	    		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+	    				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+	    				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+	    				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+	    				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+	    				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+	    				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+	    				
+	    				while((topic = parser.parseTopicFromList()) != null)
+	    				{
+	    					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+	    				}
+	    				return data;
+	            	}
+	    			public void start() { startLoading(); }
+	    		});
+	    		break;
+	    	case 2: // ALL
+	    		AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/?fl=all", false) {
+	            	public void finish(String data) { finishLoading(data); }
+	            	public String update(String pageData) {
+	            		String data = "";
+	            		HabraTopicParser parser = new HabraTopicParser(pageData);
+	    				HabraTopic topic = null;
+	    				
+	    		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+	    				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+	    				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+	    				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+	    				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+	    				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+	    				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+	    				
+	    				while((topic = parser.parseTopicFromList()) != null)
+	    				{
+	    					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+	    				}
+	    				return data;
+	            	}
+	    			public void start() { startLoading(); }
+	    		});
+	    		break;
+	    	case 3: // NEW ALL
+	    		AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/new/?fl=all", false) {
+	            	public void finish(String data) { finishLoading(data); }
+	            	public String update(String pageData) {
+	            		String data = "";
+	            		HabraTopicParser parser = new HabraTopicParser(pageData);
+	    				HabraTopic topic = null;
+	    				
+	    		    	boolean hideContent = preferences.getBoolean("prefHidePostContent", false);
+	    				boolean hideTags = preferences.getBoolean("prefHidePostTags", false);
+	    				boolean hideMark = preferences.getBoolean("prefHidePostMark", false);
+	    				boolean hideDate = preferences.getBoolean("prefHidePostDate", false);
+	    				boolean hideFavs = preferences.getBoolean("prefHidePostFavs", false);
+	    				boolean hideAuthor = preferences.getBoolean("prefHidePostAuthor", false);
+	    				boolean hideComments = preferences.getBoolean("prefHidePostComments", false);
+	    				
+	    				while((topic = parser.parseTopicFromList()) != null)
+	    				{
+	    					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, hideDate, hideFavs, hideAuthor, hideComments);
+	    				}
+	    				return data;
+	            	}
+	    			public void start() { startLoading(); }
+	    		});
+	    		break;
+	    	case 4: // Q&A
+	    		AsyncDataLoader.getDataLoader().repeat(new LoaderData("http://habrahabr.ru/qa/", false) {
+	            	public void finish(String data) { finishLoading(data); }
+	            	public String update(String pageData) {
+	            		String data = "";
+	            		HabraQuestParser parser = new HabraQuestParser(pageData);
+	    				HabraQuest quest = null;
+	    				
+	    				while((quest = parser.parseQuestFromList()) != null)
+	    				{
+	    					data += quest.getDataAsHTML();
+	    				}
+	    				return data;
+	            	}
+	    			public void start() { startLoading(); }
+	    		});
+	    		break;
+	    	case 5:
+	    		finishLoading("Coming soon...");
+	    		break;
+	    	default:
+	    		finishLoading("Unknown page");
+	    		break;
+	    	}
+	    }
     }
 }

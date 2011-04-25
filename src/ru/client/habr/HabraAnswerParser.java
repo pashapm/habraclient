@@ -52,9 +52,12 @@ public class HabraAnswerParser
 				lastIndex = answerData.indexOf('<', lastIndex)));
 		
 		Log.d("AnswerParser", "Parse Rating");
-		answer.rating *= Integer.valueOf(answerData.substring(
+		String rs = answerData.substring(
 				lastIndex = (answerData.indexOf("mark\"><span>", lastIndex) + 12), 
-				lastIndex = (answerData.indexOf('<', lastIndex))));
+				lastIndex = (answerData.indexOf('<', lastIndex)));
+    	if(rs.charAt(0) == '-') answer.rating = -1; else answer.rating = 1;
+    	rs = "0" + rs.substring(1);
+		answer.rating = Integer.valueOf(rs);
 		
 		Log.d("AnswerParser", "Parse Text");
 		answer.text = new String(answerData.substring(

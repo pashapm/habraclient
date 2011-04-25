@@ -71,9 +71,11 @@ public class HabraCommentParser
 		comment.inFavs = commentData.indexOf("class=\"fav_added", lastIndex) != -1;
 		
 		Log.d("CommentParser", "Parse Rating");
-		comment.rating = Integer.valueOf(commentData.substring(
-				lastIndex = (commentData.indexOf("mark\"><span>", lastIndex) + 12), 
-				lastIndex = (commentData.indexOf('<', lastIndex))));
+		String rs = commentData.substring(lastIndex = (commentData.indexOf("mark\"><span>", lastIndex) + 12), 
+				lastIndex = (commentData.indexOf('<', lastIndex)));
+    	if(rs.charAt(0) == '-') comment.rating = -1; else comment.rating = 1;
+    	rs = "0" + rs.substring(1);
+    	comment.rating *= Integer.parseInt(rs);
 		
 		Log.d("CommentParser", "Parse Text");
 		int endIndex = commentData.indexOf("<p class=\"reply", lastIndex);
