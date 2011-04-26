@@ -4,8 +4,11 @@ import org.apache.http.cookie.Cookie;
 
 import ru.client.habr.AsyncDataLoader.LoaderData;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -22,6 +25,7 @@ public class Habrahabr extends Activity {
 	WebView mResultView = null;
 	SharedPreferences preferences = null;
 	boolean isStartCalled = false;
+	WifiManager wifi = null;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -52,9 +56,7 @@ public class Habrahabr extends Activity {
         Log.d("onCreate", "Settings");
         mResultView.getSettings().setAllowFileAccess(true);
         mResultView.getSettings().setJavaScriptEnabled(true);
-        mResultView.getSettings().setBuiltInZoomControls(true);
         mResultView.getSettings().setUserAgentString(URLClient.USER_AGENT);
-        mResultView.getSettings().setPluginsEnabled(true);
         
         /*final HorizontalScrollView scrollNavPanel = (HorizontalScrollView) findViewById(R.id.scrollNavPanel);
         final LinearLayout layoutData = (LinearLayout) findViewById(R.id.layoutData);
@@ -131,6 +133,8 @@ public class Habrahabr extends Activity {
     public void onStart()
     {
     	super.onStart();
+    	wifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+    	
     	updateUserBar();
         
         if(preferences.getBoolean("prefFullScreen", false))
@@ -145,6 +149,10 @@ public class Habrahabr extends Activity {
     public void onResume()
     {
     	super.onResume();
+    	
+    	mResultView.getSettings().setBuiltInZoomControls(preferences.getBoolean("prefEnableZoom", true));
+        mResultView.getSettings().setPluginsEnabled(preferences.getBoolean("prefEnableFlash", false));
+    	
     	if(!isStartCalled)
     	{
 	    	updateUserBar();
@@ -278,8 +286,11 @@ public class Habrahabr extends Activity {
     }
     
     public void finishLoading(String data)
-    {
-    	mResultView.loadDataWithBaseURL("file:///android_asset/", "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\"/></head>" + data, "text/html", "utf-8", null);
+    {	
+    	data = preferences.getBoolean("prefEnableFlash", false) ? data : RemoveNode.removeVideo(data);
+    	data = preferences.getString("prefLoadImages", "2").equals("1") || (preferences.getString("prefLoadImages", "2").equals("2") && wifi.getConnectionInfo().getNetworkId() != -1) ? data : RemoveNode.removeImage(data);
+    	mResultView.loadDataWithBaseURL("file:///android_asset/", "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /><link href=\"general.css\" rel=\"stylesheet\"/></head>" + data,
+    			"text/html", "utf-8", null);
 		findViewById(R.id.procLoading).setVisibility(View.GONE);
     }
     
