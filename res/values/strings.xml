@@ -62,4 +62,8 @@
     <string name="hide_post_favs_summary"></string>
     <string name="hide_post_author_summary"></string>
     <string name="hide_post_comments_summary"></string>
+    <string name="enable_flash">Включить флеш</string>
+    <string name="enable_flash_summary">Если флеш будет выключен, вместо него будет ссылка на видео, которую можно открыть в плеере или брузере.</string>
+    <string name="enable_zoom">Включть маштабирование</string>
+    <string name="enable_zoom_summary">Стандартный механизм маштабирования мультитачем или кнопками.</string>
 </resources>

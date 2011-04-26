@@ -25,6 +25,16 @@
 		android:entries="@array/name_load_images"
 		android:entryValues="@array/value_load_images" />
 	<CheckBoxPreference 
+		android:key="prefEnableFlash" 
+		android:defaultValue="false" 
+		android:title="@string/enable_flash"
+		android:summary="@string/enable_flash_summary"/>
+	<CheckBoxPreference 
+		android:key="prefEnableZoom" 
+		android:defaultValue="true" 
+		android:title="@string/enable_zoom"
+		android:summary="@string/enable_zoom_summary"/>
+	<CheckBoxPreference 
 		android:key="prefFullScreen" 
 		android:defaultValue="false" 
 		android:title="@string/fullscreen"/>
