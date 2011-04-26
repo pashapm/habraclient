@@ -139,6 +139,7 @@ public class AsyncDataLoader
 	 */
 	public final boolean cancel(boolean mayInterruptIfRunning)
 	{
+		if(mAsyncLoader == null) return false;
 		return mAsyncLoader.cancel(mayInterruptIfRunning);
 	}
 }
