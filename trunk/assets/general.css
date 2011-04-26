@@ -1,9 +1,16 @@
 body {
-	padding: 5px 5px 5px 5px;
-	margin: 0 0 0 0;
+	/*padding: 10px 10px 10px 10px;
+	margin: 0 0 0 0;*/
 	background: white;
 	color: black;
+	width: 100%;
 }
+
+ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, body, html, blockquote, fieldset, dl, dt, dd, caption {
+	margin: 0;
+	padding: 0;
+}
+
 a {
 	color:#6DA3BD;
 	text-decoration:underline;
@@ -16,7 +23,9 @@ a:hover {
 .hentry {
     width: 100%;
 	margin-bottom:10px;
+	margin-top: 5px;
 	display: block;
+	clear: both;
 }
 
 .entry-title {
@@ -34,11 +43,13 @@ a:hover {
 
 .content {
 	margin-bottom: 5px;
-	width:100%;
+	width:auto;
+	padding-right: 5px;
+	padding-left: 5px;
 }
 
 .content img {
-	width: 100%;
+	max-width: 98%;
 }
 
 .tags {
@@ -65,7 +76,6 @@ a:hover {
 	border: 1px solid #e5e5e5;
 	z-index:20;
 	position:relative;
-	width:100%;
 	margin-bottom: 10px;
 }
 
@@ -192,3 +202,84 @@ a:hover {
 .entry-info .comments a:hover .new {
 	color: #85C266;
 }
+
+#comments {
+	width:100%;
+	padding-left: 5px;
+	clear: both;
+}
+
+.comment_holder {
+	display: block;
+}
+
+.menu {
+	list-style: none;
+}
+
+.msg-meta ul li {
+	float: left;
+	font-family: tahoma;
+	line-height: 18px;
+	font-size: 9pt;
+	color: #666;
+	/*padding-top: 5px;*/
+	margin-right: 10px;
+}
+
+.msg-meta a {
+	color: #666;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+.msg-meta a:hover {
+	color: black;
+}
+
+.avatar {
+	width: 24px;
+	height: 24px;
+	margin-right: 10px;
+}	
+	
+.date abbr {
+	border: none;
+	font-size: 8pt;
+}
+
+.msg-meta .mark {
+	float:right;
+	font: bold 10pt/100% Arial, Helvetica, sans-serif;
+	color: darkGray;
+}
+
+.entry-content {
+	font: 9pt Arial, sans-serif;
+	margin: 0;
+	padding: 5px 0 5px 0;
+	clear: both;
+	margin-bottom: 10px;
+}
+
+.padding0 { padding-left: 0px; }
+.padding1 { padding-left: 10px; }
+.padding2 { padding-left: 20px; }
+.padding3 { padding-left: 30px; }
+.padding4 { padding-left: 40px; }
+.padding5 { padding-left: 50px; }
+.padding6 { padding-left: 60px; }
+.padding7 { padding-left: 70px; }
+.padding8 { padding-left: 80px; }
+.padding9 { padding-left: 90px; }
+.padding10 { padding-left: 100px; }
+.padding11 { padding-left: 110px; }
+.padding12 { padding-left: 120px; }
+.padding13 { padding-left: 130px; }
+.padding14 { padding-left: 140px; }
+.padding15 { padding-left: 150px; }
+.padding16 { padding-left: 160px; }
+.padding17 { padding-left: 170px; }
+.padding18 { padding-left: 180px; }
+.padding19 { padding-left: 190px; }
+.paddingBig { padding-left: 200px; }

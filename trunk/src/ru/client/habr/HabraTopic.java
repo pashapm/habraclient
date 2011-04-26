@@ -53,7 +53,7 @@ public class HabraTopic
 	 */
 	public String getDataAsHTML()
 	{
-		return "<div class=\"hentry\"><h2 class=\"entry-title\"><a href=\"" + 
+		return "<div class=\"hentry\" id=\"post_" + id + "\"><h2 class=\"entry-title\"><a href=\"" + 
 			getBlogURL() + "\" class=\"blog\">" + blogName + "</a> &rarr; <a href=\"" + 
 			getTopicURL() + "\" class=\"topic\">" + title + "</a></h2><div class=\"content\">" + content + "</div>" + 
 			(tags.length() > 1 ? "<ul class=\"tags\">" + tags + "</ul>" : "") + 
@@ -67,7 +67,7 @@ public class HabraTopic
 	
 	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, boolean noDate, boolean noFavs, boolean noAuthor, boolean noComments)
 	{
-		return "<div class=\"hentry\"><h2 class=\"entry-title\"><a href=\"" + 
+		return "<div class=\"hentry\" id=\"post_" + id + "\"><h2 class=\"entry-title\"><a href=\"" + 
 			getBlogURL() + "\" class=\"blog\">" + blogName + "</a> &rarr; <a href=\"" + 
 			getTopicURL() + "\" class=\"topic\">" + title + "</a></h2>" + 
 			(noContent ? "" : "<div class=\"content\">" + content + "</div>") + 

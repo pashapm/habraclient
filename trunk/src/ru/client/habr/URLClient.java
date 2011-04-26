@@ -25,6 +25,8 @@ import android.util.Log;
 
 public class URLClient 
 {
+	final static String USER_AGENT = "Mozilla/5.0 (Linux; Android) AppleWebKit (KHTML, like Gecko) HabraClient 1.0";
+	
 	private DefaultHttpClient mHttpClient = null;
 	boolean locked = false;
 	
@@ -51,7 +53,7 @@ public class URLClient
 		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
 		HttpConnectionParams.setSoTimeout(httpParams, 90000);
 	    mHttpClient = new DefaultHttpClient(httpParams);
-	    mHttpClient.getParams().setParameter("http.useragent", "Mozilla/5.0 (Linux; Android) AppleWebKit (KHTML, like Gecko) HabraClient 1.0");
+	    mHttpClient.getParams().setParameter("http.useragent", USER_AGENT);
 	}
 	
 	/**
