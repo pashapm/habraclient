@@ -13,49 +13,58 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class CookieSaver extends SQLiteOpenHelper
-{
+/**
+ * @author WNeZRoS
+ * —охран€ет кукисы в базу
+ */
+public final class CookieSaver extends SQLiteOpenHelper {
 	private static final int DB_VERSION = 1;
 	private static final String DB_NAME = "cookies";
-	
-	public static final String TABLE_NAME = "cookies";
-
+	private static final String TABLE_NAME = "cookies";
 	private static CookieSaver mCookieSaver = null;
-	public static CookieSaver getCookieSaver()
-	{
-		if(mCookieSaver == null) Log.e("CookieSaver.getCookieSaver", "mCookieSaver == null");
-		return mCookieSaver;
-	}
 	
-	public CookieSaver(Context context) 
-	{
+	/**
+	 * @param context
+	 */
+	public CookieSaver(Context context) {
 		super(context, DB_NAME, null,DB_VERSION);
 		mCookieSaver = this;
 	}
 
-	@Override
-	public void onCreate(SQLiteDatabase db)
-	{
-		db.execSQL("CREATE TABLE " + TABLE_NAME + " (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, " +
-				"`domain` VARCHAR(128) NOT NULL, `path` VARCHAR(256) NOT NULL, `date` DATETIME NOT NULL, UNIQUE (`name`));");
+	/**
+	 * нельз€ вызывать если CookieSaver нигде не инициирован
+	 * @return экземпл€р CookieSaver
+	 */
+	public static CookieSaver getCookieSaver() {
+		if(mCookieSaver == null) 
+			Log.e("CookieSaver.getCookieSaver", "mCookieSaver == null");
+		return mCookieSaver;
 	}
 	
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) 
-	{
+	public void onCreate(SQLiteDatabase db) {
+		db.execSQL("CREATE TABLE " + TABLE_NAME 
+				+ " (`name` VARCHAR(64) NOT NULL, `value` VARCHAR(128) NOT NULL, " 
+				+ "`domain` VARCHAR(128) NOT NULL, `path` VARCHAR(256) NOT NULL, " 
+				+ "`date` DATETIME NOT NULL, UNIQUE (`name`));");
+	}
+	
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {
 		
 	}
 	
-	public Cookie[] getCookies()
-	{
+	/**
+	 * @return сохранЄнные куки из базы
+	 */
+	public Cookie[] getCookies() {
 		List<Cookie> cookies = new ArrayList<Cookie>();
 		SQLiteDatabase db = this.getReadableDatabase();
 		
 		Cursor c = db.rawQuery("SELECT name,value,domain,path,date FROM " + TABLE_NAME + ";", null);
 		
 		if(c == null) return null;
-		if(!c.moveToFirst()) 
-		{
+		if(!c.moveToFirst()) {
 			c.close();
 			db.close();
 			return null;
@@ -63,8 +72,7 @@ public class CookieSaver extends SQLiteOpenHelper
 		
 		Log.d("CookieSaver", "do ... while");
 		
-		do 
-		{			
+		do {			
 			BasicClientCookie cookie = new BasicClientCookie(c.getString(0), c.getString(1));
 			cookie.setDomain(c.getString(2));
 			cookie.setPath(c.getString(3));
@@ -85,8 +93,8 @@ public class CookieSaver extends SQLiteOpenHelper
 			Log.i("CookieSaver.getCookie", "Ver: " + cookie.getVersion());
 			
 			cookies.add(cookie);
-		} 
-		while (c.moveToNext());
+		} while (c.moveToNext());
+		
 		c.close();
 		db.close();
 		
@@ -95,8 +103,11 @@ public class CookieSaver extends SQLiteOpenHelper
 		return cookies.toArray(new Cookie[0]);
 	}
 	
-	public void putCookie(Cookie cook)
-	{	
+	/**
+	 * —охран€ет в базу куку
+	 * @param cook кука
+	 */
+	public void putCookie(Cookie cook) {	
 		Log.i("CookieSaver.putCookie", cook.getName());
 		Log.i("CookieSaver.putCookie", "Val: " + cook.getValue());
 		Log.i("CookieSaver.putCookie", "Dom: " + cook.getDomain());
@@ -107,33 +118,36 @@ public class CookieSaver extends SQLiteOpenHelper
 		Log.i("CookieSaver.putCookie", "Ver: " + cook.getVersion());
 		
 		SQLiteDatabase db = getWritableDatabase();
-		try
-		{
-		db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME + " VALUES ('" + cook.getName() + "',  '" + cook.getValue() + 
-				"',  '" + cook.getDomain() + "',  '" + cook.getPath() + "',  '" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cook.getExpiryDate()) + "');");
-		}
-		catch(SQLException e)
-		{
+		try {
+		db.execSQL("INSERT OR REPLACE INTO " + TABLE_NAME + " VALUES ('" 
+				+ cook.getName() + "',  '" + cook.getValue() + "',  '" 
+				+ cook.getDomain() + "',  '" + cook.getPath() + "',  '" 
+				+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cook.getExpiryDate()) + "');");
+		} catch(SQLException e) {
 			Log.w("CookieSaver.putCookie", "SQLException: " + e.getMessage());
 		}
 		db.close();
 	}
 	
-	public void putCookies(Cookie[] cooks)
-	{
+	/**
+	 * —охран€ет куки в базу из массива
+	 * @param cooks куки
+	 */
+	public void putCookies(Cookie[] cooks) {
 		for(int i = 0; i < cooks.length; i++)
 			putCookie(cooks[i]);
 	}
 	
-	public void clearCookies()
-	{
+	/**
+	 * ќчищает базу от кук
+	 */
+	public void clearCookies() {
 		SQLiteDatabase db = getWritableDatabase();
 		db.execSQL("DELETE FROM " + TABLE_NAME + ";");
 		db.close();
 	}
 	
-	public void close()
-	{
+	public void close() {
 		mCookieSaver = null;
 	}
 }

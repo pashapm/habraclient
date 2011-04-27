@@ -66,4 +66,8 @@
     <string name="enable_flash_summary">Если флеш будет выключен, вместо него будет ссылка на видео, которую можно открыть в плеере или брузере.</string>
     <string name="enable_zoom">Включть маштабирование</string>
     <string name="enable_zoom_summary">Стандартный механизм маштабирования мультитачем или кнопками.</string>
+    <string name="hide_quest_answers">Скрыть кол-во ответов</string>
+    <string name="hide_quest_answers_summary"></string>
+    <string name="hide_quest_element">Скрыть элементы вопроса</string>
+    <string name="hide_quest_element_summary">При отображении в виде списка</string>
 </resources>

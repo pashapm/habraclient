@@ -5,17 +5,19 @@ import java.util.List;
 
 import android.util.Log;
 
-public class HabraAnswerParser 
-{
-	String mData = null;
-	int mStartPosition = 0;
+/**
+ * @author WNeZRoS
+ * Парсер ответов
+ */
+public final class HabraAnswerParser {
+	private String mData = null;
+	private int mStartPosition = 0;
 	
 	/**
 	 * Парсит ответы из вопроса
 	 * @param data Данные HTML страницы
 	 */
-	public HabraAnswerParser(String data)
-	{
+	public HabraAnswerParser(String data) {
 		mData = data;
 	}
 	
@@ -23,19 +25,20 @@ public class HabraAnswerParser
 	 * Парсит следующий ответ
 	 * @return следующий ответ или null
 	 */
-	public HabraAnswer parseAnswer()
-	{
+	public HabraAnswer parseAnswer() {
 		if(mData == null || mStartPosition == -1) return null;
 		HabraAnswer answer = new HabraAnswer();
 		
 		int startPosition = mData.indexOf("<li id=\"answer_", mStartPosition);
 		if(startPosition == -1) return null;
 		
-		String answerData = mData.substring(startPosition, startPosition = mData.indexOf("<div class=\"hsublevel", startPosition));
+		String answerData = mData.substring(startPosition, 
+				startPosition = mData.indexOf("<div class=\"hsublevel", startPosition));
 		
 		Log.d("AnswerParser", "Parse ID");
 		int lastIndex = 15;
-		answer.id = Integer.valueOf(answerData.substring(lastIndex, lastIndex = answerData.indexOf('"', lastIndex)));
+		answer.id = Integer.valueOf(answerData.substring(lastIndex, 
+				lastIndex = answerData.indexOf('"', lastIndex)));
 		
 		Log.d("AnswerParser", "Parse Avatar");
 		answer.avatar = new String(answerData.substring(
@@ -44,7 +47,8 @@ public class HabraAnswerParser
 		
 		Log.d("AnswerParser", "Parse Author");
 		lastIndex += 7;
-		answer.author = new String(answerData.substring(lastIndex, lastIndex = answerData.indexOf('"', lastIndex)));
+		answer.author = new String(answerData.substring(lastIndex, 
+				lastIndex = answerData.indexOf('"', lastIndex)));
 		
 		Log.d("AnswerParser", "Parse Date");
 		answer.date = new String(answerData.substring(
@@ -55,7 +59,7 @@ public class HabraAnswerParser
 		String rs = answerData.substring(
 				lastIndex = (answerData.indexOf("mark\"><span>", lastIndex) + 12), 
 				lastIndex = (answerData.indexOf('<', lastIndex)));
-    	if(rs.charAt(0) == '-') answer.rating = -1; else answer.rating = 1;
+    	answer.rating = (rs.charAt(0) == '-' ? -1 : 1) ;
     	rs = "0" + rs.substring(1);
 		answer.rating = Integer.valueOf(rs);
 		
@@ -72,21 +76,25 @@ public class HabraAnswerParser
 		Log.i("commentsList", String.valueOf(commentsList != null) + commentsList.toString());
 		
 		int subIndex = 0;
-		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1)
-		{
+		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1) {
 			Log.d("QuestParser", "new Comment");
 			comment = new HabraQAComment();
 			subIndex += 16;
+			
 			Log.d("QuestParser", "Parse comment.id");
-			comment.id = Integer.valueOf(commentsData.substring(subIndex, subIndex = commentsData.indexOf('"', subIndex)));
+			comment.id = Integer.valueOf(commentsData.substring(subIndex, 
+					subIndex = commentsData.indexOf('"', subIndex)));
+			
 			Log.d("QuestParser", "Parse comment.text");
 			comment.text = new String(commentsData.substring(
 					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
 					subIndex = commentsData.indexOf("&nbsp;<span class=\"fn", subIndex)));
+			
 			Log.d("QuestParser", "Parse comment.author");
 			comment.author = new String(commentsData.substring(
 					subIndex = (commentsData.indexOf("http://", subIndex) + 7), 
 					subIndex = commentsData.indexOf('.', subIndex)));
+			
 			Log.d("QuestParser", "Parse comment.date");
 			comment.date = new String(commentsData.substring(
 					subIndex = (commentsData.indexOf('>', commentsData.indexOf("<abbr", subIndex)) + 1), 
