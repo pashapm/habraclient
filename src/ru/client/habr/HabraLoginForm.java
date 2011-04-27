@@ -6,68 +6,67 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class HabraLoginForm extends Activity 
-{
-	EditText textUserName, textPassword, textCaptcha;
-	Button buttonLogin, buttonSkip;
-	ImageView imageCaptcha;
-	TextView titleError;
-	LinearLayout layoutCaptcha;
-	CheckBox checkSavePassword;
+/**
+ * @author WNeZRoS
+ * Форма логина
+ */
+public final class HabraLoginForm extends Activity {
+	
+	private EditText mTextUserName;
+	private EditText mTextPassword;
+	private EditText mTextCaptcha;
+	private ImageView mImageCaptcha;
+	private TextView mTitleError;
+	private CheckBox mCheckSavePassword;
 	
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        setContentView(R.layout.first_login);
-        
-        Log.d("HabraLoginForm.onCreate", "called");
-        
-        titleError = (TextView) findViewById(R.id.titleError);
-        textUserName = (EditText) findViewById(R.id.textUserName);
-        textPassword = (EditText) findViewById(R.id.textPassword);
-        layoutCaptcha = (LinearLayout) findViewById(R.id.layoutCaptcha);
-        imageCaptcha = (ImageView) findViewById(R.id.imageCaptcha);
-        textCaptcha = (EditText) findViewById(R.id.textCaptcha);
-        checkSavePassword = (CheckBox) findViewById(R.id.checkSavePassword);
-        buttonLogin = (Button) findViewById(R.id.buttonLogin);
-        buttonSkip = (Button) findViewById(R.id.buttonSkip);
+		setContentView(R.layout.first_login);
+		
+		Log.d("HabraLoginForm.onCreate", "called");
+		
+		mTitleError = (TextView) findViewById(R.id.titleError);
+		mTextUserName = (EditText) findViewById(R.id.textUserName);
+		mTextPassword = (EditText) findViewById(R.id.textPassword);
+		mImageCaptcha = (ImageView) findViewById(R.id.imageCaptcha);
+		mTextCaptcha = (EditText) findViewById(R.id.textCaptcha);
+		mCheckSavePassword = (CheckBox) findViewById(R.id.checkSavePassword);
 	}
 	
-	public void onStart()
-	{
+	public void onStart() {
 		super.onStart();
 		
 		Log.d("HabraLoginForm.onStart", "called");
 		
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        
-    	textUserName.setText(preferences.getString("prefUserName", ""));
-    	textPassword.setText(preferences.getString("prefPassword", ""));
-    	checkSavePassword.setChecked(preferences.getBoolean("prefSavePassword", false));
-    	
+		
+		mTextUserName.setText(preferences.getString("prefUserName", ""));
+		mTextPassword.setText(preferences.getString("prefPassword", ""));
+		mCheckSavePassword.setChecked(preferences.getBoolean("prefSavePassword", false));
+		
 		updateCaptcha();
 	}
 	
-	public void onClickLogin(View v)
-	{	
+	/**
+	 * Действие по нажатию кнопки "Логин"
+	 * @param v кнопка
+	 */
+	public void onClickLogin(View v) {	
 		Log.d("HabraLoginForm.onClickLogin", "called");
 		
-		String username = textUserName.getText().toString();
-		String password = textPassword.getText().toString();
-		String captcha = textCaptcha.getText().toString();
+		String username = mTextUserName.getText().toString();
+		String password = mTextPassword.getText().toString();
+		String captcha = mTextCaptcha.getText().toString();
 		String result = null;
 		
-		if((result = HabraLogin.getHabraLogin().login(username, password, captcha)) == null)
-		{	
+		if((result = HabraLogin.getHabraLogin().login(username, password, captcha)) == null) {	
 			Log.d("HabraLoginForm.onClickLogin", "logged");
 			
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -75,41 +74,40 @@ public class HabraLoginForm extends Activity
 			
 			preferencesEditor.putString("prefUserName", username);
 			
-			if(checkSavePassword.isChecked())
-			{
+			if(mCheckSavePassword.isChecked()) {
 				preferencesEditor.putString("prefPassword", password);
 			}
 			
-			preferencesEditor.putBoolean("prefSavePassword", checkSavePassword.isChecked());
+			preferencesEditor.putBoolean("prefSavePassword", mCheckSavePassword.isChecked());
 			preferencesEditor.commit();
 			
 			HabraLogin.getHabraLogin().parseUserData();
 			Toast.makeText(getApplicationContext(), getString(R.string.logged), Toast.LENGTH_LONG).show();
 			
 			onBackPressed();
-		}
-		else
-		{
+		} else {
 			Log.d("HabraLoginForm.onClickLogin", "fail");
-			titleError.setText(result);
+			mTitleError.setText(result);
 			
-			textCaptcha.setText("");
-			textCaptcha.requestFocus();
+			mTextCaptcha.setText("");
+			mTextCaptcha.requestFocus();
 			
 			updateCaptcha();
 		}
 		Log.d("HabraLoginForm.onClickLogin", "end");
 	}
 	
-	public void onClickSkip(View v)
-	{
+	/**
+	 * Действие по нажатию кнопки "Пропустить"
+	 * @param v кнопка
+	 */
+	public void onClickSkip(View v) {
 		Log.d("HabraLoginForm.onClickSkip", "called");
 		Toast.makeText(getApplicationContext(), getString(R.string.skip_login_text), Toast.LENGTH_LONG).show();
 		onBackPressed();
 	}
 	
-	public void onBackPressed()
-	{
+	public void onBackPressed() {
 		SharedPreferences.Editor preferencesEditor = PreferenceManager.getDefaultSharedPreferences(this).edit();
 		preferencesEditor.putBoolean("prefFirstStart", false);
 		preferencesEditor.commit();
@@ -117,8 +115,7 @@ public class HabraLoginForm extends Activity
 		finish();
 	}
 	
-	public void updateCaptcha()
-	{
-		new AsyncCaptchaLoader().execute(imageCaptcha);
+	private void updateCaptcha() {
+		new AsyncCaptchaLoader().execute(mImageCaptcha);
 	}
 }

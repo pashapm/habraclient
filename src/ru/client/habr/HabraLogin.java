@@ -9,8 +9,13 @@ import org.apache.http.cookie.Cookie;
 
 import android.util.Log;
 
-public class HabraLogin 
-{
+/**
+ * @author WNeZRoS
+ * Информация о пользователе
+ */
+public final class HabraLogin {
+	private static HabraLogin habraLogin = null;
+	
 	private String mCacheDir = null;
 	private String mUserName = null;
 	private int mUserID = 0;
@@ -18,16 +23,12 @@ public class HabraLogin
 	private float mUserRating = 0.0f;
 	private int mUserTopPosition = 0;
 	
-	private static HabraLogin habraLogin = null;
-	
 	/**
 	 * Получает общий HabraLogin класс. Внимание! Перед получением его надо где-то создать
 	 * @return экземпляр HabraLogin
 	 */
-	public static HabraLogin getHabraLogin()
-	{
-		if(habraLogin == null)
-		{
+	public static HabraLogin getHabraLogin() {
+		if(habraLogin == null) {
 			Log.w("HabraLogin.getHabraLogin", "create new HabraLogin");
 			habraLogin = new HabraLogin();
 		}
@@ -35,15 +36,10 @@ public class HabraLogin
 	}
 	
 	/**
-	 * Класс авторизации на хабр
+	 * Устанавливает директорию для сохранения каптчи
+	 * @param cacheDir директорию для сохранения каптчи
 	 */
-	public HabraLogin()
-	{
-		
-	}
-	
-	public void setCacheDir(String cacheDir)
-	{
+	public void setCacheDir(String cacheDir) {
 		mCacheDir = cacheDir;
 	}
 	
@@ -51,8 +47,7 @@ public class HabraLogin
 	 * Проверяет залогинен пользователь или нет
 	 * @return быть или не быть
 	 */
-	public boolean isLogged()
-	{
+	public boolean isLogged() {
 		return mUserName != null;
 	}
 	
@@ -63,8 +58,7 @@ public class HabraLogin
 	 * @param captcha Каптча
 	 * @return null или описание ошибки
 	 */
-	public String login(String login, String password, String captcha)
-	{
+	public String login(String login, String password, String captcha) {
 		String[][] post = new String[][]{{"act","login"}, {"redirect_url","http://habrahabr.ru/"},
         		{"login",login},{"password",password},{"captcha",captcha},{"","true"}};
         
@@ -73,8 +67,7 @@ public class HabraLogin
         Log.d("login", data);
         
         int errorIndex = data.indexOf("<error");
-        if(errorIndex == -1) 
-        {
+        if(errorIndex == -1) {
         	return null;
         }
         
@@ -86,19 +79,18 @@ public class HabraLogin
 	 * Выход из аккаунта
 	 * @return успешность выхода
 	 */
-	public boolean logout()
-	{
+	public boolean logout() {
 		if(mUserName == null || mUserID == 0) return false;
 		
 		URLClient.getUrlClient().getURL("http://habrahabr.ru/logout/" + mUserName + "/" + mUserID + "/");
 		Cookie[] cooks = URLClient.getUrlClient().getCookies();
 		
-		for(int i = 0; i < cooks.length; i++)
-		{
+		for(int i = 0; i < cooks.length; i++) {
 			Log.d("cooks", cooks[i].getName() + " expire for " + cooks[i].getExpiryDate().toGMTString());
-			if(cooks[i].getName().equals("PHPSESSID")) 
-			{
-				if(cooks[i].getExpiryDate().getTime() > new Date().getTime()) return false;
+			
+			if(cooks[i].getName().equals("PHPSESSID")) {
+				if(cooks[i].getExpiryDate().getTime() > new Date().getTime()) 
+					return false;
 			}
 		}
 
@@ -111,8 +103,7 @@ public class HabraLogin
 	 * Получает каптчу
 	 * @return путь до файла каптчи
 	 */
-	public String getCaptcha()
-	{
+	public String getCaptcha() {
 		byte[] data =  URLClient.getUrlClient().getURLAsBytes("http://habrahabr.ru/core/captcha/");
 		String fileCaptcha = mCacheDir + "/captcha.png";
 		
@@ -133,8 +124,7 @@ public class HabraLogin
 	 * Получает данные от сервера и проверяет логин
 	 * @return this.isLogged()
 	 */
-	public boolean parseUserData()
-	{
+	public boolean parseUserData() {
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/info/stats/");
 		int logoutIndex = data.indexOf("http://habrahabr.ru/logout/") + 27;
 		if(logoutIndex == 26) return false;
@@ -146,8 +136,10 @@ public class HabraLogin
 		return isLogged();
 	}
 	
-	public void parseUserKarmaAndForce()
-	{
+	/**
+	 * получает и парсит рейтинг и карму
+	 */
+	public void parseUserKarmaAndForce() {
 		if(mUserName == null) return;
 		
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/api/profile/" + mUserName + "/");
@@ -165,28 +157,38 @@ public class HabraLogin
 		mUserTopPosition = Integer.valueOf(data.substring(index, data.indexOf('<', index)));
 	}
 	
-	public float getUserKarma()
-	{
+	/**
+	 * @return карма
+	 */
+	public float getUserKarma() {
 		return mUserKarma;
 	}
 	
-	public float getUserRating()
-	{
+	/**
+	 * @return рейтинг
+	 */
+	public float getUserRating() {
 		return mUserRating;
 	}
 	
-	public int getUserRatingPosition()
-	{
+	/**
+	 * @return позиция в рейтинге
+	 */
+	public int getUserRatingPosition() {
 		return mUserTopPosition;
 	}
 	
-	public String getUserName()
-	{
+	/**
+	 * @return имя пользователя
+	 */
+	public String getUserName() {
 		return mUserName;
 	}
 	
-	public String getProfileURL()
-	{
+	/**
+	 * @return ссылка на профиль
+	 */
+	public String getProfileURL() {
 		return "http://" + mUserName + ".habrahabr.ru/";
 	}
 }
