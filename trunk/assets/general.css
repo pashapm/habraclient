@@ -34,6 +34,12 @@ a:hover {
 	margin-top: 0px;
 }
 
+.entry-title img {
+	height: 24px;
+	position: relative;
+	top: 3px;
+}
+
 .topic {
 	color:#666;
 }

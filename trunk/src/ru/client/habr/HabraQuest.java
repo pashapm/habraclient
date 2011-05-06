@@ -1,178 +1,75 @@
 package ru.client.habr;
 
+import android.util.Log;
+
 /**
  * @author WNeZRoS
- * Класс вопроса
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
-public final class HabraQuest 
-{	
-	/**
-	 * ID вопроса
-	 */
-	public int id = 0;
+public final class HabraQuest extends HabraEntry {	
 	
-	/**
-	 * Заголовок
-	 */
+	protected HabraEntryType type = HabraEntryType.QUESTION;
 	public String title = null;
-	
-	/**
-	 * Текст вопроса
-	 */
-	public String text = null;
-	
-	/**
-	 * Теги
-	 */
-	public String tags = null;
-	
-	/**
-	 * Рейтинг
-	 */
+	public String[] tags = null;
 	public int rating = 0;
-	
-	/**
-	 * Дата публикации
-	 */
-	public String date = null;
-	
-	/**
-	 * Автор
-	 */
-	public String author = null;
-	
-	/**
-	 * Кол-во добавлений в избранное
-	 */
-	public int favsCount = 0;
-	
-	/**
-	 * Кол-во ответов
-	 */
+	public int favoritesCount = 0;
 	public int answerCount = 0;
-	
-	/**
-	 * В избранном у меня
-	 */
 	public boolean inFavs = false;
-	
-	/**
-	 * Решено?
-	 */
 	public boolean accepted = false;
+	public HabraEntry[] comments = null;
 	
 	/**
-	 * Комментарии к вопросу
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
-	public HabraQAComment[] comments = null;
+	public String getUrl() {
+		return "http://habrahabr.ru/qa/" + id + "/";
+	}
 	
-	/**
-	 * Голосовать в +
-	 * @return удалось ли проголосовать
-	 */
-	public boolean voteUp() {
-		String[][] post = {{"action","vote"}, {"target_name","qa_question"}, 
-				{"target_id",String.valueOf(id)}, {"mark", "1"}};
-		return URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
+	private String getTagsAsString() {
+		String tagsAsString = "";
+		for(int i = 0; i < tags.length; i++) {
+			tagsAsString += "<li>" + tags[i] + "</li>";
+		}
+		return tagsAsString;
 	}
 	
 	/**
-	 * Голосовать в -
-	 * @return удалось ли проголосовать
-	 */
-	public boolean voteDown() {
-		String[][] post = {{"action","vote"}, {"target_name","qa_question"}, 
-				{"target_id",String.valueOf(id)}, {"mark", "-1"}};
-		return URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
-	}
-	
-	/**
-	 * Добавить в избранное
-	 * @return удалось ли добавить
-	 */
-	public boolean addToFavorites() {
-		String[][] post = {{"action","add"}, {"target_type","questions"}, {"target_id",String.valueOf(id)}};
-		inFavs = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
-		
-		if(inFavs) favsCount++;
-		return inFavs;
-	}
-	
-	/**
-	 * Удалить из избранного
-	 * @return удалось ли удалить
-	 */
-	public boolean removeFromFavorites() {
-		String[][] post = {{"action","remove"}, {"target_type","questions"}, {"target_id",String.valueOf(id)}};
-		inFavs = !URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
-		
-		if(!inFavs) favsCount--;
-		return !inFavs;
-	}
-	
-	/**
-	 * Возвращает URL вопроса
-	 * @return URL вопроса
-	 */
-	public String getQuestURL() {
-		return "http://habrahabr.ru/qa/" + String.valueOf(id) + "/";
-	}
-	
-	/**
-	 * Возвращает HTML код вопроса
-	 * @return HTML код
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return HTML пїЅпїЅпїЅ
 	 */
 	public String getDataAsHTML() {
-		return "<div class=\"hentry question_hentry\" id=\"" + String.valueOf(id) 
-		+ "\"><h2 class=\"entry-title\"><a href=\"" + getQuestURL() 
-		+ "\" class=\"topic\">" + title + "</a></h2><div class=\"content\">" 
-		+ text + "</div><ul class=\"tags\">" + tags 
-		+ "</ul><div class=\"entry-info vote_holder answer-positive\">" 
-		+ "<div class=\"corner tl\"></div><div class=\"corner tr\"></div>" 
-		+ "<div class=\"entry-info-wrap\"><div class=\"mark\"><span>" 
-		+ ( rating > 0 ? "+" : "" ) + String.valueOf(rating) 
-		+ "</span></div><div class=\"informative\"><span>" 
-		+ String.valueOf(answerCount) + " " + getAnswer() + "</span></div>" 
-		+ "<div class=\"published\"><span>" + date + "</span></div>" 
-		+ "<div class=\"favs_count\"><span>" + favsCount + "</span></div>" 
-		+ "<div class=\"vcard author full\"><a href=\"http://" + author 
-		+ ".habrahabr.ru/\" class=\"fn nickname url\"><span>" + author 
-		+ "</span></a></div></div><div class=\"corner bl\"></div>" 
-		+ "<div class=\"corner br\"></div></div></div>";
+		return getDataAsHTML(false, false, false, false, false, false, false);
 	}
 	
 	/**
-	 * Возвращает HTML код ответа
-	 * @param noContent скрыть контент
-	 * @param noTags скрыть теги
-	 * @param noMark скрыть оценку
-	 * @param noAnswersCount скрыть кол-во ответов
-	 * @param noDate скрыть дату
-	 * @param noFavs скрыть кол-во добавлений в избранное
-	 * @param noAuthor скрыть автора
-	 * @return HTML код
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param noContent пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param noTags пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	 * @param noMark пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param noAnswersCount пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param noDate пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	 * @param noFavs пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param noAuthor пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return HTML пїЅпїЅпїЅ
 	 */
 	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, 
 			boolean noAnswersCount, boolean noDate, boolean noFavs, boolean noAuthor) {
-		return "<div class=\"hentry question_hentry\" id=\"" + String.valueOf(id) 
-		+ "\"><h2 class=\"entry-title\"><a href=\"" + getQuestURL() 
+		return "<div class=\"hentry question_hentry\" id=\"" + id 
+		+ "\"><h2 class=\"entry-title\"><a href=\"" + getUrl() 
 		+ "\" class=\"topic\">" + title + "</a></h2>" 
-		+ (noContent ? "" : "<div class=\"content\">" + text + "</div>")
-		+ (noTags ? "" : "<ul class=\"tags\">" + tags + "</ul>")
+		+ (noContent ? "" : "<div class=\"content\">" + (content == null ? "" : content) + "</div>")
+		+ (noTags ? "" : "<ul class=\"tags\">" + getTagsAsString() + "</ul>")
 		+ (noMark && noAnswersCount && noDate && noAuthor ? "" 
 				: "<div class=\"entry-info vote_holder answer-positive\">" 
 		+ "<div class=\"corner tl\"></div><div class=\"corner tr\"></div>" 
 		+ "<div class=\"entry-info-wrap\">" 
 		+ (noMark ? "" : "<div class=\"mark\"><span>" 
-			+ ( rating > 0 ? "+" : "" ) + String.valueOf(rating) + "</span></div>") 
+			+ ( rating > 0 ? "+" : "" ) + rating + "</span></div>") 
 		+ (noAnswersCount ? "" : "<div class=\"informative\"><span>" 
-			+ String.valueOf(answerCount) + " " + getAnswer() + "</span></div>") 
+			+ answerCount + " " + getAnswer() + "</span></div>") 
 		+ (noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>")
-		+ (noFavs ? "" : "<div class=\"favs_count\"><span>" + favsCount + "</span></div>")
+		+ (noFavs ? "" : "<div class=\"favs_count\"><span>" + favoritesCount + "</span></div>")
 		+ (noAuthor ? "" : "<div class=\"vcard author full\"><a href=\"http://" 
 			+ author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" 
 			+ author + "</span></a></div>") 
@@ -181,8 +78,8 @@ public final class HabraQuest
 	}
 	
 	/**
-	 * Вывод комментариев к вопросу
-	 * @return HTML код комментариев
+	 * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String getCommentsAsHTML() {
 		String data = "";
@@ -196,15 +93,16 @@ public final class HabraQuest
 	}
 	
 	private String getAnswer() {
-		int mod = answerCount / 10;
+		int mod = answerCount - (answerCount / 10) * 10;
+		Log.d("HabraQuest.getAnswer", "mod is " + mod);
 		
 		if((answerCount >= 6 && answerCount <= 20) || mod == 0 || mod >= 5)
-			return "ответов";
+			return "РѕС‚РІРµС‚РѕРІ";
 		else if(mod == 1) 
-			return "ответ";
+			return "РѕС‚РІРµС‚";
 		else if(mod >= 2 && mod <= 4)
-			return "ответа";
+			return "РѕС‚РІРµС‚Р°";
 		
-		return "ответов";
+		return "РѕС‚РІРµС‚РѕРІ";
 	}
 }

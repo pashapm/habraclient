@@ -11,7 +11,7 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Информация о пользователе
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class HabraLogin {
 	private static HabraLogin habraLogin = null;
@@ -24,8 +24,8 @@ public final class HabraLogin {
 	private int mUserTopPosition = 0;
 	
 	/**
-	 * Получает общий HabraLogin класс. Внимание! Перед получением его надо где-то создать
-	 * @return экземпляр HabraLogin
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ HabraLogin пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HabraLogin
 	 */
 	public static HabraLogin getHabraLogin() {
 		if(habraLogin == null) {
@@ -36,27 +36,27 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * Устанавливает директорию для сохранения каптчи
-	 * @param cacheDir директорию для сохранения каптчи
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param cacheDir пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public void setCacheDir(String cacheDir) {
 		mCacheDir = cacheDir;
 	}
 	
 	/**
-	 * Проверяет залогинен пользователь или нет
-	 * @return быть или не быть
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 	 */
 	public boolean isLogged() {
 		return mUserName != null;
 	}
 	
 	/**
-	 * Вход в аккаунт на хабре
-	 * @param login Логин
-	 * @param password Пароль
-	 * @param captcha Каптча
-	 * @return null или описание ошибки
+	 * пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	 * @param login пїЅпїЅпїЅпїЅпїЅ
+	 * @param password пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param captcha пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return null пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String login(String login, String password, String captcha) {
 		String[][] post = new String[][]{{"act","login"}, {"redirect_url","http://habrahabr.ru/"},
@@ -76,8 +76,8 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * Выход из аккаунта
-	 * @return успешность выхода
+	 * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public boolean logout() {
 		if(mUserName == null || mUserID == 0) return false;
@@ -100,8 +100,8 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * Получает каптчу
-	 * @return путь до файла каптчи
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String getCaptcha() {
 		byte[] data =  URLClient.getUrlClient().getURLAsBytes("http://habrahabr.ru/core/captcha/");
@@ -121,11 +121,13 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * Получает данные от сервера и проверяет логин
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	 * @return this.isLogged()
 	 */
 	public boolean parseUserData() {
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/info/stats/");
+		if(data == null) return false;
+		
 		int logoutIndex = data.indexOf("http://habrahabr.ru/logout/") + 27;
 		if(logoutIndex == 26) return false;
 		
@@ -137,12 +139,13 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * получает и парсит рейтинг и карму
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
 	 */
 	public void parseUserKarmaAndForce() {
 		if(mUserName == null) return;
 		
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/api/profile/" + mUserName + "/");
+		if(data == null) return;
 		
 		int index = data.indexOf("<karma>") + 7;
 		if(index == 6) return;
@@ -158,35 +161,35 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * @return карма
+	 * @return пїЅпїЅпїЅпїЅпїЅ
 	 */
 	public float getUserKarma() {
 		return mUserKarma;
 	}
 	
 	/**
-	 * @return рейтинг
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public float getUserRating() {
 		return mUserRating;
 	}
 	
 	/**
-	 * @return позиция в рейтинге
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public int getUserRatingPosition() {
 		return mUserTopPosition;
 	}
 	
 	/**
-	 * @return имя пользователя
+	 * @return пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String getUserName() {
 		return mUserName;
 	}
 	
 	/**
-	 * @return ссылка на профиль
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String getProfileURL() {
 		return "http://" + mUserName + ".habrahabr.ru/";

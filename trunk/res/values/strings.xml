@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HabraClient</string>
-    <string name="user_name">Имя пользователя</string>
-    <string name="password">Пароль</string>
-    <string name="login">Вход</string>
-    <string name="skip">Пропустить</string>
-    <string name="logout">Выход</string>
-    <string name="habrahabr">Хабрахабр</string>
-    <string name="save_password">Сохранять пароль</string>
-    <string name="exit">Выход</string>
-    <string name="preferences">Настройки</string>
-    <string name="load_images">Загружать картинки</string>
-    <string name="load_images_summary">Загружать изображения из постов, вопросов и комментариев?</string>
-    <string name="login_form">Войти на хабр</string>
-    <string name="login_form_summary">Используйте для входа на хабрахабр</string>
-    <string name="main_screen_content">Главный экран</string>
-    <string name="main_screen_content_summary">Позволяет выбрать страницу для отображения на главном экране</string>
-    <string name="captcha">Капча</string>
-    <string name="fullscreen">Полный экран</string>
-    <string name="refresh">Обновить</string>
-    <string name="private_mail">Личная почта</string>
-    <string name="favorites">Избранное</string>
-    <string name="mark">Оценка</string>
-    <string name="user_mark">Карма</string>
-    <string name="rating">Рейтинг</string>
-    <string name="user_bar_summary">Настройки польовательского бара</string>
-    <string name="user_bar">Пользовательский бар</string>
-    <string name="user_bar_hide">Скрыть UserBar</string>
-    <string name="user_bar_hide_summary">Скрыть пользовательский бар</string>
+    <string name="add_favorites">Добавить в избранного</string><string name="app_name">HabraClient</string>
+    
+    
+    <string name="captcha">Капча</string><string name="exit">Выход</string><string name="favorites">Избранное</string><string name="fullscreen">Полный экран</string><string name="habrahabr">Хабрахабр</string><string name="load_images">Загружать картинки</string><string name="load_images_summary">Загружать изображения из постов, вопросов и комментариев?</string><string name="login">Вход</string><string name="login_form">Войти на хабр</string><string name="login_form_summary">Используйте для входа на хабрахабр</string><string name="logout">Выход</string><string name="main_screen_content">Главный экран</string><string name="main_screen_content_summary">Позволяет выбрать страницу для отображения на главном экране</string><string name="mark">Оценка</string><string name="password">Пароль</string><string name="preferences">Настройки</string>
+    <string name="private_mail">Личная почта</string><string name="rating">Рейтинг</string><string name="refresh">Обновить</string><string name="save_password">Сохранять пароль</string><string name="skip">Пропустить</string>
+    
+    
+    <string name="user_bar">Пользовательский бар</string><string name="user_bar_summary">Настройки польовательского бара</string><string name="user_bar_hide">Скрыть UserBar</string><string name="user_bar_hide_summary">Скрыть пользовательский бар</string><string name="user_mark">Карма</string><string name="user_name">Имя пользователя</string>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <string name="user_bar_hide_mark">Скрыть карму</string>
     <string name="user_bar_hide_force">Скрыть ХабраСилу</string>
     <string name="user_bar_hide_favorites">Скрыть избранное</string>
@@ -70,4 +70,16 @@
     <string name="hide_quest_answers_summary"></string>
     <string name="hide_quest_element">Скрыть элементы вопроса</string>
     <string name="hide_quest_element_summary">При отображении в виде списка</string>
+    <string name="comments">Комментарии</string>
+    <string name="share">Отправить</string>
+    <string name="open">Открыть</string>
+    <string name="author">Автор</string>
+    <string name="vote">Голосовать</string>
+    <string name="vote_up">+1</string>
+    <string name="vote_down">-1</string>
+    <string name="vote_zero">0</string>
+    <string name="copy_link">Копировать ссылку</string>
+    
+    <string name="remove_favorites">Удалить из избранного</string>
+    <string name="cache">Кэш</string>
 </resources>

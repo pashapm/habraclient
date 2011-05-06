@@ -5,7 +5,7 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Класс для загрузки данных (только GET) в отдельном потоке
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ GET) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class AsyncDataLoader {
 	
@@ -18,31 +18,40 @@ public final class AsyncDataLoader {
 		protected boolean force = false;
 		
 		/**
-		 * @param url URL для запроса
-		 * @param force выполнить запрос даже если есть данные с этого URL'a
+		 * @param url URL пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		 * @param force пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ URL'a
 		 */
 		public LoaderData(String url, boolean force) { 
 			this.url = url; 
 			this.force = force; 
 		}
 		
+		public LoaderData() {
+			
+		}
+		
+		public LoaderData setUrl(String url) {
+			this.url = url;
+			return this;
+		}
+		
 		/**
-		 * Выполняется перед началом работы
+		 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		 */
 		public void start() { }
 		
 		/**
-		 * Выполняется в отдельном потоке в процессе работы. Предназначен для обработки даннных
-		 * @param data исходные данные
-		 * @return обработанные данные
+		 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+		 * @param data пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		 */
 		public String update(String data) { 
 			return data; 
 		}
 		
 		/**
-		 * Выполняется после завершения работы потока
-		 * @param data обработанные данные
+		 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+		 * @param data пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		 */
 		public void finish(String data) { }
 	}
@@ -65,6 +74,11 @@ public final class AsyncDataLoader {
 			Log.d("AsyncLoader.doInBackground", "called");
 			
 			mData = URLClient.getUrlClient().getURL(mLoaderData.url);
+			if(mData == null) {
+				mUpdateData = "";
+				return 1;
+			}
+			
 			mUpdateData = mLoaderData.update(mData);
 			
 			return 0;
@@ -80,7 +94,7 @@ public final class AsyncDataLoader {
 	private boolean mIsFinished = true;
 	
 	/**
-	 * @return экземпляр AsyncDataLoader
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ AsyncDataLoader
 	 */
 	public static AsyncDataLoader getDataLoader() {
 		if(mAsyncDataLoader == null) {
@@ -93,14 +107,17 @@ public final class AsyncDataLoader {
 
 	
 	/**
-	 * Выполняет запрос в отдельном потоке
-	 * @param data класс информации о запросе и обработки данных
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
-	public void execute(LoaderData data) {
+	public void execute(LoaderData data, boolean noExecute) {
 		if(data == null) return;
 		Log.d("AsyncDataLoader.execute", "called");
 		
 		mLoaderData = data;
+		
+		if(noExecute) return;
+		
 		mLoaderData.start();
 		
 		if(mLoaderData.url == null) {
@@ -120,8 +137,8 @@ public final class AsyncDataLoader {
 	}
 	
 	/**
-	 * Перезагружает данные использую класс-обработчик предыдущего запроса
-	 * @return false если это первый запрос
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return false пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public boolean reload() {
 		if(mLoaderData == null) return false;
@@ -132,29 +149,29 @@ public final class AsyncDataLoader {
 	}
 	
 	/**
-	 * Обновляет данные по предыдущему URL спользуя новый класс-обработчик
-	 * @param data класс-обработчик
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public void repeat(LoaderData data) {
 		Log.d("AsyncDataLoader.repeat", "called");
 		
 		if(mLastURL == null) {
-			execute(data);
+			execute(data, false);
 		} else {
 			data.finish(mLoaderData.update(mData));
 		}
 	}
 	
 	/**
-	 * Обновляет данные по предыдущему URL спользуя новый класс-обработчик
-	 * @param data класс-обработчик
-	 * @param notUpdate не выполнять обработку данных, только получение
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param notUpdate пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public void repeat(LoaderData data, boolean notUpdate) {
 		Log.d("AsyncDataLoader.repeat", "called");
 		
 		if(mLastURL == null) {
-			execute(data);
+			execute(data, false);
 		} else {
 			if(notUpdate) data.finish(mData);
 			else data.finish(mLoaderData.update(mData));
@@ -162,7 +179,7 @@ public final class AsyncDataLoader {
 	}
 	
 	/**
-	 * @return завершён ли предыдущий запрос
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public boolean isFinished() {
 		return mIsFinished;
@@ -174,6 +191,7 @@ public final class AsyncDataLoader {
 	 * @return AsyncTask.cancel(...)
 	 */
 	public final boolean cancel(boolean mayInterruptIfRunning) {
+		// TODO: correct cancel
 		if(mAsyncLoader == null) return false;
 		return mAsyncLoader.cancel(mayInterruptIfRunning);
 	}
