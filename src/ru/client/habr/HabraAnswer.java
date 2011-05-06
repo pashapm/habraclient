@@ -2,113 +2,53 @@ package ru.client.habr;
 
 /**
  * @author WNeZRoS
- * Класс ответа на вопрос
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
  */
-public final class HabraAnswer {
+public final class HabraAnswer extends HabraEntry {
 	
-	/**
-	 * ID ответа
-	 */
-	public int id = 0;
-	
-	/**
-	 * Аватар автора
-	 */
+	protected HabraEntryType type = HabraEntryType.ANSWER;
 	public String avatar = null;
-	
-	/**
-	 * Автор
-	 */
-	public String author = null;
-	
-	/**
-	 * Дата публикации
-	 */
-	public String date = null;
-	
-	/**
-	 * Текст ответа
-	 */
-	public String text = null;
-	
-	/**
-	 * Рейтинг
-	 */
 	public int rating = 0;
-	
-	/**
-	 * Этот ответ решение?
-	 */
 	public boolean isSolution = false;
-	
+	public HabraEntry[] comments = null;
+		
 	/**
-	 * Комментарии к ответу
+	 * @param questionID ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	 */
-	public HabraQAComment[] comments = null;
+	public String getUrl(int questionID) {
+		return getUrl() + questionID + "/#answer_" + id;
+	}
 	
-	/**
-	 * Голосовать в +
-	 * @return удалось ли проголосовать
-	 */
-	public boolean voteUp() {
-		String[][] post = {{"action","vote"}, {"target_name","qa_question"}, 
-				{"target_id",String.valueOf(id)}, {"mark", "1"}};
-		return URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
+	public String getUrl() {
+		return "http://habrahabr.ru/qa/";
 	}
 	
 	/**
-	 * Голосовать в -
-	 * @return удалось ли проголосовать
-	 */
-	public boolean voteDown() {
-		String[][] post = {{"action","vote"}, {"target_name","qa_question"}, 
-				{"target_id",String.valueOf(id)}, {"mark", "-1"}};
-		return URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/qa/").contains("<message>ok</message>");
-	}
-	
-	/**
-	 * @param questionID ID вопроса
-	 * @return ссылку на ответ
-	 */
-	public String getAnswerURL(int questionID) {
-		return "http://habrahabr.ru/qa/" + questionID + "/#answer_" + id;
-	}
-	
-	/**
-	 * @return ответ как HTML
+	 * @return пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ HTML
 	 */
 	public String getDataAsHTML() {
-		return "<div class=\"comment_holder vote_holder answer\">" 
-		+ "<div class=\"msg-meta\"><ul class=\"menu info author hcard\">" 
-		+ "<li class=\"avatar\"><a href=\"http://" + author 
-		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a></li>" 
-		+ "<li class=\"fn nickname username\"><a href=\"http://" + author 
-		+ ".habrahabr.ru/\" class=\"url\">" + author + "</a>,</li>" 
-		+ "<li class=\"date\"><abbr class=\"published\">" + date 
-		+ "</abbr></li><li class=\"mark\"><span>" + String.valueOf(rating) 
-		+ "</span></li></ul></div>" + text + "</div>";
+		return getDataAsHTML(false);
 	}
 	
 	/**
-	 * @param noAvatar скрыть аватар
-	 * @return ответ как HTML
+	 * @param noAvatar пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ HTML
 	 */
 	public String getDataAsHTML(boolean noAvatar) {
-		return "<div class=\"comment_holder vote_holder answer\">" 
+		return "<div class=\"comment_holder vote_holder answer\" id=\"answer_" + id + "\">" 
 		+ "<div class=\"msg-meta\"><ul class=\"menu info author hcard\">" 
 		+ "<li class=\"avatar\">" + (noAvatar ? "" : "<a href=\"http://" + author 
 		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a>") + "</li>" 
 		+ "<li class=\"fn nickname username\"><a href=\"http://" + author 
 		+ ".habrahabr.ru/\" class=\"url\">" + author + "</a>,</li>" 
 		+ "<li class=\"date\"><abbr class=\"published\">" + date 
-		+ "</abbr></li><li class=\"mark\"><span>" + String.valueOf(rating) 
-		+ "</span></li></ul></div>" + text + "</div>";
+		+ "</abbr></li><li class=\"mark\"><span>" + rating 
+		+ "</span></li></ul></div>" + content + "</div>";
 	}
 	
 	/**
-	 * @return комментарии к ответу как HTML код
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ HTML пїЅпїЅпїЅ
 	 */
 	public String getCommentsAsHTML() {
 		String data = "";

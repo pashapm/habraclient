@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <HorizontalScrollView 
+    	android:id="@+id/scrollUserBar" 
+    	android:layout_width="wrap_content" 
+    	android:layout_height="wrap_content">
+        <LinearLayout 
+        	android:layout_width="match_parent" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/layoutUserBar" 
+        	android:gravity="center_horizontal|top" 
+        	android:layout_gravity="fill_horizontal|center_horizontal">
+            <TextView android:text="@string/captcha" android:layout_width="wrap_content" android:id="@+id/titleUserName" android:layout_marginLeft="5dip" android:gravity="center_vertical|center_horizontal" android:textSize="24px" android:maxWidth="100dip" android:layout_height="40dip" android:maxHeight="40dip" android:layout_marginRight="5dip" android:onClick="onClickUserName"/>
+            <TextView android:text="@string/user_mark" android:textColor="#6C6" android:layout_width="wrap_content" android:id="@+id/titleKarma" android:textSize="20dip" android:layout_height="30dip" android:maxHeight="40dip" android:layout_marginRight="5dip"/>
+            <TextView android:text="@string/rating" android:textColor="#C6C" android:layout_width="wrap_content" android:textSize="20dip" android:layout_height="30dip" android:id="@+id/titleHabraForce"/>
+            <Button android:layout_width="wrap_content" android:text="@string/favorites" android:id="@+id/buttonFavorites" android:layout_marginLeft="5dip" android:layout_height="40dip" android:onClick="onClickFavorites"/>
+            <Button android:layout_width="wrap_content" android:text="@string/private_mail" android:id="@+id/buttonPrivateMail" android:layout_height="40dip" android:onClick="onClickPM"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="match_parent" android:layout_width="match_parent" android:gravity="center_horizontal">
+        <WebView android:layout_height="wrap_content" android:id="@+id/result" android:layout_width="match_parent" android:layout_marginTop="40dip"/>
+        <ProgressBar android:id="@+id/procLoading" android:layout_centerHorizontal="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="60dip"/>
+        <HorizontalScrollView android:fillViewport="true" android:id="@+id/scrollNavPanel" android:layout_width="wrap_content" android:layout_height="wrap_content">
+            <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/layoutNavPanel">
+                <Button android:id="@+id/buttonNavPost" android:layout_width="wrap_content" android:text="@string/posts" android:layout_height="40dip" android:onClick="onClickNav"/>
+                <Button android:id="@+id/buttonNavQA" android:layout_width="wrap_content" android:text="@string/q_a" android:layout_height="40dip" android:onClick="onClickNav"/>
+                <Button android:id="@+id/buttonNavPeople" android:layout_width="wrap_content" android:text="@string/people" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
+                <Button android:id="@+id/buttonNavBlog" android:layout_width="wrap_content" android:text="@string/blogs" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
+                <Button android:id="@+id/buttonNavCompany" android:layout_width="wrap_content" android:text="@string/companies" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
+            </LinearLayout>
+        </HorizontalScrollView>
+    </RelativeLayout>
+    <Button android:text="menuPostFromList" android:id="@+id/menuPostFromList" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	<Button android:text="menuPostFull" android:id="@+id/menuPostFull" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	<Button android:text="menuComment" android:id="@+id/menuComment" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	<Button android:text="menuQuestFromList" android:id="@+id/menuQuestFromList" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	<Button android:text="menuQuestFull" android:id="@+id/menuQuestFull" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+	<Button android:text="menuAnswer" android:id="@+id/menuAnswer" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</LinearLayout>

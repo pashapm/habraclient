@@ -7,23 +7,24 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Парсер ответов
+ * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class HabraAnswerParser {
 	private String mData = null;
 	private int mStartPosition = 0;
+	// TODO: 
 	
 	/**
-	 * Парсит ответы из вопроса
-	 * @param data Данные HTML страницы
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public HabraAnswerParser(String data) {
 		mData = data;
 	}
 	
 	/**
-	 * Парсит следующий ответ
-	 * @return следующий ответ или null
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ null
 	 */
 	public HabraAnswer parseAnswer() {
 		if(mData == null || mStartPosition == -1) return null;
@@ -64,21 +65,21 @@ public final class HabraAnswerParser {
 		answer.rating = Integer.valueOf(rs);
 		
 		Log.d("AnswerParser", "Parse Text");
-		answer.text = new String(answerData.substring(
+		answer.content = new String(answerData.substring(
 				lastIndex = (answerData.indexOf("<div class=\"entry-content entry-content-text answer-text\">", lastIndex)),
 				lastIndex = answerData.indexOf("<ul class=\"hentry", lastIndex)));
 		
 		Log.d("AnswerParser", "Parse comments");
 		String commentsData = new String(answerData.substring(lastIndex));
-		HabraQAComment comment = null;
-		List<HabraQAComment> commentsList = new ArrayList<HabraQAComment>();
+		HabraEntry comment = null;
+		List<HabraEntry> commentsList = new ArrayList<HabraEntry>();
 		
 		Log.i("commentsList", String.valueOf(commentsList != null) + commentsList.toString());
 		
 		int subIndex = 0;
 		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1) {
 			Log.d("QuestParser", "new Comment");
-			comment = new HabraQAComment();
+			comment = new HabraEntry();
 			subIndex += 16;
 			
 			Log.d("QuestParser", "Parse comment.id");
@@ -86,7 +87,7 @@ public final class HabraAnswerParser {
 					subIndex = commentsData.indexOf('"', subIndex)));
 			
 			Log.d("QuestParser", "Parse comment.text");
-			comment.text = new String(commentsData.substring(
+			comment.content = new String(commentsData.substring(
 					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
 					subIndex = commentsData.indexOf("&nbsp;<span class=\"fn", subIndex)));
 			
@@ -106,7 +107,7 @@ public final class HabraAnswerParser {
 		}
 		
 		Log.d("QuestParser", "toArray");
-		answer.comments = commentsList.toArray(new HabraQAComment[0]);
+		answer.comments = commentsList.toArray(new HabraEntry[0]);
 		
 		Log.d("CommentParser", "Save position");		
 		mStartPosition = startPosition;

@@ -2,29 +2,31 @@ package ru.client.habr;
 
 /**
  * @author WNeZRoS
- * Удаляет элементы HTML страницы
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class RemoveNode {
 	
 	/**
-	 * Вызов НЛО для уничтожения картинок в тексте
-	 * @param data текст HTML страницы
-	 * @return текст без картинок
+	 * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public static String removeImage(String data)
 	{
 		if(data == null) return null;
-		return data.replaceAll("<img[^>]+src=\"([^\"]+)\"[^>]+>", "<h4 class=\"ufo\">Прилитело НЛО и уничтожило <a href=\"$1\">картинку</a></h4>");
+		return data.replaceAll("<img[^>]+src=\"([^\"]+)\"[^>]+>", 
+				"<h4 class=\"ufo\" onClick=\"this.innerHTML='<img src=\"$1\">';\">Р—РґРµСЃСЊ Р±С‹Р»Р° РєР°СЂС‚РёРЅРєР°</h4>");
 	}
 	
 	/**
-	 * Замена видео ролика на ссылку
-	 * @param data текст HTML страницы
-	 * @return текст без видео
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	 */
 	public static String removeVideo(String data)
 	{
 		if(data == null) return null;
-		return data.replaceAll("<object.+<embed src=\"([^\"]+)\".+</object>", "<a href=\"$1\">Здесь был ролик</a>");
+		return data.replaceAll("<object.+<param name=\"movie\" value=\"([^\"]+)\".+</object>", 
+				"<h3><a href=\"$1\">Р—РґРµСЃСЊ Р±С‹Р» СЂРѕР»РёРє</a></h3>");
 	}
 }

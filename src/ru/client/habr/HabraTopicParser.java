@@ -1,331 +1,158 @@
 package ru.client.habr;
 
+import android.net.Uri;
 import android.util.Log;
-import ru.client.habr.HabraTopic.HabraTopicType;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author WNeZRoS
- * Класс для парсинга постов
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class HabraTopicParser {
-	private String mData = null;
-	private int mStartPosition = 0;
+	private int mListIndex = 0;
+	private HtmlCleaner mParser = null;
+	private TagNode mMainNode = null;
+	private List<TagNode> mEntryNodeList = new ArrayList<TagNode>();
+	private String mBlogName = null;
+	private String mBlogURL = null;
 	
 	/**
-	 * Парсер постов
-	 * @param data Код страницы
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
-	public HabraTopicParser(String data) {
-		mData = data;
-		mStartPosition = 0;
-	}
-	
-	/**
-	 * Получаем следующий топик из списка
-	 * @return данные топика
-	 */
-	public HabraTopic parseTopicFromList() {
-		if(mData == null || mStartPosition == -1) return null;
+	public HabraTopicParser(String data) {	
+		if(data == null) return;
 		
-		Log.d("TopicParser", "Find post");
+		mParser = new HtmlCleaner();
+		mMainNode = mParser.clean(data);
 		
-		// Находим начало поста
-		int startPosition = mData.indexOf("<div class=\"hentry ", mStartPosition);
-		if(startPosition == -1) return null;
+		TagNode blogHeader = mMainNode.findElementByAttValue("class", "blog-header", true, true);
+		if(blogHeader != null) {
+			blogHeader = blogHeader.getChildTags()[0];
+			mBlogName = blogHeader.getText().toString();
+			mBlogURL = blogHeader.getAttributeByName("href");
+		}
 		
-		Log.d("TopicParser", "Find end");
-		
-		// Ищем конец
-		int endPosition = mData.indexOf("<div class=\"corner bl\"></div><div class=\"corner br\"></div>", 
-				startPosition);
-		if(endPosition == -1) return null;
-		
-		Log.d("TopicParser", "SubString");
-		// Вырезаем данные поста
-		String topicData = new String(mData.substring(startPosition, 
-				endPosition)) + "</div></div>";
-		HabraTopic topic = new HabraTopic();
-		
-		Log.d("TopicParser", "Parse data");
-		// Парсим данные поста
-		int lastIndex = 19;
-		
-		Log.d("TopicParser", "Parse Type");
-		String type = new String(topicData.substring(19, 
-				lastIndex = topicData.indexOf("\"", lastIndex)));
-		
-		if(type != null) {
-			Log.i("TopicData", type);
-			// blogs [XxX] | corporative [XxX]
-			// XxX: translation link
-			
-			if(type.charAt(0) == 'c') topic.isCorporativeBlog = true;
-			
-			int indexAfterSpace = type.indexOf(' ', 5) + 1;
-			
-			if(indexAfterSpace == 0) topic.type = HabraTopicType.Post;
-			else switch(type.charAt(indexAfterSpace)) {
-			case 't': topic.type = HabraTopicType.Translate; break;
-			case 'l': topic.type = HabraTopicType.Link; break;
-			case 'p': topic.type = HabraTopicType.Podcast; break;
+		TagNode[] divNodes = mMainNode.getElementsByName("div", true);	
+		for(int i = 0; i < divNodes.length; i++) {
+			if(divNodes[i].getAttributeByName("class") != null && divNodes[i].getAttributeByName("id") == null) {
+				Log.d("HabraTopicParser.construct", "checking node... " + divNodes[i].getAttributeByName("class"));
+				if(divNodes[i].getAttributeByName("class").startsWith("hentry")) {
+					mEntryNodeList.add(divNodes[i]);
+					Log.d("HabraTopicParser.construct", "ok ... lis size is " + mEntryNodeList.size());
+				}
 			}
 		}
+	}
+	
+	public HabraTopic parse() {
+		if(mMainNode == null) return null;
+		if(mEntryNodeList.size() <=  mListIndex) return null;
 		
-		Log.d("TopicParser", "Parse Blog Data");
-		String blog = new String(topicData.substring(
-				lastIndex = topicData.indexOf("<a ", lastIndex), 
-				lastIndex = topicData.indexOf("</a>", lastIndex)));
+		HabraTopic topic = new HabraTopic();
 		
-		if(topic.isCorporativeBlog) {
-			int subIndex = blog.indexOf("/company/") + 9;
-			topic.blogID = new String(blog.substring(subIndex, 
-					blog.indexOf('/', subIndex)));
-		} else {
-			int subIndex = blog.indexOf("/blogs/") + 7;
-			topic.blogID = new String(blog.substring(subIndex, 
-					blog.indexOf('/', subIndex)));
-		}
+		TagNode currentNode = mEntryNodeList.get(mListIndex);
+		TagNode[] contentNodes = currentNode.getChildTags();
 		
-		topic.blogName = new String(blog.substring(blog.indexOf("\">") + 2));
-		
-		Log.i("TopicData", topic.blogID);
-		Log.i("TopicData", topic.blogName);
-		
-		Log.d("TopicGet", topic.getBlogURL());
-		
-		Log.d("TopicParser", "Parse ID and Title");
-		if(topic.type != HabraTopicType.Link)
-		{
-			topic.id = Integer.valueOf(topicData.substring(
-					lastIndex = (topicData.indexOf(topic.getBlogURL(), 
-							lastIndex) + topic.getBlogURL().length()), 
-					lastIndex = topicData.indexOf('/', lastIndex)));
-		}
-		else
-		{
-			topic.id = Integer.valueOf(topicData.substring(
-					lastIndex = (topicData.indexOf("/linker/go/", lastIndex) + 11), 
-					lastIndex = topicData.indexOf('/', lastIndex)));
-		}
+		topic.postType = getTopicType(currentNode.getAttributeByName("class"));
 
-		topic.title = new String(topicData.substring(
-				lastIndex = (topicData.indexOf('>', lastIndex) + 1), 
-				lastIndex = topicData.indexOf("</a>", lastIndex)));
-		
-		Log.i("TopicData", topic.title);
-		
-		Log.d("TopicParser", "Parse Content");
-		lastIndex = topicData.indexOf("<div class=\"content\">", lastIndex) + 21;
-		int endIndex = topicData.indexOf("<ul class=\"tags\">", lastIndex);
-		
-		if(endIndex == -1) {
-			endIndex = topicData.indexOf("<div class=\"entry-info", lastIndex);
-			topic.content = new String(topicData.substring(lastIndex, endIndex));
-			topic.tags = "";
+		// Parse title: Blog URL, Blog Name, Post Title, Post ID
+		TagNode[] titleNodes = contentNodes[0].getChildTags();
+		if(titleNodes.length == 1) {
+			// Full topic
+			topic.blogURL = mBlogURL;
+			topic.blogName = mBlogName;
+			topic.title = titleNodes[0].getText().toString();
+			List<String> pathSegments = Uri.parse(
+					titleNodes[0].getAttributeByName("title")).getPathSegments();
+			topic.isCorporativeBlog = pathSegments.get(0).equals("company");
+			topic.id = Integer.valueOf(pathSegments.get(pathSegments.size() - 1));
 		} else {
-			topic.content = new String(topicData.substring(lastIndex, endIndex));
-			Log.d("TopicParser", "Parse tags");
-			endIndex += 17;
-			topic.tags = new String(topicData.substring(endIndex, 
-					lastIndex = topicData.indexOf("</ul>", endIndex)));
+			// Topic in list
+			topic.blogURL = titleNodes[0].getAttributeByName("href");
+			topic.blogName = titleNodes[0].getText().toString();
+			topic.title = titleNodes[titleNodes.length - 1].getText().toString();
+			List<String> pathSegments = Uri.parse(
+					titleNodes[titleNodes.length - 1].getAttributeByName("href")).getPathSegments();
+			topic.isCorporativeBlog = pathSegments.get(0).equals("company");
+			topic.id = Integer.valueOf(pathSegments.get(pathSegments.size() - 1));
 		}
 		
-		Log.d("TopicParser", "Parse rating");
-		topic.rating = new String(topicData.substring(
-				lastIndex = (topicData.indexOf('>', 
-						(topicData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-				lastIndex = topicData.indexOf('<', lastIndex)));
+		Log.i("HabraTopicParser.parse", "ID: " + topic.id + "\nTitle: " + topic.title);
 		
-		Log.d("TopicParser", "Parse date");
-		topic.date = new String(topicData.substring(
-				lastIndex = (topicData.indexOf("<span>", 
-						topicData.indexOf("<div class=\"published\">", lastIndex)) + 6),
-				lastIndex = topicData.indexOf('<', lastIndex)));
+		// Parse content
+		topic.content = mParser.getInnerHtml(contentNodes[1]);
 		
-		Log.d("TopicParser", "Parse favorites");
+		// Parse tags
+		TagNode[] tagsNodes = contentNodes[2].getChildTags();
+		topic.tags = new String[tagsNodes.length];
+		for(int i = 0; i < tagsNodes.length; i++)
+			topic.tags[i] = tagsNodes[i].getText().toString();
 		
-		topic.inFavs = topicData.indexOf("js-to_favs_remove", lastIndex) != -1;
+		// Parse information: Mark, Date, Favorites, Author, Comments count
+		TagNode[] infoNodes = contentNodes[3].findElementByAttValue("class", 
+				"entry-info-wrap", false, true).getChildTags();
 		
-		String favs = topicData.substring(
-				lastIndex = (topicData.indexOf('>', 
-						topicData.indexOf("<div class=\"favs", lastIndex)) + 1), 
-				lastIndex = topicData.indexOf('<', lastIndex));
-		if(favs.length() > 0) topic.favorites = Integer.valueOf(favs);
-		else topic.favorites = 0;
+		topic.rating = infoNodes[0].findElementByAttValue("class", "mark", false, true).findElementByName("a", true).getText().toString();
+		topic.date = infoNodes[1].findElementByName("span", false).getText().toString();
 		
-		if(topicData.indexOf("class=\"vcard", lastIndex) != -1) {
-			Log.d("TopicParser", "Parse author");
-			topic.author = new String(topicData.substring(
-					lastIndex = (topicData.indexOf("url\"><span>", lastIndex) + 11), 
-					lastIndex = topicData.indexOf('<', lastIndex)));
-		} else {
-			topic.author = "";
+		topic.inFavs = infoNodes[2].getAttributeByName("class").equals("js-to_favs_remove");
+		try {
+			topic.favoritesCount = Integer.valueOf(infoNodes[3].getText().toString());
+		} catch(NumberFormatException e) {
+			Log.w("HabraTopicParser.parse", "NumberFormatException: " + e.getMessage());
+			topic.favoritesCount = 0;
 		}
 		
-		Log.d("TopicParser", "Parse comments");
-		String comments = topicData.substring(
-				lastIndex = (topicData.indexOf("<span class=\"all\">", lastIndex) + 18), 
-				lastIndex = topicData.indexOf('<', lastIndex));
-		Log.i("TopicData", comments + "(" + comments.codePointAt(0) + ")");
-		if(comments.codePointAt(0) != 1082) topic.commentsCount = Integer.valueOf(comments);
-		else topic.commentsCount = 0;
+		if(infoNodes.length > 8 || (infoNodes.length > 7 && mBlogURL != null)) {
+			// Additional information: original link
+			TagNode additional = infoNodes[6].findElementByName("a", true);
+			topic.additional = "<a href=\"" + additional.getAttributeByName("href") 
+					+ "\">" + additional.getText().toString() + "</a>";
+			topic.author = infoNodes[7].findElementByName("span", true).getText().toString();
+		} else {
+			topic.additional = "";
+			topic.author = infoNodes[6].findElementByName("span", true).getText().toString();
+		}
 		
-		lastIndex = topicData.indexOf("<span class=\"new\">", lastIndex);
-		if(lastIndex == -1) topic.commentsDiff = 0;
-		else topic.commentsDiff = Integer.valueOf(topicData.substring(
-				lastIndex += 19, 
-				lastIndex = topicData.indexOf('<', lastIndex)));
-		
-		Log.d("TopicParser", "Save position");
-		// Сохраняем конечную позицию
-		mStartPosition = endPosition;
-		return topic;
-	}
-	
-	/**
-	 * Получаем полный топик
-	 * @return данные топика
-	 */
-	public HabraTopic parseFullTopic() {
-		if(mData == null) return null;
-		
-		Log.d("TopicParser", "Find post");
-		
-		// Находим начало поста
-		int startPosition = mData.indexOf("<div class=\"hentry ");
-		if(startPosition == -1) return null;
-		
-		HabraTopic topic = new HabraTopic();
-		
-		Log.d("TopicParser", "Parse data");
-		// Парсим данные поста
-		int lastIndex = startPosition + 19;
-		
-		Log.d("TopicParser", "Parse Type");
-		int endIndex = mData.indexOf("\"", lastIndex);
-		String type = (lastIndex == endIndex ? null 
-				: new String(mData.substring(lastIndex, endIndex)));
-		if(type != null) {
-			Log.i("TopicData", type);
-			// blogs [XxX] | corporative [XxX]
-			// XxX: translation link
+		if(mBlogURL == null) {
+			// Topic form list
+			TagNode[] commentNodes = infoNodes[infoNodes.length - 1].getChildTags()[0].getChildTags();
 			
-			if(type.charAt(0) == 'c') topic.isCorporativeBlog = true;
+			try {
+				topic.commentsCount = Integer.valueOf(commentNodes[0].getText().toString());
+			} catch(NumberFormatException e) {
+				Log.w("HabraTopicParser.parse", "NumberFormatException: " + e.getMessage());
+				topic.commentsCount = 0;
+			}
 			
-			int indexAfterSpace = type.indexOf(' ', 5) + 1;
-			if(indexAfterSpace == 0)
-				topic.type = HabraTopicType.Post;
-			else switch(type.charAt(indexAfterSpace)) {
-			case 't': topic.type = HabraTopicType.Translate; break;
-			case 'l': topic.type = HabraTopicType.Link; break;
-			case 'p': topic.type = HabraTopicType.Podcast; break;
+			if(commentNodes.length == 2)
+				topic.commentsDiff = Integer.valueOf(commentNodes[1].getText().toString().substring(1));
+		} else {
+			// Full topic
+			topic.commentsDiff = 0;
+			
+			try {
+				topic.commentsCount = Integer.valueOf(mMainNode
+						.findElementByAttValue("class", "js-comments-count", 
+								true, true).getText().toString());
+			} catch(NumberFormatException e) {
+				Log.w("HabraTopicParser.parse", "NumberFormatException: " + e.getMessage());
+				topic.commentsCount = 0;
 			}
 		}
 		
-		Log.d("TopicParser", "Parse Blog Data");
-		int blogIndex = mData.indexOf("class=\"blog-header");
-		if(blogIndex == -1) {
-			blogIndex = mData.indexOf("class=\"profile-header");
-			topic.isCorporativeBlog = true;
-		}
-		
-		String blog = new String(mData.substring(
-				blogIndex = mData.indexOf("<a ", blogIndex), 
-				blogIndex = mData.indexOf("</a>", blogIndex)));
-		
-		if(topic.isCorporativeBlog) {
-			int subIndex = blog.indexOf("/company/") + 9;
-			topic.blogID = new String(blog.substring(subIndex, 
-					blog.indexOf('/', subIndex)));
-		}
-		else {
-			int subIndex = blog.indexOf("/blogs/") + 7;
-			topic.blogID = new String(blog.substring(subIndex, 
-					blog.indexOf('/', subIndex)));
-		}
-		topic.blogName = new String(blog.substring(blog.indexOf("\">") + 2));
-		
-		Log.i("TopicData", topic.blogID);
-		Log.i("TopicData", topic.blogName);
-		
-		Log.d("TopicGet", topic.getBlogURL());
-		
-		Log.d("TopicParser", "Parse ID and Title");
-		topic.id = Integer.valueOf(mData.substring(
-				lastIndex = (mData.indexOf(topic.getBlogURL(), lastIndex) 
-						+ topic.getBlogURL().length()), 
-				lastIndex = mData.indexOf('/', lastIndex)));
-		
-		Log.i("TopicData", "ID: " + topic.id);
-		
-		topic.title = new String(mData.substring(
-				lastIndex = (mData.indexOf('>', lastIndex) + 1), 
-				lastIndex = mData.indexOf('<', lastIndex)));
-		
-		while(topic.title.length() == 0) {
-			topic.title = new String(mData.substring(
-					lastIndex = (mData.indexOf('>', lastIndex) + 1), 
-					lastIndex = mData.indexOf('<', lastIndex)));
-		}
-		
-		Log.i("TopicData", "Title[" + topic.title.length() + "]: " + topic.title);
-		
-		Log.d("TopicParser", "Parse Content");
-		lastIndex = mData.indexOf("<div class=\"content\">", lastIndex) + 21;
-		endIndex = mData.indexOf("<ul class=\"tags\">", lastIndex);
-		if(endIndex == -1) {
-			endIndex = mData.indexOf("<div class=\"entry-info", lastIndex);
-			topic.content = new String(mData.substring(lastIndex, endIndex));
-			topic.tags = "";
-		} else {
-			topic.content = new String(mData.substring(lastIndex, endIndex));
-			Log.d("TopicParser", "Parse tags");
-			endIndex += 17;
-			topic.tags = new String(mData.substring(endIndex, 
-					lastIndex = mData.indexOf("</ul>", endIndex)));
-		}
-		
-		Log.d("TopicParser", "Parse rating");
-		topic.rating = new String(mData.substring(
-				lastIndex = (mData.indexOf('>', 
-						(mData.indexOf("mark\">", lastIndex) + 6)) + 1), 
-				lastIndex = mData.indexOf('<', lastIndex)));
-		
-		Log.d("TopicParser", "Parse date");
-		topic.date = new String(mData.substring(
-				lastIndex = (mData.indexOf("<span>", 
-						mData.indexOf("<div class=\"published\">", lastIndex)) + 6),
-				lastIndex = mData.indexOf('<', lastIndex)));
-		
-		Log.d("TopicParser", "Parse favorites");
-		
-		topic.inFavs = mData.indexOf("js-to_favs_remove", lastIndex) != -1;
-		
-		String favs = mData.substring(
-				lastIndex = (mData.indexOf('>', 
-						mData.indexOf("<div class=\"favs", lastIndex)) + 1), 
-				lastIndex = mData.indexOf('<', lastIndex));
-		if(favs.length() > 0) topic.favorites = Integer.valueOf(favs);
-		else topic.favorites = 0;
-		
-		if(mData.indexOf("class=\"vcard", lastIndex) != -1) {
-			Log.d("TopicParser", "Parse author");
-			topic.author = new String(mData.substring(
-					lastIndex = (mData.indexOf("url\"><span>", lastIndex) + 11), 
-					lastIndex = mData.indexOf('<', lastIndex)));
-		} else {
-			topic.author = "";
-		}
-		
-		lastIndex = mData.indexOf("js-comments-count\">", lastIndex) + 19;
-		if(lastIndex != 18) {
-			topic.commentsCount = Integer.valueOf(mData.substring(lastIndex, 
-					mData.indexOf('<', lastIndex)));
-		}
-		else topic.commentsCount = 0;
-		
-		topic.commentsDiff = 0;
-		
+		mListIndex++;
 		return topic;
+	}
+	
+	private HabraTopic.HabraTopicType getTopicType(String classString) {
+		if(classString.contains("link")) return HabraTopic.HabraTopicType.LINK;
+		if(classString.contains("translate")) return HabraTopic.HabraTopicType.TRANSLATE;
+		if(classString.contains("podcast")) return HabraTopic.HabraTopicType.PODCAST;
+		return HabraTopic.HabraTopicType.POST;
 	}
 }

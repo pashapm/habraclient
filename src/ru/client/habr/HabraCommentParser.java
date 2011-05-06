@@ -4,7 +4,7 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Парсер комментариев
+ * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class HabraCommentParser {
 	private String mData = null;
@@ -12,18 +12,19 @@ public final class HabraCommentParser {
 	private int mPadding = 0;
 	private HabraComment mReplyTo = null;
 	private HabraComment mPrevComment = null;
+	// TODO: 
 	
 	/**
-	 * Парсит комментарии из постов
-	 * @param data Данные HTML страницы поста
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param data пїЅпїЅпїЅпїЅпїЅпїЅ HTML пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	 */
 	public HabraCommentParser(String data) {
 		mData = data;
 	}
 	
 	/**
-	 * Парсит следующий комментарий
-	 * @return следующий комментарий или null
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ null
 	 */
 	public HabraComment parseComment() {
 		if(mData == null || mStartPosition == -1) return null;
@@ -32,7 +33,7 @@ public final class HabraCommentParser {
 		int startPosition = mData.indexOf("<li id=\"comment_", mStartPosition);
 		if(startPosition == -1) return null;
 		
-		// Проверяем, на какой комментарий этот ответ
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 		Log.d("CommentParser", "PaddingCheck");
 		String check = mData.substring(startPosition - 30, startPosition);
 		if(check.indexOf("<ul class") != -1) {
@@ -82,11 +83,11 @@ public final class HabraCommentParser {
 		Log.d("CommentParser", "Parse Text");
 		int endIndex = commentData.indexOf("<p class=\"reply", lastIndex);
 		if(endIndex == -1) {
-			comment.text = "<div class=\"entry-content\">" + new String(
+			comment.content = "<div class=\"entry-content\">" + new String(
 					commentData.substring(lastIndex 
 							= (commentData.indexOf("entry-content\">", lastIndex) + 15)));
 		} else
-			comment.text = "<div class=\"entry-content\">" + new String(
+			comment.content = "<div class=\"entry-content\">" + new String(
 					commentData.substring(lastIndex 
 							= (commentData.indexOf("entry-content\">", 
 									lastIndex) + 15), endIndex)) + "</div>";
