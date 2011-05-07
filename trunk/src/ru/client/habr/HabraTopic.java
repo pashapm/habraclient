@@ -20,9 +20,8 @@ public final class HabraTopic extends HabraEntry {
 	protected HabraTopicType postType = HabraTopicType.POST;
 	
 	public String title = null;
-	//public String tags = null;
 	public String[] tags = null;
-	public String rating = null;
+	public int rating = 0;
 	public int favoritesCount = 0;
 	public int commentsCount = 0;
 	public int commentsDiff = 0;
@@ -92,7 +91,9 @@ public final class HabraTopic extends HabraEntry {
 		+ (noMark && noDate && noFavs && noAuthor && noComments ? "" 
 				: "<div class=\"entry-info\"><div class=\"corner tl\"></div>" 
 					+ "<div class=\"corner tr\"></div><div class=\"entry-info-wrap\">" 
-					+ (noMark ? "" : "<div class=\"mark\">" + rating + "</div>") 
+					+ (noMark ? "" : "<div class=\"mark\"><span class=\"" 
+						+ (rating > 0 ? "plus" : (rating < 0 ? "minus" : "zero")) + "\">" 
+						+ (rating == 99999 ? "&#8212;" : (rating > 0 ? "+" : "") + rating) + "</span></div>") 
 					+ (noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>") 
 					+ (noFavs ? "" : "<div class=\"favs_count\"><span>" 
 							+ favoritesCount + "</span></div>") 

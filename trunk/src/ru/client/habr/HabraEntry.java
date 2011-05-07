@@ -26,7 +26,7 @@ public class HabraEntry {
 	 */
 	public String getDataAsHTML() {
 		return "<div id=\"comment_" + id 
-		+ "\" class=\"comment_holder vote_holder\"><div class=\"entry-content\">" 
+		+ "\" class=\"comment_holder quest_comment\"><div class=\"entry-content\">" 
 		+ "<div class=\"entry-content-only\">" + content 
 		+ "&nbsp;<span class=\"fn comm\"><a href=\"http://" + author 
 		+ ".habrahabr.ru/\">" + author + "</a>,&nbsp;<abbr class=\"published\">" 
