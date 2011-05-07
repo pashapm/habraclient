@@ -2,115 +2,83 @@ package ru.client.habr;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import android.util.Log;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
 
 /**
  * @author WNeZRoS
  * ������ �������
  */
 public final class HabraAnswerParser {
-	private String mData = null;
-	private int mStartPosition = 0;
-	// TODO: 
+	private int mListIndex = 0;
+	private HtmlCleaner mParser = null;
+	private TagNode mMainNode = null;
+	private List<TagNode> mEntryNodeList = new ArrayList<TagNode>();
 	
 	/**
 	 * ������ ������ �� �������
 	 * @param data ������ HTML ��������
 	 */
+	@SuppressWarnings("unchecked")
 	public HabraAnswerParser(String data) {
-		mData = data;
+		if(data == null) return;
+		
+		mParser = new HtmlCleaner();
+		mMainNode = mParser.clean(data);
+
+		mEntryNodeList = mMainNode.getElementListHavingAttribute("data-id", true);
 	}
 	
-	/**
-	 * ������ ��������� �����
-	 * @return ��������� ����� ��� null
-	 */
-	public HabraAnswer parseAnswer() {
-		if(mData == null || mStartPosition == -1) return null;
+	public HabraAnswer parse() {
+		if(mEntryNodeList.size() <= mListIndex || mMainNode == null) return null;
+		
 		HabraAnswer answer = new HabraAnswer();
 		
-		int startPosition = mData.indexOf("<li id=\"answer_", mStartPosition);
-		if(startPosition == -1) return null;
+		answer.id = Integer.valueOf(mEntryNodeList.get(mListIndex).getAttributeByName("data-id"));
 		
-		String answerData = mData.substring(startPosition, 
-				startPosition = mData.indexOf("<div class=\"hsublevel", startPosition));
+		TagNode[] contentNodes = mEntryNodeList.get(mListIndex).getChildTags();
+		TagNode[] titleNodes = contentNodes[0].findElementByName("ul", false).getChildTags();
+		answer.author = titleNodes[0].findElementByName("a", false).getAttributeByName("title");
+		answer.avatar = titleNodes[0].findElementByName("img", true).getAttributeByName("src");
+		answer.date = titleNodes[2].getChildTags()[0].getText().toString();
+		String ratings = titleNodes[6].findElementByAttValue("class", "mark", 
+				true, true).findElementByName("span", false).getText().toString();
 		
-		Log.d("AnswerParser", "Parse ID");
-		int lastIndex = 15;
-		answer.id = Integer.valueOf(answerData.substring(lastIndex, 
-				lastIndex = answerData.indexOf('"', lastIndex)));
+		answer.isSolution = titleNodes[4].getText().length() > 0;
 		
-		Log.d("AnswerParser", "Parse Avatar");
-		answer.avatar = new String(answerData.substring(
-				lastIndex = (answerData.indexOf("<img src=", lastIndex) + 10), 
-				lastIndex = answerData.indexOf('"', lastIndex)));
-		
-		Log.d("AnswerParser", "Parse Author");
-		lastIndex += 7;
-		answer.author = new String(answerData.substring(lastIndex, 
-				lastIndex = answerData.indexOf('"', lastIndex)));
-		
-		Log.d("AnswerParser", "Parse Date");
-		answer.date = new String(answerData.substring(
-				lastIndex = (answerData.indexOf('>', answerData.indexOf("<abbr", lastIndex)) + 1), 
-				lastIndex = answerData.indexOf('<', lastIndex)));
-		
-		Log.d("AnswerParser", "Parse Rating");
-		String rs = answerData.substring(
-				lastIndex = (answerData.indexOf("mark\"><span>", lastIndex) + 12), 
-				lastIndex = (answerData.indexOf('<', lastIndex)));
-    	answer.rating = (rs.charAt(0) == '-' ? -1 : 1) ;
-    	rs = "0" + rs.substring(1);
-		answer.rating = Integer.valueOf(rs);
-		
-		Log.d("AnswerParser", "Parse Text");
-		answer.content = new String(answerData.substring(
-				lastIndex = (answerData.indexOf("<div class=\"entry-content entry-content-text answer-text\">", lastIndex)),
-				lastIndex = answerData.indexOf("<ul class=\"hentry", lastIndex)));
-		
-		Log.d("AnswerParser", "Parse comments");
-		String commentsData = new String(answerData.substring(lastIndex));
-		HabraEntry comment = null;
-		List<HabraEntry> commentsList = new ArrayList<HabraEntry>();
-		
-		Log.i("commentsList", String.valueOf(commentsList != null) + commentsList.toString());
-		
-		int subIndex = 0;
-		while((subIndex = commentsData.indexOf("<li id=\"comment_", subIndex)) != -1) {
-			Log.d("QuestParser", "new Comment");
-			comment = new HabraEntry();
-			subIndex += 16;
-			
-			Log.d("QuestParser", "Parse comment.id");
-			comment.id = Integer.valueOf(commentsData.substring(subIndex, 
-					subIndex = commentsData.indexOf('"', subIndex)));
-			
-			Log.d("QuestParser", "Parse comment.text");
-			comment.content = new String(commentsData.substring(
-					subIndex = (commentsData.indexOf("content-only\">", subIndex) + 14), 
-					subIndex = commentsData.indexOf("&nbsp;<span class=\"fn", subIndex)));
-			
-			Log.d("QuestParser", "Parse comment.author");
-			comment.author = new String(commentsData.substring(
-					subIndex = (commentsData.indexOf("http://", subIndex) + 7), 
-					subIndex = commentsData.indexOf('.', subIndex)));
-			
-			Log.d("QuestParser", "Parse comment.date");
-			comment.date = new String(commentsData.substring(
-					subIndex = (commentsData.indexOf('>', commentsData.indexOf("<abbr", subIndex)) + 1), 
-					subIndex = commentsData.indexOf("</abbr", subIndex)));
-			
-			Log.d("QuestParser", "add(comment)");
-			commentsList.add(comment);
-			Log.d("QuestParser", "do while");
+		answer.rating = ratings.charAt(0) == '-' ? -1 : 1;
+		try {
+			answer.rating *= Integer.valueOf(ratings.substring(1));
+		} catch(NumberFormatException e) {
+			answer.rating = 0;
 		}
 		
-		Log.d("QuestParser", "toArray");
-		answer.comments = commentsList.toArray(new HabraEntry[0]);
+		answer.content = mParser.getInnerHtml(contentNodes[1].findElementByName("div", false));
 		
-		Log.d("CommentParser", "Save position");		
-		mStartPosition = startPosition;
+		TagNode[] comments = contentNodes[2].getChildTags();
+		
+		answer.comments = new HabraEntry[comments.length];
+		for(int i = 0; i < comments.length; i++) {
+			answer.comments[i] = parseComment(comments[i]);
+		}
+		
+		mListIndex++;
 		return answer;
+	}
+	
+	private HabraEntry parseComment(TagNode commentNode) {
+		HabraEntry entry = new HabraEntry();
+		
+		entry.id = Integer.valueOf(commentNode.getAttributeByName("id").substring(8));
+		
+		TagNode contentNode = commentNode.getChildTags()[0].getChildTags()[0];
+		entry.content = mParser.getInnerHtml(contentNode);
+		entry.content = entry.content.substring(0, entry.content.indexOf("<span class=\"fn comm"));
+		
+		TagNode infoNode = contentNode.findElementByAttValue("class", "fn comm", false, true);
+		entry.author = infoNode.findElementByName("a", false).getText().toString();
+		entry.date = infoNode.findElementByName("abbr", false).getText().toString();
+		
+		return entry;
 	}
 }

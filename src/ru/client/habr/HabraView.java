@@ -70,6 +70,8 @@ public class HabraView extends Activity {
 						hideDate, hideFavs, hideAuthor, hideComments);
 			}
 			
+			data += getNavLinksForUri(Uri.parse(url));
+			
 			return data;
 		}
 		public void start() { 
@@ -79,6 +81,10 @@ public class HabraView extends Activity {
 	
 	private LoaderData mPostLoader = new LoaderData() {
 		public void finish(String data) { 
+			if(mLastEntries.size() == 0) {
+				finishLoading("", "FAIL");
+				return;
+			}
 			mHistory.add(url);
 			finishLoading(((HabraTopic)mLastEntries.get(0)).title, data); 
 		}
@@ -86,7 +92,7 @@ public class HabraView extends Activity {
 			mLastEntries.clear();
 			
 			HabraTopicParser parser = new HabraTopicParser(pageData);
-			HabraTopic topic = parser.parse();//XXX parser.parseFullTopic();
+			HabraTopic topic = parser.parse();
 			
 			if(topic == null) return "";
 			
@@ -98,7 +104,7 @@ public class HabraView extends Activity {
 			HabraCommentParser commentParser = new HabraCommentParser(pageData);
 			HabraComment comment = null;
 			
-			while((comment = commentParser.parseComment()) != null) {
+			while((comment = commentParser.parse()) != null) {
 				mLastEntries.add(comment);
 				data += comment.getDataAsHTML();
 			}
@@ -135,6 +141,9 @@ public class HabraView extends Activity {
 				data += quest.getDataAsHTML(hideContent, hideTags, hideMark, 
 						hideAnswers, hideDate, hideFavs, hideAuthor);
 			}
+			
+			data += getNavLinksForUri(Uri.parse(url));
+			
 			return data;
 		}
 		public void start() { 
@@ -163,7 +172,7 @@ public class HabraView extends Activity {
 			HabraAnswerParser answerParser = new HabraAnswerParser(pageData);
 			HabraAnswer answer = null;
 			
-			while((answer = answerParser.parseAnswer()) != null) {
+			while((answer = answerParser.parse()) != null) {
 				mLastEntries.add(answer);
 				data += answer.getDataAsHTML();
 				data += answer.getCommentsAsHTML();
@@ -444,6 +453,36 @@ public class HabraView extends Activity {
 		}
 	}
 	
+	private String getNavLinksForUri(Uri uri) {
+		String bpath = "http://" + uri.getHost();
+		String npath = "http://" + uri.getHost();
+		List<String> paths = uri.getPathSegments();
+		int cur = 0;
+		
+		for(int i = 0; i < paths.size(); i++) {
+			if(paths.get(i).startsWith("page")) {
+				cur = Integer.valueOf(paths.get(i).substring(4));
+				bpath += "/page" + (cur <= 1 ? 1 : cur - 1);
+				npath += "/page" + (cur + 1);
+				continue;
+			}
+			bpath += "/" + paths.get(i);
+			npath += "/" + paths.get(i);
+		}
+		if(cur == 0) {
+			bpath += "/page1";
+			npath += "/page2";
+		}
+		bpath += "/"; 
+		npath += "/";
+		
+		Log.d("URI", npath);
+		
+		return "<h2 class=\"nav\"><a href=\"" + bpath + "?" + uri.getQuery() 
+			+ "\">&#8592;&nbsp;сюда</a>&nbsp;&nbsp;<a href=\"" + npath 
+			+ "?" + uri.getQuery()  + "\">туда&nbsp;&#8594;</a></h2>" ;
+	}
+	
 	private void exit(int result) {
 		setResult(result);
 		finish();
@@ -546,12 +585,12 @@ public class HabraView extends Activity {
 		
 		if(url != null) {
 			String[] path = url.getPathSegments().toArray(new String[0]);
-			if(path.length == 0 || path[0].equals("new")) {
+			if(path.length == 0 || path[0].equals("new") || path[0].startsWith("page")) {
 				Log.d("Habrahabr.loadData", "CODE: path.length == 0 || path[0].equals(\"new\")");
 				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
 				loadPostsList(url.toString(), noExecute);
-			} else if((path.length == 1 && path[0].equals("qa")) 
-					|| (path.length == 2 && path[1].equals("new"))) {
+			} else if(path[0].equals("qa") && path.length == 1 
+					|| (path.length == 2 && (path[1].equals("new") || path[1].startsWith("page")))) {
 				Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"qa\") || " 
 						+ "(path.length == 2 && path[1].equals(\"new\"))");
 				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
@@ -599,7 +638,7 @@ public class HabraView extends Activity {
 				break;
 			default:
 				finishLoading("", "Unknown page");
-					break;
+				break;
 				}
 			}
 		}

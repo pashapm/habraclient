@@ -61,12 +61,14 @@ public final class HabraQuest extends HabraEntry {
 		+ (noContent ? "" : "<div class=\"content\">" + (content == null ? "" : content) + "</div>")
 		+ (noTags ? "" : "<ul class=\"tags\">" + getTagsAsString() + "</ul>")
 		+ (noMark && noAnswersCount && noDate && noAuthor ? "" 
-				: "<div class=\"entry-info vote_holder answer-positive\">" 
+				: "<div class=\"entry-info" + (accepted ? " accepted" : "") + "\">" 
 		+ "<div class=\"corner tl\"></div><div class=\"corner tr\"></div>" 
 		+ "<div class=\"entry-info-wrap\">" 
-		+ (noMark ? "" : "<div class=\"mark\"><span>" 
+		+ (noMark ? "" : "<div class=\"mark\"><span class=\"" + (rating > 0 ? " plus" : 
+			(rating < 0 ? " minus" : "zero")) + "\">" 
 			+ ( rating > 0 ? "+" : "" ) + rating + "</span></div>") 
-		+ (noAnswersCount ? "" : "<div class=\"informative\"><span>" 
+		+ (noAnswersCount ? "" : "<div class=\"informative\"><span" 
+			+ (answerCount == 0 ? " class=\"empty\"" : "") + ">" 
 			+ answerCount + " " + getAnswer() + "</span></div>") 
 		+ (noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>")
 		+ (noFavs ? "" : "<div class=\"favs_count\"><span>" + favoritesCount + "</span></div>")

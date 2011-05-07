@@ -66,8 +66,12 @@ public final class HabraTopicParser {
 			topic.blogURL = mBlogURL;
 			topic.blogName = mBlogName;
 			topic.title = titleNodes[0].getText().toString();
-			List<String> pathSegments = Uri.parse(
-					titleNodes[0].getAttributeByName("title")).getPathSegments();
+			List<String> pathSegments = null;
+			try {
+				pathSegments = Uri.parse(titleNodes[0].getAttributeByName("title")).getPathSegments();
+			} catch(NullPointerException e) {
+				pathSegments = Uri.parse(titleNodes[0].getAttributeByName("href")).getPathSegments();
+			}
 			topic.isCorporativeBlog = pathSegments.get(0).equals("company");
 			topic.id = Integer.valueOf(pathSegments.get(pathSegments.size() - 1));
 		} else {
@@ -96,7 +100,23 @@ public final class HabraTopicParser {
 		TagNode[] infoNodes = contentNodes[3].findElementByAttValue("class", 
 				"entry-info-wrap", false, true).getChildTags();
 		
-		topic.rating = infoNodes[0].findElementByAttValue("class", "mark", false, true).findElementByName("a", true).getText().toString();
+		String ratings = "";
+		try {
+			ratings = infoNodes[0].findElementByAttValue("class", "mark", 
+					false, true).findElementByName("a", true).getText().toString();
+		} catch(NullPointerException e) {
+			ratings = infoNodes[0].findElementByAttValue("class", "mark", 
+					false, true).findElementByName("span", true).getText().toString();
+		}
+		
+		topic.rating = ratings.charAt(0) == '-' ? -1 : +1;
+		ratings = "0" + ratings.substring(1);
+		try {
+			topic.rating *= Integer.valueOf(ratings);
+		} catch(NumberFormatException e) {
+			topic.rating = 99999;
+		}
+		
 		topic.date = infoNodes[1].findElementByName("span", false).getText().toString();
 		
 		topic.inFavs = infoNodes[2].getAttributeByName("class").equals("js-to_favs_remove");

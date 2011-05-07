@@ -58,6 +58,8 @@ public final class HabraQuestParser {
 		for(int i = 0; i < tagsNodes.length; i++)
 			quest.tags[i] = tagsNodes[i].getText().toString();
 		
+		quest.accepted = contentNodes[3].getAttributeByName("class").contains("answer-accepted");
+		
 		// Parse information: Mark, Date, Favorites, Author, Answer count
 		TagNode[] infoNodes = contentNodes[3].findElementByAttValue("class", 
 				"entry-info-wrap", false, true).getChildTags();

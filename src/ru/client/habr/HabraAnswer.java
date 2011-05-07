@@ -36,15 +36,17 @@ public final class HabraAnswer extends HabraEntry {
 	 * @return ����� ��� HTML
 	 */
 	public String getDataAsHTML(boolean noAvatar) {
-		return "<div class=\"comment_holder vote_holder answer\" id=\"answer_" + id + "\">" 
+		return "<div class=\"comment_holder answer\" id=\"answer_" + id + "\">" 
 		+ "<div class=\"msg-meta\"><ul class=\"menu info author hcard\">" 
 		+ "<li class=\"avatar\">" + (noAvatar ? "" : "<a href=\"http://" + author 
 		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a>") + "</li>" 
 		+ "<li class=\"fn nickname username\"><a href=\"http://" + author 
 		+ ".habrahabr.ru/\" class=\"url\">" + author + "</a>,</li>" 
 		+ "<li class=\"date\"><abbr class=\"published\">" + date 
-		+ "</abbr></li><li class=\"mark\"><span>" + rating 
-		+ "</span></li></ul></div>" + content + "</div>";
+		+ "</abbr></li><li class=\"correct\">" + (isSolution ? "<strong>Решение</strong>" : "") 
+		+ "</li><li class=\"mark\"><span class=\"" + (rating > 0 ? "plus" : 
+			(rating < 0 ? "minus" : "zero")) + "\">" + (rating > 0 ? "+" : "") + rating 
+		+ "</span></li></ul></div><div class=\"entry-content\">" + content + "</div></div>";
 	}
 	
 	/**

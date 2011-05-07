@@ -1,6 +1,8 @@
 package ru.client.habr;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,7 @@ import android.util.Log;
  * �������� �����
  */
 public class Habrahabr extends Activity {	
+	final int ASSET_REV = 25;
 	boolean first = false;
 	
 	@Override
@@ -88,7 +91,29 @@ public class Habrahabr extends Activity {
 	}
 	
 	private void unpackAssets(File where) {
-		if(new File(where, "general.css").exists()) return;
+		File revFile = new File(getCacheDir(), "habraclient.rev");
+		try {
+			FileInputStream revInputStream = new FileInputStream(revFile);
+			int rev = revInputStream.read();
+			if(rev >= ASSET_REV) return;
+			revInputStream.close();
+		} catch (FileNotFoundException e) {
+			
+		} catch (IOException e) {
+			Log.w("Habrahabr.unpackAssets", "IOException: " + e.getMessage());
+		}
+		
+		try {
+			OutputStream revOut = new FileOutputStream(revFile);
+			revOut.write(ASSET_REV);
+			revOut.close();
+		} catch (FileNotFoundException e) {
+			Log.e("Habrahabr.unpackAssets", "FileNotFoundException: " + e.getMessage());
+		} catch (IOException e) {
+			Log.e("Habrahabr.unpackAssets", "FileNotFoundException: " + e.getMessage());
+		}
+		
+		Log.i("Habrahabr.unpackAssets", "Update cache directory");
 		
 		AssetManager assetManager = getAssets();
 		
