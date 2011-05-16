@@ -38,9 +38,9 @@ public final class HabraAnswer extends HabraEntry {
 	public String getDataAsHTML(boolean noAvatar) {
 		return "<div class=\"comment_holder answer\" id=\"answer_" + id + "\">" 
 		+ "<div class=\"msg-meta\"><ul class=\"menu info author hcard\">" 
-		+ "<li class=\"avatar\">" + (noAvatar ? "" : "<a href=\"http://" + author 
+		+ "<li class=\"avatar\">" + (noAvatar ? "" : "<a href=\"http://" + author.replace('_', '-') 
 		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a>") + "</li>" 
-		+ "<li class=\"fn nickname username\"><a href=\"http://" + author 
+		+ "<li class=\"fn nickname username\"><a href=\"http://" + author.replace('_', '-') 
 		+ ".habrahabr.ru/\" class=\"url\">" + author + "</a>,</li>" 
 		+ "<li class=\"date\"><abbr class=\"published\">" + date 
 		+ "</abbr></li><li class=\"correct\">" + (isSolution ? "<strong>Решение</strong>" : "") 

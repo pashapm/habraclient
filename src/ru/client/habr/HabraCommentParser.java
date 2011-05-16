@@ -26,9 +26,13 @@ public final class HabraCommentParser {
 		mParser = new HtmlCleaner();
 		mMainNode = mParser.clean(data);
 
+		try {
 		mEntryNodeList = mMainNode.findElementByAttValue("id", "comments", true, false)
 				.findElementByName("ul", false)
 				.getElementListByAttValue("class", "comment_holder vote_holder", false, false);
+		} catch(NullPointerException e) {
+			mMainNode = null;
+		}
 	}
 	
 	public HabraComment parse() {

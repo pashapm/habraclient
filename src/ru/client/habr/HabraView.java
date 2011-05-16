@@ -35,7 +35,21 @@ import java.util.List;
  * @author WNeZRoS
  * �������� �����
  */
-public class HabraView extends Activity {	
+public class HabraView extends Activity {
+	public static enum PageType {
+		UNKNOWN,
+		POST_LIST,
+		POST,
+		QUEST_LIST,
+		QUEST,
+		USER_LIST,
+		USER,
+		BLOG_LIST,
+		BLOG,
+		COMPANY_LIST,
+		COMPANY
+	}
+	
 	private WebView mResultView = null;
 	private SharedPreferences mPreferences = null;
 	private WifiManager mWifi = null;
@@ -185,6 +199,23 @@ public class HabraView extends Activity {
 		}
 	};
 	
+	private LoaderData mUserLoader = new LoaderData() {
+		public void finish(String data) { 
+			mHistory.add(url);
+			finishLoading(Uri.parse(url).getHost(), data); 
+		}
+		public String update(String pageData) {
+			
+			HabraUser user = HabraUser.parse(pageData);
+			
+			if(user == null) return "Can't parse";
+			return user.getDataAsHTML();
+		}
+		public void start() { 
+			startLoading(); 
+		}
+	};
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -202,7 +233,7 @@ public class HabraView extends Activity {
 		mResultView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (Uri.parse(url).getHost().equals("habrahabr.ru") 
+				if (Uri.parse(url).getHost().contains("habrahabr.ru") 
 						|| Uri.parse(url).getHost().equals("m.habrahabr.ru")) {
 					startActivityForResult(new Intent(getBaseContext(), 
 							HabraView.class).setData(Uri.parse(url)), 0);
@@ -543,7 +574,7 @@ public class HabraView extends Activity {
 			return;
 		}
 		
-		File cacheFile = new File(getCacheDir(), title.replaceAll("[.?!;]+( .*|.?)", "") + ".html");
+		File cacheFile = new File(getCacheDir(), title.replaceAll("[/|\\?]+", "!") + ".html");
 		try {
 			FileOutputStream outStream = new FileOutputStream(cacheFile);
 			outStream.write(data.getBytes());
@@ -576,6 +607,10 @@ public class HabraView extends Activity {
 		AsyncDataLoader.getDataLoader().execute(mQuestLoader.setUrl(url), noExecute);
 	}
 	
+	private void loadUserProfile(String url, boolean noExecute) {
+		AsyncDataLoader.getDataLoader().execute(mUserLoader.setUrl(url), noExecute);
+	}
+	
 	private void loadData(Uri url) {
 		loadData(url, false);
 	}
@@ -584,37 +619,13 @@ public class HabraView extends Activity {
 		Log.d("onCreate", "Load data"); 
 		
 		if(url != null) {
-			String[] path = url.getPathSegments().toArray(new String[0]);
-			if(path.length == 0 || path[0].equals("new") || path[0].startsWith("page")) {
-				Log.d("Habrahabr.loadData", "CODE: path.length == 0 || path[0].equals(\"new\")");
-				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
-				loadPostsList(url.toString(), noExecute);
-			} else if(path[0].equals("qa") && path.length == 1 
-					|| (path.length == 2 && (path[1].equals("new") || path[1].startsWith("page")))) {
-				Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"qa\") || " 
-						+ "(path.length == 2 && path[1].equals(\"new\"))");
-				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
-				loadQuestsList(url.toString(), noExecute);
-			} else if(path[0].equals("qa")) {
-				Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"qa\")");
-				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
-				loadFullQuest(url.toString(), noExecute);
-			} else if(path[0].equals("post") || (path[0].equals("blogs") && path.length == 3)
-					|| path[0].equals("linker") || (path[0].equals("company") || path.length == 4)) {
-				Log.d("Habrahabr.loadData", "CODE: path[0].equals(\"post\") || path[0].equals(\"blogs\")...");
-				Log.d("Habrahabr.loadData", "PATH: " + url.toString());
-				String strUrl = "http://habrahabr.ru/post/";
-				
-				if(path.length == 3) strUrl += path[2]; // blogs/.../{ID} OR linker/go/{ID}
-				else if(path.length == 4) strUrl += path[3]; // company/blog/.../{ID}
-				else strUrl += path[1]; // post/{ID}
-				
-				strUrl += "/";
-				if(url.getQuery() != null) strUrl += "?" + url.getQuery();
-				if(url.getFragment() != null) strUrl += "#" + url.getFragment();
-				loadFullPost(strUrl, noExecute);
-			} else {
-				finishLoading("", "Unknown");
+			switch(getPageTypeByURI(url)) {
+			case POST_LIST: loadPostsList(url.toString(), noExecute); break;
+			case POST: loadFullPost(url.toString(), noExecute); break;
+			case QUEST_LIST: loadQuestsList(url.toString(), noExecute); break;
+			case QUEST: loadFullQuest(url.toString(), noExecute); break;
+			case USER: loadUserProfile(url.toString(), noExecute); break;
+			default: finishLoading("", "Unknown");
 			}
 		} else {
 			Log.i("pref", mPreferences.getString("prefMainScreenContent", "000"));
@@ -639,7 +650,72 @@ public class HabraView extends Activity {
 			default:
 				finishLoading("", "Unknown page");
 				break;
-				}
 			}
 		}
 	}
+
+	public PageType getPageTypeByURI(Uri uri) {
+		if(uri.getHost().indexOf("habrahabr.ru") < 0) return PageType.UNKNOWN;
+		if(uri.getHost().indexOf("habrahabr.ru") > 0) return PageType.USER;
+		
+		List<String> ps = uri.getPathSegments();
+		boolean pagination = false;
+		
+		if(ps.size() > 0) {
+			Log.d("HabraView.getPageTypeByURI", "::" + ps.size() + " " + ps.get(ps.size() - 1));
+			if(ps.get(ps.size() - 1).startsWith("page"))
+				pagination = true;
+		}
+		
+		switch(ps.size() - (pagination ? 1 : 0)) {
+		case 0: return PageType.POST_LIST;
+		case 1:
+			switch(ps.get(0).charAt(0)) {
+			case 'n': return PageType.POST_LIST;
+			case 'q': return PageType.QUEST_LIST;
+			case 's': return PageType.POST_LIST;
+			case 'b': return PageType.BLOG_LIST;
+			case 'p': return PageType.USER_LIST;
+			case 'c': return PageType.COMPANY_LIST;
+			}
+			break;
+		case 2:
+			switch(ps.get(0).charAt(0)) {
+			case 'q': 
+				if(ps.get(1).equals("new") || ps.get(1).equals("unhabred")) 
+					return PageType.QUEST_LIST;
+				else return PageType.QUEST;
+			case 'b': 
+				if(ps.get(0).length() > 5) return PageType.BLOG_LIST;
+				else return PageType.POST_LIST;
+			case 'c': return PageType.COMPANY;
+			}
+			break;
+		case 3:
+			switch(ps.get(0).charAt(0)) {
+			case 'b': 
+				if(ps.get(2).equals("new") || ps.get(2).equals("unhabred")) 
+					return PageType.POST_LIST;
+				else return PageType.POST;
+			case 'c': 
+				switch(ps.get(2).charAt(0)) {
+				case 'b': return PageType.POST_LIST;
+				case 'f': return PageType.USER_LIST;
+				}
+			}
+			break;
+		case 4:
+			switch(ps.get(0).charAt(0)) {
+			case 'c': 
+				switch(ps.get(3).charAt(0)) {
+				case 'n': return PageType.POST_LIST;
+				case 'u': return PageType.POST_LIST;
+				default: return PageType.POST;
+				}
+			}
+			break;
+		}
+		
+		return PageType.UNKNOWN;
+	}
+}

@@ -28,7 +28,7 @@ public class HabraEntry {
 		return "<div id=\"comment_" + id 
 		+ "\" class=\"comment_holder quest_comment\"><div class=\"entry-content\">" 
 		+ "<div class=\"entry-content-only\">" + content 
-		+ "&nbsp;<span class=\"fn comm\"><a href=\"http://" + author 
+		+ "&nbsp;<span class=\"fn comm\"><a href=\"http://" + author.replace('_', '-')
 		+ ".habrahabr.ru/\">" + author + "</a>,&nbsp;<abbr class=\"published\">" 
 		+ date + "</abbr></span></div></div></div>";
 	}

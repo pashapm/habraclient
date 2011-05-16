@@ -15,7 +15,7 @@ public final class RemoveNode {
 	{
 		if(data == null) return null;
 		return data.replaceAll("<img[^>]+src=\"([^\"]+)\"[^>]+>", 
-				"<h4 class=\"ufo\" onClick=\"this.innerHTML='<img src=\"$1\">';\">Здесь была картинка</h4>");
+				"<h4 class=\"ufo\" onClick=\"this.innerHTML='<img src=\\\\'$1\\\\'>';\">Здесь была картинка</h4>");
 	}
 	
 	/**
@@ -26,7 +26,7 @@ public final class RemoveNode {
 	public static String removeVideo(String data)
 	{
 		if(data == null) return null;
-		return data.replaceAll("<object.+<param name=\"movie\" value=\"([^\"]+)\".+</object>", 
-				"<h3><a href=\"$1\">Здесь был ролик</a></h3>");
+		return data.replaceAll("<object.+<param name=\"(movie|video)\" value=\"([^\"]+)\".+</object>", 
+				"<h3><a href=\"$2\">Здесь был ролик</a></h3>");
 	}
 }
