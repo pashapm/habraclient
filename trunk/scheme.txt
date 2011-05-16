@@ -1,0 +1,48 @@
+################################################################################
+##                                                                            ##
+##                            Scheme of usage                                 ##
+##                                                                            ##
+################################################################################
+
+              -> HabraLoginForm (2)
+(1) Habrahabr -> HabraView (3)
+              -> CookieSaver
+    
+                   -> AsyncCaptchaLoader -> URLClient
+(2) HabraLoginForm -> HabraLogin -> URLClient
+    
+              -> HabraLogin
+(3) HabraView -> AsyncDataLoader (4)
+              -> JSInterface
+              -> HabraPreferences -> HabraLoginForm (2)
+                                  -> HabraLogin
+
+                                                      -> HabraComment -> HabraEntry
+                    -> HabraTopicParser -> HabraTopic -> HabraEntry
+                                                      -> HabraAnswer -> HabraEntry
+                    -> HabraQuestparser -> HabraQuest -> HabraEntry
+(4) AsyncDataLoader -> HabraBlog
+                    -> HabraCompany
+                    -> HabraUser
+                    -> RemoveNode
+                    
+################################################################################
+##                                                                            ##
+##                                 TODO                                       ##
+##                                                                            ##
+################################################################################
+
+[ ] Send requests only in Async*
+[ ] Process data only in Async*
+[ ] Optimize cache
+[ ] Interface improvement
+[ ] Split preferences to categories
+[ ] Think about embed parsers
+[ ] Do HabraUser
+[ ] Optimize data process
+[ ] Test parser engine
+[ ] HabraTopicWriter or embed
+[ ] HabraCommentWriter or embed
+[ ] HabraQuestWriter or embed
+[ ] HabraAnswerWriter or embed
+[ ] Fix context menu

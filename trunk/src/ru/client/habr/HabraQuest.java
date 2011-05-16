@@ -73,7 +73,7 @@ public final class HabraQuest extends HabraEntry {
 		+ (noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>")
 		+ (noFavs ? "" : "<div class=\"favs_count\"><span>" + favoritesCount + "</span></div>")
 		+ (noAuthor ? "" : "<div class=\"vcard author full\"><a href=\"http://" 
-			+ author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" 
+			+ author.replace('_', '-') + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" 
 			+ author + "</span></a></div>") 
 		+ "</div><div class=\"corner bl\"></div>" 
 		+ "<div class=\"corner br\"></div></div>") + "</div>";

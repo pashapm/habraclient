@@ -192,6 +192,6 @@ public final class HabraLogin {
 	 * @return ������ �� �������
 	 */
 	public String getProfileURL() {
-		return "http://" + mUserName + ".habrahabr.ru/";
+		return "http://" + mUserName.replace('_', '-') + ".habrahabr.ru/";
 	}
 }

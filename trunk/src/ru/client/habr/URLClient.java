@@ -23,12 +23,12 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Класс предназначен для запросов к web серверам методами GET и POST
+ * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ web пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GET пїЅ POST
  */
 public final class URLClient {
 	
 	/**
-	 * USER AGENT для запросов к веб серверам
+	 * USER AGENT пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public final static String USER_AGENT = "Mozilla/5.0 (Linux; Android) WebKit (KHTML, like Gecko) HabraClient 1.0";
 	private static URLClient mUrlClient = null;
@@ -38,7 +38,7 @@ public final class URLClient {
 	private boolean mLocked = false;
 	
 	/**
-	 * Класс предназначен для запросов к web серверам методами GET и POST
+	 * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ web пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ GET пїЅ POST
 	 */
 	public URLClient() {
 		Log.d("URLClient.URLClient", "construct");
@@ -52,8 +52,8 @@ public final class URLClient {
 	}
 	
 	/**
-	 * Получаем экземпляр URLClient
-	 * @return экземпляр URLClient
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ URLClient
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ URLClient
 	 */
 	public static URLClient getUrlClient() {
 		Log.d("URLClient.getUrlClient", "called");
@@ -67,8 +67,8 @@ public final class URLClient {
 	}
 	
 	/**
-	 * Добавляет куки в клиент
-	 * @param cookies Массив печенек или null
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param cookies пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ null
 	 */
 	public void insertCookies(Cookie[] cookies) {
 		Log.d("URLClient.insertCookies", "called with (" 
@@ -82,8 +82,8 @@ public final class URLClient {
 	}
 	
 	/**
-	 * Добавляет куку в клиент
-	 * @param cookie Кука
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param cookie пїЅпїЅпїЅпїЅ
 	 */
 	public void insertCookie(Cookie cookie) {
 		Log.d("URLClient.insertCookie", "called witch cookie name " + cookie.getName());
@@ -94,11 +94,12 @@ public final class URLClient {
 	}
 
 	/**
-	 * Запрос url методом GET
-	 * @param url URL для запроса
-	 * @return HTML код страницы
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ url пїЅпїЅпїЅпїЅпїЅпїЅпїЅ GET
+	 * @param url URL пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String getURL(String url) { 
+		Log.d("URlClient.getURL", url);
 		HttpGet httpGet = new HttpGet(url);
 		
 		try {
@@ -126,9 +127,9 @@ public final class URLClient {
 	}
 	
 	/**
-	 * Запрос url методом GET
-	 * @param url URL для запроса
-	 * @return HTML код страницы
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ url пїЅпїЅпїЅпїЅпїЅпїЅпїЅ GET
+	 * @param url URL пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public byte[] getURLAsBytes(String url) { 
 		HttpGet httpGet = new HttpGet(url);
@@ -158,11 +159,11 @@ public final class URLClient {
 	}
 	
 	/**
-	 * Запрос url методом POST
-	 * @param url URL для запроса
-	 * @param post POST параметры или null
-	 * @param referer URL источника запроса или null
-	 * @return HTML код страницы
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ url пїЅпїЅпїЅпїЅпїЅпїЅпїЅ POST
+	 * @param url URL пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param post POST пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ null
+	 * @param referer URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ null
+	 * @return HTML пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public String postURL(String url, String[][] post, String referer) { 
 		HttpPost httpPost = new HttpPost(url);
@@ -207,17 +208,17 @@ public final class URLClient {
 	}
 
 	/**
-	 * Метод для получения Cookie текущего HTTP клиента
-	 * @return массив печеннек
+	 * пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Cookie пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HTTP пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public Cookie[] getCookies() {
 		return mHttpClient.getCookieStore().getCookies().toArray(new Cookie[0]);
 	}
 
 	/**
-	 * Кодирование строки для загрузки в WebView
-	 * @param code инпут
-	 * @return аутпут
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ WebView
+	 * @param code пїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅ
 	 */
 	public static String encode(String code) {
 		return code.replace("%", "%25").replace("#", "%23").replace("\\", 

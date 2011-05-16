@@ -20,16 +20,14 @@ public final class HabraTopic extends HabraEntry {
 	protected HabraTopicType postType = HabraTopicType.POST;
 	
 	public String title = null;
-	public String[] tags = null;
+	public String[] tags = new String[0];
 	public int rating = 0;
 	public int favoritesCount = 0;
 	public int commentsCount = 0;
 	public int commentsDiff = 0;
 	public String additional = null;
 
-	public String blogURL = null;
-	public String blogName = null;
-	public boolean isCorporativeBlog = false;
+	public HabraBlog blog = null;
 
 	public boolean inFavs = false;
 
@@ -42,15 +40,7 @@ public final class HabraTopic extends HabraEntry {
 	 * @return ����� �����
 	 */
 	public String getUrl() {
-		return getBlogUrl() + id + "/";
-	}
-	
-	/**
-	 * �������� ���� �����, � ������� ����� �����
-	 * @return ����� �����
-	 */
-	public String getBlogUrl() {
-		return blogURL;
+		return blog.getUrl() + id + "/";
 	}
 	
 	private String getTagsAsString() {
@@ -84,7 +74,7 @@ public final class HabraTopic extends HabraEntry {
 			boolean noDate, boolean noFavs, boolean noAuthor, boolean noComments) {
 		return "<div class=\"hentry\" id=\"post_" + id 
 		+ "\"><h2 class=\"entry-title\"><a href=\"" + getUrl() 
-		+ "\" class=\"blog\">" + blogName + "</a> &rarr; <a href=\"" 
+		+ "\" class=\"blog\">" + blog.name + "</a> &rarr; <a href=\"" 
 		+ getUrl() + "\" class=\"topic\">" + title + "</a></h2>" 
 		+ (noContent ? "" : "<div class=\"content\">" + content + "</div>") 
 		+ (tags.length > 1 && !noTags ? "<ul class=\"tags\">" + getTagsAsString() + "</ul>" : "") 
@@ -98,7 +88,7 @@ public final class HabraTopic extends HabraEntry {
 					+ (noFavs ? "" : "<div class=\"favs_count\"><span>" 
 							+ favoritesCount + "</span></div>") 
 					+ (noAuthor ? "" : "<div class=\"vcard author full\"><a href=\"http://" 
-							+ author + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" 
+							+ author.replace('_', '-') + ".habrahabr.ru/\" class=\"fn nickname url\"><span>" 
 							+ author + "</span></a></div>") 
 					+ (noComments ? "" : "<div class=\"comments\"><a href=\"" 
 							+ getUrl() + "#comments\"><span class=\"all\">" 

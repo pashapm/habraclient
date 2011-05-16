@@ -35,10 +35,10 @@ public final class HabraComment extends HabraEntry {
 	public String getDataAsHTML(boolean noAvatar) {
 		return "<div id=\"comment_" + id + "\" class=\"comment_holder" 
 		+ "\"><div class=\"msg-meta" + (newReply ? " new-reply" : "") + "\"><ul class=\"menu info author hcard\">" 
-		+ (noAvatar ? "" : "<li class=\"avatar\">" + "<a href=\"http://" + author 
+		+ (noAvatar ? "" : "<li class=\"avatar\">" + "<a href=\"http://" + author.replace('_', '-') 
 		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a>") 
 		+ "</li><li class=\"fn nickname username\"><a href=\"http://" 
-		+ author + ".habrahabr.ru/\" class=\"url\">" + author 
+		+ author.replace('_', '-') + ".habrahabr.ru/\" class=\"url\">" + author 
 		+ "</a>,</li><li class=\"date\"><abbr class=\"published\">" + date 
 		+ "</abbr></li><li class=\"mark\"><span class=\"" 
 		+ (rating > 0 ? "plus" : (rating < 0 ? "minus" : "zero")) + "\">"
