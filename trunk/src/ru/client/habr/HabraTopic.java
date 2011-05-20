@@ -99,4 +99,14 @@ public final class HabraTopic extends HabraEntry {
 		+ "</div><div class=\"corner bl\"></div><div class=\"corner br\"></div>") 
 		+ "</div></div>";
 	}
+	
+	/* *********************************************************************** *
+	 * Comments: http://habrahabr.ru/ajax/comments/add/
+	 * comment[target_type]=post
+	 * comment[parent_id]={0|COMMENT_ID}
+	 * timefield={time()}
+	 * comment[target_id]={POST_ID}
+	 * comment[message]={MSG}
+	 * 
+	 */
 }

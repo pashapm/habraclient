@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="userbar_button_text_color">#FFFFFF</color>
+    <color name="userbar_name_bg_color">#00000000</color>
 </resources>

@@ -2,17 +2,17 @@
 <resources>
     <string-array name="name_main_screen_content">
         <item>Лента</item>
-        <item>Все</item>
+        <item>Все посты</item>
         <item>Все новые посты</item>
         <item>Q&amp;A</item>
         <item>Мой профиль</item>
     </string-array>
     <string-array name="value_main_screen_content">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
+        <item>http://habrahabr.ru/?fl=hl</item>
+        <item>http://habrahabr.ru/?fl=all</item>
+        <item>http://habrahabr.ru/new/?fl=all</item>
+        <item>http://habrahabr.ru/qa/</item>
+        <item>qwe</item>
     </string-array>
     <string-array name="name_load_images">
         <item>Загружать</item>

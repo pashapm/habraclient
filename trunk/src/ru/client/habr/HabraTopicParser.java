@@ -62,16 +62,15 @@ public final class HabraTopicParser {
 		HabraTopic topic = new HabraTopic();
 		
 		TagNode currentNode = mEntryNodeList.get(mListIndex);
-		TagNode[] contentNodes = currentNode.getChildTags();
 		
 		topic.postType = getTopicType(currentNode.getAttributeByName("class"));
 
 		// Parse title: Blog URL, Blog Name, Post Title, Post ID
 		topic.blog = new HabraBlog();
-		TagNode[] titleNodes = contentNodes[0].getElementsByName("a", false);
+		TagNode[] titleNodes = currentNode.findElementByName("h2", false).getElementsByName("a", false);
 		if(titleNodes.length < 2) {
 			// Full topic
-			titleNodes = contentNodes[0].getChildTags();
+			titleNodes = currentNode.findElementByName("h2", false).getChildTags();
 			
 			topic.blog.parseIdFromUri(mBlogURI);
 			topic.blog.name = mBlogName;
@@ -99,33 +98,34 @@ public final class HabraTopicParser {
 		Log.i("HabraTopicParser.parse", "ID: " + topic.id + "\nTitle: " + topic.title);
 		
 		// Parse content
+		TagNode content = currentNode.findElementByAttValue("class", "content", false, true);
 		if(mBlogURI != null) {
 			// In full post habracut is '<a name="habracut" />', remove this for unlink text after it.
-			contentNodes[1].removeChild(contentNodes[1].findElementByAttValue(
+			content.removeChild(content.findElementByAttValue(
 					"name", "habracut", false, true));
 		}
-		topic.content = mParser.getInnerHtml(contentNodes[1]);
+		topic.content = mParser.getInnerHtml(content);
 		
 		// Parse tags
-		int contentIndex = 2;
-		if(contentNodes[2].getAttributeByName("class").equals("tags")) {
-			TagNode[] tagsNodes = contentNodes[2].getChildTags();
+		try {
+			TagNode[] tagsNodes = currentNode.findElementByAttValue("class", "tags", false, true).getChildTags();
 			topic.tags = new String[tagsNodes.length];
 			for(int i = 0; i < tagsNodes.length; i++)
 				topic.tags[i] = tagsNodes[i].getText().toString();
-			
-			contentIndex++;
+		} catch(NullPointerException e) {
+			Log.w("HabraTopicParser.parse", "No tags: " + e.getMessage());
 		}
+			
 		// Parse information: Mark, Date, Favorites, Author, Comments count
-		TagNode infoNode = contentNodes[contentIndex].findElementByAttValue("class", 
-				"entry-info-wrap", false, true);
+		TagNode infoNode = currentNode.findElementByAttValue("class", 
+				"entry-info-wrap", true, true);
 		
 		String ratings = "";
 		try {
 			ratings = infoNode.findElementByAttValue("class", "mark", 
 					true, false).findElementByName("a", true).getText().toString();
 		} catch(NullPointerException e) {
-			ratings = infoNode.findElementByAttValue("class", "mark", 
+			ratings = infoNode.findElementByAttValue("class", "mark",
 					true, false).findElementByName("span", true).getText().toString();
 		}
 		

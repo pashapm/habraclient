@@ -107,4 +107,37 @@ public final class HabraQuest extends HabraEntry {
 		
 		return "ответов";
 	}
+	
+	/*
+	 * Question: http://habrahabr.ru/ajax/qa/question/save/
+	 * Answer from server: {"redirect":"http://habrahabr.ru/qa\/{ID}/","messages":"ok"}
+	 * question_id=''
+	 * title={TITLE}
+	 * text={TEXT}
+	 * userformat={BOOLEAN} - checkbox
+	 * tags_string={TAGS_AS_STRING}
+	 */
+	/*
+	 * Remove Question: http://habrahabr.ru/ajax/qa/remove-question/
+	 * Answer from server: {"redirect":"http://habrahabr.ru/qa/","messages":"ok"}
+	 * question_id={ID}
+	 * title=...
+	 * text=...
+	 * userformat=...
+	 * tags_string=...
+	 * 
+	 * 
+	 * 
+	 */
+	/*
+	 * Answer: http://habrahabr.ru/ajax/qa/answer
+	 * question_id={ID}
+	 * text={MSG}
+	 */
+	/*
+	 * Comment to answer: http://habrahabr.ru/ajax/qa/comment
+	 * question_id={ID}
+	 * answer_id={ANSWER_ID|0?}
+	 * text={MSG}
+	 */
 }

@@ -1,12 +1,7 @@
 package ru.client.habr;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
-
 import org.apache.http.cookie.Cookie;
-
 import android.util.Log;
 
 /**
@@ -15,8 +10,7 @@ import android.util.Log;
  */
 public final class HabraLogin {
 	private static HabraLogin habraLogin = null;
-	
-	private String mCacheDir = null;
+
 	private String mUserName = null;
 	private int mUserID = 0;
 	private float mUserKarma = 0.0f;
@@ -33,14 +27,6 @@ public final class HabraLogin {
 			habraLogin = new HabraLogin();
 		}
 		return habraLogin;
-	}
-	
-	/**
-	 * ������������� ���������� ��� ���������� ������
-	 * @param cacheDir ���������� ��� ���������� ������
-	 */
-	public void setCacheDir(String cacheDir) {
-		mCacheDir = cacheDir;
 	}
 	
 	/**
@@ -62,6 +48,7 @@ public final class HabraLogin {
 		String[][] post = new String[][]{{"act","login"}, {"redirect_url","http://habrahabr.ru/"},
         		{"login",login},{"password",password},{"captcha",captcha},{"","true"}};
         
+		// TODO: URLClient use only in new thread
         String data = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/auth/", post, "http://habrahabr.ru/login/");
         
         Log.d("login", data);
@@ -82,6 +69,7 @@ public final class HabraLogin {
 	public boolean logout() {
 		if(mUserName == null || mUserID == 0) return false;
 		
+		// TODO: URLClient use only in new thread
 		URLClient.getUrlClient().getURL("http://habrahabr.ru/logout/" + mUserName + "/" + mUserID + "/");
 		Cookie[] cooks = URLClient.getUrlClient().getCookies();
 		
@@ -100,31 +88,11 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * �������� ������
-	 * @return ���� �� ����� ������
-	 */
-	public String getCaptcha() {
-		byte[] data =  URLClient.getUrlClient().getURLAsBytes("http://habrahabr.ru/core/captcha/");
-		String fileCaptcha = mCacheDir + "/captcha.png";
-		
-		File captcha = new File(fileCaptcha);
-		try {
-			if(!captcha.exists()) captcha.createNewFile();
-			FileOutputStream outputStream = new FileOutputStream(captcha);
-			outputStream.write(data);
-			outputStream.close();
-		} catch (IOException e) {
-			Log.e("HabraLogin.getCaptcha", "IOException: " + e.getMessage());
-		}
-		
-		return fileCaptcha;
-	}
-	
-	/**
 	 * �������� ������ �� ������� � ��������� �����
 	 * @return this.isLogged()
 	 */
 	public boolean parseUserData() {
+		// TODO: URLClient use only in new thread
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/info/stats/");
 		if(data == null) return false;
 		
@@ -144,6 +112,7 @@ public final class HabraLogin {
 	public void parseUserKarmaAndForce() {
 		if(mUserName == null) return;
 		
+		// TODO: URLClient use only in new thread
 		String data = URLClient.getUrlClient().getURL("http://habrahabr.ru/api/profile/" + mUserName + "/");
 		if(data == null) return;
 		
