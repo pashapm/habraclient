@@ -56,6 +56,7 @@ public class HabraEntry {
 		default: return false;
 		}
 		
+		// TODO: URLClient use only in new thread
 		String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
 				"http://habrahabr.ru/");
 		Log.d("VOTE", res);
@@ -73,6 +74,7 @@ public class HabraEntry {
 		default: return false;
 		}
 		
+		// TODO: URLClient use only in new thread
 		String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
 				"http://habrahabr.ru/");
 		Log.d("FAV", res);

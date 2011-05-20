@@ -67,7 +67,9 @@ public class HabraUser {
 		user.username = avaname.getAttributeByName("alt");
 		user.avatar = avaname.getAttributeByName("src");
 		
-		TagNode[] karmaAndForce = headerNode.getChildTags()[4].getChildTags();
+		TagNode[] karmaAndForce = headerNode.getChildTags();
+		if(karmaAndForce.length == 4) karmaAndForce = karmaAndForce[2].getChildTags();
+		else karmaAndForce = karmaAndForce[4].getChildTags();
 		
 		String karmaStr = karmaAndForce[0].findElementByName("span", 
 				true).findElementByName("span", false).getText().toString();

@@ -9,7 +9,7 @@
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
 	<application android:icon="@drawable/icon_habr" android:label="@string/app_name">
-		<activity android:name=".Habrahabr"
+		<activity android:name="ActivityMain"
 			android:label="@string/app_name"
 			android:theme="@android:style/Theme.NoTitleBar">
 			<intent-filter>
@@ -32,12 +32,12 @@
 			android:configChanges="orientation">
 		</activity>
 		<activity
-			android:name="HabraLoginForm"
+			android:name="ActivityLogin"
 			android:label="@string/login_form"
 			android:theme="@android:style/Theme.NoTitleBar">
 		</activity>
 		<activity
-			android:name="HabraView"
+			android:name="ActivityView"
 			android:label="@string/habrahabr"
 			android:theme="@android:style/Theme.NoTitleBar"
 			android:configChanges="orientation">

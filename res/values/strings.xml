@@ -82,4 +82,11 @@
     
     <string name="remove_favorites">Удалить из избранного</string>
     <string name="cache">Кэш</string>
+    <string name="preview">Предпросмотр</string>
+    <string name="send">Отправить</string>
+    <string name="enter_text">Введите текст здесь</string>
+    <string name="title">Заголовок</string>
+    <string name="tags">Тэги</string>
+    <string name="need_login">Для использования данной штуки нужно зайти на хабр.</string>
+    <string name="not_cache">Эта страница не была добавлена в кэш.</string>
 </resources>

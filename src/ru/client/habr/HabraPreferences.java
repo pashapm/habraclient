@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 /**
  * @author WNeZRoS
- * Настройки приложения
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
  */
 public final class HabraPreferences extends PreferenceActivity {
 	
@@ -22,7 +22,7 @@ public final class HabraPreferences extends PreferenceActivity {
 		prefLoginForm.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				startActivity(new Intent(getBaseContext(),HabraLoginForm.class));
+				startActivity(new Intent(getBaseContext(),ActivityLogin.class));
 				return false;
 			}
 		});
