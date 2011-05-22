@@ -7,22 +7,29 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import ru.client.habr.R;
+import ru.client.habr.HabraLogin.UserInfoListener;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 /**
  * @author WNeZRoS
  * �������� �����
  */
 public class ActivityMain extends Activity {	
-	final int ASSET_REV = 25;
+	final int ASSET_REV = 29;
 	boolean first = false;
 	static String sCacheDir = null;
+	private static Context applicationContext = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -33,19 +40,25 @@ public class ActivityMain extends Activity {
 		
 		if(CookieSaver.getCookieSaver() == null) {
 			first = true;
-			unpackAssets(getCacheDir());
+			unpackAssets(getFilesDir());
+			
+			applicationContext = getApplicationContext();
 			
 			new CookieSaver(this);
 			URLClient.getUrlClient().insertCookies(CookieSaver.getCookieSaver().getCookies());
-			HabraLogin.getHabraLogin().parseUserData();
 			
 			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 			if(preferences.getBoolean("prefFirstStart", true)) {
 				startActivityForResult(new Intent(getBaseContext(), 
 						ActivityLogin.class), R.layout.first_login);
 			} else {
-				startActivityForResult(new Intent(getBaseContext(), 
-						ActivityView.class).setData(getIntent().getData()), R.layout.view);
+				HabraLogin.getHabraLogin().parseUserData(new UserInfoListener() {
+					@Override
+					public void onFinish(String userName) {
+						startActivityForResult(new Intent(getBaseContext(), 
+								ActivityView.class).setData(getIntent().getData()), R.layout.view);
+					}
+				});
 			}
 		} else {
 			startActivityForResult(new Intent(getBaseContext(), 
@@ -62,6 +75,7 @@ public class ActivityMain extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		findViewById(R.id.layoutLoading).setVisibility(View.GONE);
 		switch(requestCode) {
 		case R.layout.first_login:
 			startActivityForResult(new Intent(getBaseContext(), ActivityView.class), R.layout.view);
@@ -93,7 +107,7 @@ public class ActivityMain extends Activity {
 	}
 	
 	private void unpackAssets(File where) {
-		File revFile = new File(getCacheDir(), "habraclient.rev");
+		File revFile = new File(where, "habraclient.rev");
 		try {
 			FileInputStream revInputStream = new FileInputStream(revFile);
 			int rev = revInputStream.read();
@@ -104,7 +118,7 @@ public class ActivityMain extends Activity {
 		} catch (IOException e) {
 			Log.w("Habrahabr.unpackAssets", "IOException: " + e.getMessage());
 		}
-		
+
 		try {
 			OutputStream revOut = new FileOutputStream(revFile);
 			revOut.write(ASSET_REV);
@@ -143,5 +157,13 @@ public class ActivityMain extends Activity {
 				Log.e("Habrahabr.unpackAssets", "Exception: " + e.getMessage());
 			}
 		}
+	}
+	
+	public static void showToast(int resId) {
+		Toast.makeText(applicationContext, applicationContext.getString(resId), Toast.LENGTH_LONG).show();
+	}
+	
+	public static String getStringFromResource(int resId) {
+		return applicationContext.getString(resId);
 	}
 }

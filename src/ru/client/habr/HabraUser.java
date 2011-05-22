@@ -198,10 +198,11 @@ public class HabraUser {
 		} catch(NullPointerException e) { }
 			
 		try {
-			TagNode[] companies = logicWrap[2].findElementByAttValue("class", 
+			TagNode[] companies = logicWrap[2].findElementByAttValue("id", 
 					"working_in", false, true).findElementByName("ul", true).getElementsByName("a", true);
 			user.workIn = new HabraCompany[companies.length];
 			for(int i = 0; i < companies.length; i++) {
+				user.workIn[i] = new HabraCompany();
 				user.workIn[i].id = Uri.parse(
 						companies[i].getAttributeByName("href")).getPathSegments().get(1);
 				user.workIn[i].name = companies[i].getText().toString();
@@ -209,15 +210,17 @@ public class HabraUser {
 		} catch(NullPointerException e) { }
 		
 		try {
-			TagNode[] companies = logicWrap[2].findElementByAttValue("class", 
+			TagNode[] companies = logicWrap[2].findElementByAttValue("id", 
 					"favorite_companies_list", false, true).findElementByName("ul", true).getElementsByName("a", true);
+			
 			user.favoriteCompanies = new HabraCompany[companies.length];
 			for(int i = 0; i < companies.length; i++) {
+				user.favoriteCompanies[i] = new HabraCompany();
 				user.favoriteCompanies[i].id = Uri.parse(
 						companies[i].getAttributeByName("href")).getPathSegments().get(1);
 				user.favoriteCompanies[i].name = companies[i].getText().toString();
 			}
-		} catch(NullPointerException e) { }
+		} catch(NullPointerException e) { Log.w("HabraUser.parse", "favoriteCompanies exception"); }
 		
 		try {
 			TagNode[] friends = logicWrap[3].findElementByName("ul", true).getElementsByName("a", true);
@@ -347,7 +350,7 @@ public class HabraUser {
 		if(list == null) return "";
 		String result = "<ul>";
 		for(int i = 0; i < list.length; i++) {
-			result += "<li>" + list[i] + "</li>";
+			result += "<li>" + list[i] + ", </li>";
 		}
 		result += "</ul>";
 		return result;
@@ -374,12 +377,33 @@ public class HabraUser {
 	}
 	
 	public boolean karmaUpdate(int mark) {
-		// TODO:
+		// TODO
+		//  URL: http://{USERNAME}.habrahabr.ru/ajax/voting/
+		// DATA: action=vote
+		// DATA: target_name=user
+		// DATA: target_id={ID}
+		// DATA: mark={MARK={-1;1}}
+		// ANSW: <message>ok</message> 
 		return false;
 	}
 	
-	public boolean addFriend(boolean remove) {
-		// TODO:
+	public boolean addFriend() {
+		// TODO
+		//  URL: http://{USERNAME}.habrahabr.ru/ajax/users/friends/
+		// DATA: action=friend
+		// DATA: friendId={ID}
+		// DATA: msg={MSG}
+		// ANSW: <message>ok</message> 
+		return false;
+	}
+	
+	public boolean removeFriend() {
+		// TODO
+		//  URL: http://{USERNAME}.habrahabr.ru/ajax/users/friends/
+		// DATA: action=unfriend
+		// DATA: friendId={ID}
+		// DATA: msg={MSG}
+		// ANSW: <message>ok</message> 
 		return false;
 	}
 	
@@ -389,15 +413,11 @@ public class HabraUser {
 	
 	public static boolean sendMessage(String to, String title, String content) {
 		// TODO
-		return false;
-	}
-	
-	public boolean inviteInBlog(String blogName) {
-		return HabraUser.inviteInBlog(username, blogName);
-	}
-	
-	public static boolean inviteInBlog(String to, String blogName) {
-		// TODO:
+		// URL: http://{MY_USERNAME}.habrahabr.ru/ajax/messages/add/
+		// DATA: message[recipients]={TO}
+		// DATA: message[title]={TITLE}
+		// DATA: message[text]={CONTEXT}
+		// ANSW: <message>ok</message> 
 		return false;
 	}
 }

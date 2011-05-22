@@ -24,7 +24,9 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.KeyEvent;
+import ru.client.habr.R;
 import ru.client.habr.AsyncDataLoader.LoaderData;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -43,6 +45,7 @@ public class ActivityView extends Activity {
 	private String mSelectedUri = null;
 	private HabraEntry mSelectedEntry = null;
 	private List<HabraEntry> mLastEntries = new ArrayList<HabraEntry>();
+	private static boolean userBarWasUpdated = false;
 	
 	private LoaderData mAnyDataLoader = new LoaderData() {
 		public void finish(String data) {
@@ -74,18 +77,22 @@ public class ActivityView extends Activity {
 				boolean hideComments = mPreferences.getBoolean("prefHidePostComments", false);
 				
 				while((topic = parser.parse()) != null) {
-					mLastEntries.add(topic); // XXX
+					mLastEntries.add(topic); // XXX this can be replace on "%url%?a={AUTHOR}&f={FAVS}&v={MARK}" XXX 
 					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, 
 							hideDate, hideFavs, hideAuthor, hideComments);
 				}
 				
-				data += getNavLinksForUri(Uri.parse(url));
+				if(data.length() == 0) {
+					data = pageData;
+				} else {
+					data += getNavLinksForUri(Uri.parse(url));
+				}
 			} break;
 			case POST: {
 				HabraTopicParser parser = new HabraTopicParser(pageData);
 				HabraTopic topic = parser.parse();
 				
-				if(topic == null) return "";
+				if(topic == null) return pageData;
 				
 				data = topic.getDataAsHTML();
 				data += "<div id=\"comments\">";
@@ -119,13 +126,17 @@ public class ActivityView extends Activity {
 							hideAnswers, hideDate, hideFavs, hideAuthor);
 				}
 				
-				data += getNavLinksForUri(Uri.parse(url));
+				if(data.length() == 0) {
+					data = pageData;
+				} else {
+					data += getNavLinksForUri(Uri.parse(url));
+				}
 			} break;
 			case QUEST: {
 				HabraQuestParser parser = new HabraQuestParser(pageData);
 				HabraQuest quest = parser.parse();
 				
-				if(quest == null) return "";
+				if(quest == null) return pageData;
 				
 				data = quest.getDataAsHTML();
 				data += quest.getCommentsAsHTML();
@@ -145,7 +156,7 @@ public class ActivityView extends Activity {
 			case USER: {
 				HabraUser user = HabraUser.parse(pageData);
 				
-				if(user == null) return "Can't parse";
+				if(user == null) return pageData;
 				return user.getDataAsHTML();
 			}
 			default: return pageData;
@@ -167,6 +178,12 @@ public class ActivityView extends Activity {
 		
 		mResultView = (WebView) findViewById(R.id.result);
 		if(mResultView == null) Log.e("onCreate", "mResultView == null");
+		
+		if(HabraLogin.getHabraLogin().isLogged()) {
+			updateUserBarData(HabraLogin.getHabraLogin());
+		} else {
+			findViewById(R.id.scrollUserBar).setVisibility(View.GONE);
+		}
 		
 		Log.d("onCreate", "Settings");
 		mResultView.getSettings().setAllowFileAccess(true);
@@ -235,6 +252,8 @@ public class ActivityView extends Activity {
 		
 		mWifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		
+		findViewById(R.id.scrollNavPanel).setVisibility(View.GONE);
+		
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		loadData(getIntent().getData());
 		
@@ -260,11 +279,13 @@ public class ActivityView extends Activity {
 		mResultView.getSettings().setPluginsEnabled(
 				mPreferences.getBoolean("prefEnableFlash", false));
 		
-		updateUserBar();
+		if(!mPreferences.getBoolean("prefUserBarNotUpdate", false) 
+				|| !ActivityView.userBarWasUpdated) updateUserBar();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(resultCode == RESULT_CANCELED) exit(resultCode);
+		else AsyncDataLoader.getDataLoader().removeLastRequestFromHistory();
 	}
 	
 	public void onBackPressed() {
@@ -284,6 +305,16 @@ public class ActivityView extends Activity {
 			getMenuInflater().inflate(R.menu.post_list_menu, menu);
 			break;
 		}
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch(keyCode) {
+		case KeyEvent.KEYCODE_SEARCH:
+			findViewById(R.id.scrollNavPanel).setVisibility(
+					findViewById(R.id.scrollNavPanel).getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+			break;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	public boolean onContextItemSelected(MenuItem item) {
@@ -427,6 +458,7 @@ public class ActivityView extends Activity {
 			mResultView.loadData("WTF o_O", "text/html", "utf-8");
 			break;
 		}
+		findViewById(R.id.scrollNavPanel).setVisibility(View.GONE);
 	}
 	
 	private String getNavLinksForUri(Uri uri) {
@@ -464,33 +496,39 @@ public class ActivityView extends Activity {
 		finish();
 	}
 	
-	/**
-	 * ��������� ���������� � ���� ����
-	 */
 	private void updateUserBar() {
 		if(HabraLogin.getHabraLogin().getUserName() == null) {
 			findViewById(R.id.scrollUserBar).setVisibility(View.GONE);
 		} else {
-			TextView titleName = (TextView) findViewById(R.id.titleUserName);
-			TextView titleKarma = (TextView) findViewById(R.id.titleKarma);
-			TextView titleForce = (TextView) findViewById(R.id.titleHabraForce);
-			
-			HabraLogin.getHabraLogin().parseUserKarmaAndForce();
-			titleName.setText(HabraLogin.getHabraLogin().getUserName());
-			titleKarma.setText(String.valueOf(HabraLogin.getHabraLogin().getUserKarma()));
-			titleForce.setText(String.valueOf(HabraLogin.getHabraLogin().getUserRating()));
-			
-			findViewById(R.id.scrollUserBar).setVisibility(mPreferences
-					.getBoolean("prefUserBarHide", false) ? View.GONE : View.VISIBLE);
-			titleKarma.setVisibility(mPreferences
-					.getBoolean("prefUserBarHideMark", false) ? View.GONE : View.VISIBLE);
-			titleForce.setVisibility(mPreferences
-					.getBoolean("prefUserBarHideForce", false) ? View.GONE : View.VISIBLE);
-			findViewById(R.id.buttonFavorites).setVisibility(mPreferences
-					.getBoolean("prefUserBarHideFavorites", false) ? View.GONE : View.VISIBLE);
-			findViewById(R.id.buttonPrivateMail).setVisibility(mPreferences
-					.getBoolean("prefUserBarHidePM", false) ? View.GONE : View.VISIBLE);
+			HabraLogin.getHabraLogin().parseUserKarmaAndForce(new HabraLogin.KarmaListener() {
+				@Override
+				public void onFinish(HabraLogin login) {
+					userBarWasUpdated = true;
+					updateUserBarData(login);
+				}
+			});
 		}
+	}
+	
+	private void updateUserBarData(HabraLogin login) {
+		final TextView titleName = (TextView) findViewById(R.id.titleUserName);
+		final TextView titleKarma = (TextView) findViewById(R.id.titleKarma);
+		final TextView titleForce = (TextView) findViewById(R.id.titleHabraForce);
+		
+		titleName.setText(login.getUserName());
+		titleKarma.setText(String.valueOf(login.getUserKarma()));
+		titleForce.setText(String.valueOf(login.getUserRating()));
+		
+		findViewById(R.id.scrollUserBar).setVisibility(mPreferences
+				.getBoolean("prefUserBarHide", false) ? View.GONE : View.VISIBLE);
+		titleKarma.setVisibility(mPreferences
+				.getBoolean("prefUserBarHideMark", false) ? View.GONE : View.VISIBLE);
+		titleForce.setVisibility(mPreferences
+				.getBoolean("prefUserBarHideForce", false) ? View.GONE : View.VISIBLE);
+		findViewById(R.id.buttonFavorites).setVisibility(mPreferences
+				.getBoolean("prefUserBarHideFavorites", false) ? View.GONE : View.VISIBLE);
+		findViewById(R.id.buttonPrivateMail).setVisibility(mPreferences
+				.getBoolean("prefUserBarHidePM", false) ? View.GONE : View.VISIBLE);
 	}
 	
 	private void startLoading() {
@@ -506,10 +544,10 @@ public class ActivityView extends Activity {
 						: RemoveNode.removeImage(data);
 		
 		data = "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\n" 
-			+ "<link href=\"general.css\" rel=\"stylesheet\"/>\n<title>" + title 
-			+ "</title>\n</head>\n<body>" + data + "</body></html>";
+			+ "<link href=\"../files/general.css\" rel=\"stylesheet\"/>\n<title>" + title 
+			+ "</title>\n</head>\n<body>\n<div class=\"main-content\">\n" + data + "\n</div>\n</body>\n</html>";
 		
-		if(title.length() == 0)
+		if(title.length() == 0 || !mPreferences.getBoolean("prefUseCache", true))
 		{
 			mResultView.loadDataWithBaseURL("file:///android_asset/", data, 
 					"text/html", "utf-8", null);

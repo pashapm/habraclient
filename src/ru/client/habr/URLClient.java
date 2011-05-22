@@ -23,23 +23,18 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * ����� ������������ ��� �������� � web �������� �������� GET � POST
+ * Класс для отправки GET и POST запросов по протоколу HTTP
  */
 public final class URLClient {
 	
-	/**
-	 * USER AGENT ��� �������� � ��� ��������
-	 */
 	public final static String USER_AGENT = "Mozilla/5.0 (Linux; Android) WebKit (KHTML, like Gecko) HabraClient 1.0";
 	private static URLClient mUrlClient = null;
 	
 	
 	private DefaultHttpClient mHttpClient = null;
 	private boolean mLocked = false;
+	private int maxAttemptCount = 3;
 	
-	/**
-	 * ����� ������������ ��� �������� � web �������� �������� GET � POST
-	 */
 	public URLClient() {
 		Log.d("URLClient.URLClient", "construct");
 		
@@ -51,10 +46,6 @@ public final class URLClient {
 		mHttpClient.getParams().setParameter("http.useragent", USER_AGENT);
 	}
 	
-	/**
-	 * �������� ��������� URLClient
-	 * @return ��������� URLClient
-	 */
 	public static URLClient getUrlClient() {
 		Log.d("URLClient.getUrlClient", "called");
 		
@@ -67,8 +58,8 @@ public final class URLClient {
 	}
 	
 	/**
-	 * ��������� ���� � ������
-	 * @param cookies ������ ������� ��� null
+	 * Добавляет куки к HttpClient'y
+	 * @param cookies Массив печенек или null
 	 */
 	public void insertCookies(Cookie[] cookies) {
 		Log.d("URLClient.insertCookies", "called with (" 
@@ -82,8 +73,8 @@ public final class URLClient {
 	}
 	
 	/**
-	 * ��������� ���� � ������
-	 * @param cookie ����
+	 * Добавляет куку к HttpClient'y
+	 * @param cookie кука
 	 */
 	public void insertCookie(Cookie cookie) {
 		Log.d("URLClient.insertCookie", "called witch cookie name " + cookie.getName());
@@ -94,11 +85,15 @@ public final class URLClient {
 	}
 
 	/**
-	 * ������ url ������� GET
-	 * @param url URL ��� �������
-	 * @return HTML ��� ��������
+	 * Отправляет GET запрос по URL'y url
+	 * @param url URL Адрес страницы
+	 * @return HTML Код страницы в строке
 	 */
-	public String getURL(String url) { 
+	public String getURL(String url) {
+		return getURL(url, 0);
+	}
+	
+	private String getURL(String url, int attempt) { 
 		Log.d("URlClient.getURL", url);
 		HttpGet httpGet = new HttpGet(url);
 		
@@ -119,19 +114,27 @@ public final class URLClient {
 			}
 		} catch (ClientProtocolException e) {
 			Log.e("URLClient.getURL", "ClientProtocolException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return getURL(url, ++attempt);
+			return e.getLocalizedMessage();
 		} catch (IOException e) {
 			Log.e("URLClient.getURL", "IOException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return getURL(url, ++attempt);
+			return e.getLocalizedMessage();
 		}
 		
 		return null;
 	}
 	
 	/**
-	 * ������ url ������� GET
-	 * @param url URL ��� �������
-	 * @return HTML ��� ��������
+	 * Отправаляет GET запрос поURL'y url
+	 * @param url URL Адрес файла
+	 * @return Содержимое файла в байтах
 	 */
 	public byte[] getURLAsBytes(String url) { 
+		return getURLAsBytes(url, 0);
+	}
+	
+	private byte[] getURLAsBytes(String url, int attempt) { 
 		HttpGet httpGet = new HttpGet(url);
 		
 		try {
@@ -151,21 +154,27 @@ public final class URLClient {
 			}
 		} catch (ClientProtocolException e) {
 			Log.e("URLClient.getURLAsBytes", "ClientProtocolException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return getURLAsBytes(url, ++attempt);
 		} catch (IOException e) {
 			Log.e("URLClient.getURLAsBytes", "IOException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return getURLAsBytes(url, ++attempt);
 		}
 		
 		return null;
 	}
 	
 	/**
-	 * ������ url ������� POST
-	 * @param url URL ��� �������
-	 * @param post POST ��������� ��� null
-	 * @param referer URL ��������� ������� ��� null
-	 * @return HTML ��� ��������
+	 * Отправляет POST запрос по URL'y url
+	 * @param url URL Адрес обработчика
+	 * @param post POST Данные запроса или null
+	 * @param referer URL Страница с которой отправляется запрос или  null
+	 * @return HTML Ответ от сервера в строке
 	 */
-	public String postURL(String url, String[][] post, String referer) { 
+	public String postURL(String url, String[][] post, String referer) {
+		return postURL(url, post, referer, 0);
+	}
+	
+	private String postURL(String url, String[][] post, String referer, int attempt) { 
 		HttpPost httpPost = new HttpPost(url);
 		if(referer != null)	httpPost.addHeader("Referer", referer);
 		
@@ -200,25 +209,27 @@ public final class URLClient {
 			}
 		} catch (ClientProtocolException e) {
 			Log.e("URLClient.postURL", "ClientProtocolException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return postURL(url, post, referer, ++attempt);
 		} catch (IOException e) {
 			Log.e("URLClient.postURL", "IOException: " + e.getMessage());
+			if(attempt < maxAttemptCount) return postURL(url, post, referer, ++attempt);
 		}
 
 		return null;
 	}
 
 	/**
-	 * ����� ��� ��������� Cookie �������� HTTP �������
-	 * @return ������ ��������
+	 * Получает все когда-либо принятые куки от серверов
+	 * @return Массив кук
 	 */
 	public Cookie[] getCookies() {
 		return mHttpClient.getCookieStore().getCookies().toArray(new Cookie[0]);
 	}
 
 	/**
-	 * ����������� ������ ��� �������� � WebView
-	 * @param code �����
-	 * @return ������
+	 * Заменяет % # \ ? на %25 %23 %27 %3F
+	 * @param code текст
+	 * @return текст после замены
 	 */
 	public static String encode(String code) {
 		return code.replace("%", "%25").replace("#", "%23").replace("\\", 

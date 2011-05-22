@@ -8,7 +8,7 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * ����� ��� �������� ������ (������ GET) � ��������� ������
+ * Отправка GET запросов в отдельном потоке
  */
 public final class AsyncDataLoader {
 	public static enum PageType {
@@ -25,54 +25,106 @@ public final class AsyncDataLoader {
 		COMPANY
 	}
 	
+	/**
+	 * @author WNeZRoS
+	 * Класс для обработки
+	 */
 	public abstract static class LoaderData {
 		protected String url = null;
 		protected PageType pageType = null;
+		protected boolean binary = false;
 		
 		public LoaderData(String url) { 
-			this.url = url; 
-			pageType = getPageTypeByURI(Uri.parse(url));
+			setUrl(url);
 		}
 		
-		public LoaderData() {
-		}
+		public LoaderData() { }
 		
+		/**
+		 * Устанавливает URL запроса
+		 * @param url Страница для загрузки
+		 */
 		public void setUrl(String url) {
 			this.url = url;
 			pageType = getPageTypeByURI(Uri.parse(url));
+			Log.i("LoaderData.setUrl", "URL is '" + url + "' and type = " + pageType);
 		}
 		
+		/**
+		 * Устанавливает режим чтения страницы
+		 * @param bin включает бинарный режим
+		 */
+		public void setBinary(boolean bin) {
+			this.binary = bin;
+		}
+		
+		/**
+		 * Выполняется в UI потоке перед началом.
+		 */
 		public void start() { }
+		
+		/**
+		 * Выполняется в отдельном потоке. Используется для обработки полученных данных.
+		 * @param data полученные данные
+		 * @return данные после обработки
+		 */
 		public String update(String data) { 
 			return data; 
 		}
+		
+		/**
+		 * Выполняется в отдельном потоке. Используется для обработки полученных данных.
+		 * @param data полученные данные
+		 * @return данные после обработки
+		 */
+		public byte[] update(byte[] data) {
+			return data;
+		}
+		
+		/**
+		 * Выполняется в UI потоке после получения и обработки.
+		 * @param data обработанные данные
+		 */
 		public void finish(String data) { }
+		
+		/**
+		 * Выполняется в UI потоке после получения и обработки.
+		 * @param data обработанные данные
+		 */
+		public void finish(byte[] data) { }
 	}
 	
 	private class AsyncLoader extends AsyncTask<Integer, Integer, Integer> {
 		private String mUpdateData = null;
+		private byte[] mUpdateBinData = null;
+		private LoaderData mLoaderData = null;
+		
+		public AsyncLoader(LoaderData loaderData) {
+			mLoaderData = loaderData;
+		}
 		
 		protected void onProgressUpdate(Integer... progress) {
 			
 		}
 	
 		protected void onPostExecute(Integer result) {
-			mHistory.add(mLoaderData.url);
+			if(mLoaderData.pageType != PageType.UNKNOWN) mHistory.add(mLoaderData.url);
+			
 			mIsFinished = true;
-			mLoaderData.finish(mUpdateData);
+			
+			if(mLoaderData.binary) mLoaderData.finish(mUpdateBinData);
+			else mLoaderData.finish(mUpdateData);
 		}
 		
 		@Override
 		protected Integer doInBackground(Integer... data) {
 			Log.d("AsyncLoader.doInBackground", "called");
 			
-			mData = URLClient.getUrlClient().getURL(mLoaderData.url);
-			if(mData == null) {
-				mUpdateData = "";
-				return 1;
+			if(mLoaderData.binary) {
+				mUpdateBinData = mLoaderData.update(URLClient.getUrlClient().getURLAsBytes(mLoaderData.url));
+			} else {
+				mUpdateData = mLoaderData.update(URLClient.getUrlClient().getURL(mLoaderData.url));
 			}
-			
-			mUpdateData = mLoaderData.update(mData);
 			
 			return 0;
 		}
@@ -80,7 +132,6 @@ public final class AsyncDataLoader {
 	
 	private static AsyncDataLoader mAsyncDataLoader = null;
 	
-	private String mData = null;
 	private LoaderData mLoaderData = null;
 	private AsyncTask<Integer, Integer, Integer> mAsyncLoader = null;
 	private boolean mIsFinished = true;
@@ -95,53 +146,91 @@ public final class AsyncDataLoader {
 		return mAsyncDataLoader;
 	}
 	
+	/**
+	 * Устанавливает обработчик
+	 * @param loaderData обработчик
+	 */
 	public void setLoaderData(LoaderData loaderData) {
 		Log.i("AsyncDataLoader.setLoaderData", "Change loaderData to " 
 				+ (loaderData == null ? "null" : loaderData.toString()));
 		mLoaderData = loaderData;
 	}
-
-	public void execute(String url) {
+	
+	/**
+	 * Выполняет запрос в отдельном потоке
+	 * @param url URL запрашиваемой страницы
+	 * @param binary Нужен ли бинарный режим чтения
+	 * @param loaderData Собственный обработчик.
+	 * Если null, то будет использован обработчик установленный через setLoaderData.
+	 */
+	public void execute(String url, boolean binary, LoaderData loaderData) {
 		if(url == null) return;
 		Log.d("AsyncDataLoader.execute", "called");
 		
-		mLoaderData.setUrl(url);
-		mLoaderData.start();
+		if(loaderData == null) loaderData = mLoaderData;
 		
-		if(mLoaderData.url == null) {
+		loaderData.setUrl(url);
+		loaderData.setBinary(binary);
+		loaderData.start();
+		
+		if(loaderData.url == null) {
 			Log.d("AsyncDataLoader.execute", "url == null");
-			mLoaderData.finish(null);
+			if(loaderData.binary) loaderData.finish((byte[]) null);
+			else loaderData.finish((String) null);
 			return;
 		}
 		
 		mIsFinished = false;
-		mAsyncLoader = new AsyncLoader().execute();
+		mAsyncLoader = new AsyncLoader(loaderData).execute();
 	}
 	
 	/**
-	 * ������������� ������ ��������� �����-���������� ����������� �������
-	 * @return false ���� ��� ������ ������
+	 * Выполняет запрос в отдельном потоке
+	 * @param url URL запрашиваемой страницы
+	 * @param binary Нужен ли бинарный режим чтения
+	 */
+	public void execute(String url, boolean binary) {
+		execute(url, binary, null);
+	}
+	
+	/**
+	 * Выполняет запрос в отдельном потоке
+	 * @param url URL запрашиваемой страницы
+	 */
+	public void execute(String url) {
+		execute(url, false, null);
+	}
+	
+	/**
+	 * Перезагружает последнюю загруженную страницу
+	 * @return false если нет обработчика или истории загрузок
 	 */
 	public boolean reload() {
 		if(mLoaderData == null) return false;
 		if(mHistory.size() == 0) return false;
 		
 		mLoaderData.setUrl(mHistory.get(mHistory.size() - 1));
-		mAsyncLoader = new AsyncLoader().execute();
+		mAsyncLoader = new AsyncLoader(mLoaderData).execute();
 		return true;
 	}
 	
+	/**
+	 * @return Завершено ли последнее скачивание
+	 */
 	public boolean isFinished() {
 		return mIsFinished;
 	}
 	
+	/**
+	 * Загружает предыдущую страницу
+	 */
 	public void back() {
 		if(mLoaderData == null) return;
 		if(mHistory.size() == 0) return;
 		
 		mLoaderData.setUrl(mHistory.get(mHistory.size() - 1));
 		mHistory.remove(mHistory.size() - 1);
-		mAsyncLoader = new AsyncLoader().execute();
+		mAsyncLoader = new AsyncLoader(mLoaderData).execute();
 	}
 	
 	/**
@@ -155,6 +244,11 @@ public final class AsyncDataLoader {
 		return mAsyncLoader.cancel(mayInterruptIfRunning);
 	}
 	
+	/**
+	 * Получает тип страницы по URI
+	 * @param uri URI страницы
+	 * @return тип страницы
+	 */
 	public static PageType getPageTypeByURI(Uri uri) {
 		if(uri.getHost().indexOf("habrahabr.ru") < 0) return PageType.UNKNOWN;
 		if(uri.getHost().indexOf("habrahabr.ru") > 0) return PageType.USER;
@@ -181,17 +275,18 @@ public final class AsyncDataLoader {
 			}
 			break;
 		case 2:
-			switch(ps.get(0).charAt(0)) {
-			case 'q': 
+			String pss = ps.get(0);
+			if(pss.equalsIgnoreCase("qa")) { 
 				if(ps.get(1).equals("new") || ps.get(1).equals("unhabred")) 
 					return PageType.QUEST_LIST;
 				else return PageType.QUEST;
-			case 'b': 
+			} else if(pss.equalsIgnoreCase("blogs")) { 
 				if(ps.get(0).length() > 5) return PageType.BLOG_LIST;
 				else return PageType.POST_LIST;
-			case 'c': return PageType.COMPANY;
+			} else if(pss.equalsIgnoreCase("company")) { 
+				return PageType.COMPANY;
 			}
-			break;
+			return PageType.UNKNOWN;
 		case 3:
 			switch(ps.get(0).charAt(0)) {
 			case 'b': 
@@ -218,5 +313,15 @@ public final class AsyncDataLoader {
 		}
 		
 		return PageType.UNKNOWN;
+	}
+
+	/**
+	 * Удаляет из истории последний запрошенный URL
+	 */
+	public void removeLastRequestFromHistory() {
+		if(mHistory.size() == 0) return;
+		
+		mLoaderData.setUrl(mHistory.get(mHistory.size() - 1));
+		mHistory.remove(mHistory.size() - 1);
 	}
 }

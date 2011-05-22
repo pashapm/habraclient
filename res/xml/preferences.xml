@@ -25,6 +25,11 @@
 		android:entries="@array/name_load_images"
 		android:entryValues="@array/value_load_images" />
 	<CheckBoxPreference 
+		android:key="prefUseCache" 
+		android:defaultValue="true" 
+		android:title="@string/use_cache"
+		android:summary="@string/use_cache_summary"/>
+	<CheckBoxPreference 
 		android:key="prefEnableFlash" 
 		android:defaultValue="false" 
 		android:title="@string/enable_flash"
@@ -43,6 +48,11 @@
 		android:summary="@string/user_bar_summary" 
 		android:key="prefUserBar" 
 		android:title="@string/user_bar">
+		<CheckBoxPreference 
+			android:key="prefUserBarNotUpdate" 
+			android:defaultValue="false" 
+			android:title="@string/user_bar_not_update"
+			android:summary="@string/user_bar_not_update_summary"/>
 		<CheckBoxPreference 
 			android:key="prefUserBarHide" 
 			android:defaultValue="false" 
