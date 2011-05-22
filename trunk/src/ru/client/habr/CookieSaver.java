@@ -15,7 +15,7 @@ import android.util.Log;
 
 /**
  * @author WNeZRoS
- * Сохраняет кукисы в базу
+ * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
  */
 public final class CookieSaver extends SQLiteOpenHelper {
 	private static final int DB_VERSION = 1;
@@ -32,8 +32,8 @@ public final class CookieSaver extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * нельзя вызывать если CookieSaver нигде не инициирован
-	 * @return экземпляр CookieSaver
+	 * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ CookieSaver пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ CookieSaver
 	 */
 	public static CookieSaver getCookieSaver() {
 		if(mCookieSaver == null) 
@@ -55,7 +55,7 @@ public final class CookieSaver extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * @return сохранённые куки из базы
+	 * @return пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 	 */
 	public Cookie[] getCookies() {
 		List<Cookie> cookies = new ArrayList<Cookie>();
@@ -104,8 +104,8 @@ public final class CookieSaver extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * Сохраняет в базу куку
-	 * @param cook кука
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
+	 * @param cook пїЅпїЅпїЅпїЅ
 	 */
 	public void putCookie(Cookie cook) {	
 		Log.i("CookieSaver.putCookie", cook.getName());
@@ -130,8 +130,8 @@ public final class CookieSaver extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * Сохраняет куки в базу из массива
-	 * @param cooks куки
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	 * @param cooks пїЅпїЅпїЅпїЅ
 	 */
 	public void putCookies(Cookie[] cooks) {
 		for(int i = 0; i < cooks.length; i++)
@@ -139,7 +139,7 @@ public final class CookieSaver extends SQLiteOpenHelper {
 	}
 	
 	/**
-	 * Очищает базу от кук
+	 * пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ
 	 */
 	public void clearCookies() {
 		SQLiteDatabase db = getWritableDatabase();

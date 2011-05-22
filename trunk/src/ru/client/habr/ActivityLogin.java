@@ -1,11 +1,16 @@
 package ru.client.habr;
 
+import ru.client.habr.R;
+import ru.client.habr.HabraLogin.LoginListener;
+import ru.client.habr.HabraLogin.UserInfoListener;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,6 +29,8 @@ public final class ActivityLogin extends Activity {
 	private ImageView mImageCaptcha;
 	private TextView mTitleError;
 	private CheckBox mCheckSavePassword;
+	private Button mButtonLogin;
+	private Button mButtonSkip;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,6 +45,15 @@ public final class ActivityLogin extends Activity {
 		mImageCaptcha = (ImageView) findViewById(R.id.imageCaptcha);
 		mTextCaptcha = (EditText) findViewById(R.id.textCaptcha);
 		mCheckSavePassword = (CheckBox) findViewById(R.id.checkSavePassword);
+		mButtonLogin = (Button) findViewById(R.id.buttonLogin);
+		mButtonSkip = (Button) findViewById(R.id.buttonSkip);
+		
+		mImageCaptcha.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				HabraLogin.getHabraLogin().loadCaptcha(mImageCaptcha);
+			}
+		});
 	}
 	
 	public void onStart() {
@@ -51,7 +67,7 @@ public final class ActivityLogin extends Activity {
 		mTextPassword.setText(preferences.getString("prefPassword", ""));
 		mCheckSavePassword.setChecked(preferences.getBoolean("prefSavePassword", false));
 		
-		updateCaptcha();
+		HabraLogin.getHabraLogin().loadCaptcha(mImageCaptcha);
 	}
 	
 	/**
@@ -61,39 +77,53 @@ public final class ActivityLogin extends Activity {
 	public void onClickLogin(View v) {	
 		Log.d("HabraLoginForm.onClickLogin", "called");
 		
-		String username = mTextUserName.getText().toString();
-		String password = mTextPassword.getText().toString();
-		String captcha = mTextCaptcha.getText().toString();
-		String result = null;
+		final String username = mTextUserName.getText().toString();
+		final String password = mTextPassword.getText().toString();
+		final String captcha = mTextCaptcha.getText().toString();
+		final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 		
-		if((result = HabraLogin.getHabraLogin().login(username, password, captcha)) == null) {	
-			Log.d("HabraLoginForm.onClickLogin", "logged");
-			
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			SharedPreferences.Editor preferencesEditor = preferences.edit();
-			
-			preferencesEditor.putString("prefUserName", username);
-			
-			if(mCheckSavePassword.isChecked()) {
-				preferencesEditor.putString("prefPassword", password);
+		mButtonLogin.setEnabled(false);
+		mButtonSkip.setEnabled(false);
+		
+		HabraLogin.getHabraLogin().login(username, password, captcha, new LoginListener() {
+
+			@Override
+			public void onFinish(String message) {
+				
+				mButtonLogin.setEnabled(true);
+				mButtonSkip.setEnabled(true);
+				
+				if(message == null) {	
+					Log.d("HabraLoginForm.onClickLogin", "logged");
+					
+					SharedPreferences.Editor preferencesEditor = preferences.edit();
+					
+					preferencesEditor.putString("prefUserName", username);
+					
+					if(mCheckSavePassword.isChecked()) {
+						preferencesEditor.putString("prefPassword", password);
+					}
+					
+					preferencesEditor.putBoolean("prefSavePassword", mCheckSavePassword.isChecked());
+					preferencesEditor.commit();
+					
+					HabraLogin.getHabraLogin().parseUserData((UserInfoListener) null);
+					Toast.makeText(getApplicationContext(), getString(R.string.logged), Toast.LENGTH_LONG).show();
+					
+					onBackPressed();
+				} else {
+					Log.d("HabraLoginForm.onClickLogin", "fail");
+					mTitleError.setText(message);
+					
+					mTextCaptcha.setText("");
+					mTextCaptcha.requestFocus();
+					
+					HabraLogin.getHabraLogin().loadCaptcha(mImageCaptcha);
+				}
 			}
 			
-			preferencesEditor.putBoolean("prefSavePassword", mCheckSavePassword.isChecked());
-			preferencesEditor.commit();
-			
-			HabraLogin.getHabraLogin().parseUserData();
-			Toast.makeText(getApplicationContext(), getString(R.string.logged), Toast.LENGTH_LONG).show();
-			
-			onBackPressed();
-		} else {
-			Log.d("HabraLoginForm.onClickLogin", "fail");
-			mTitleError.setText(result);
-			
-			mTextCaptcha.setText("");
-			mTextCaptcha.requestFocus();
-			
-			updateCaptcha();
-		}
+		});
+		
 		Log.d("HabraLoginForm.onClickLogin", "end");
 	}
 	
@@ -113,9 +143,5 @@ public final class ActivityLogin extends Activity {
 		preferencesEditor.commit();
 		
 		finish();
-	}
-	
-	private void updateCaptcha() {
-		new AsyncCaptchaLoader().execute(mImageCaptcha);
 	}
 }

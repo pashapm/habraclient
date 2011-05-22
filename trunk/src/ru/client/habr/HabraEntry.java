@@ -1,5 +1,7 @@
 package ru.client.habr;
 
+import ru.client.habr.R;
+import ru.client.habr.AsyncDataSender.OnSendDataFinish;
 import android.util.Log;
 
 /**
@@ -56,14 +58,23 @@ public class HabraEntry {
 		default: return false;
 		}
 		
-		// TODO: URLClient use only in new thread
-		String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/");
-		Log.d("VOTE", res);
-		return res.contains("<message>ok</message>");
+		/*String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
+				"http://habrahabr.ru/");*/
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/voting/", "http://habrahabr.ru/", new OnSendDataFinish() {
+			@Override
+			public void onFinish(String result) {
+				if(result.contains("<message>ok</message>")) 
+					ActivityMain.showToast(R.string.vote_ok);
+				else 
+					ActivityMain.showToast(R.string.vote_failed);
+			}
+		}).execute(post);
+		
+		return true; //res.contains("<message>ok</message>");
 	}
 	
-	public final boolean changeFavorites(boolean isRemove) {
+	public final boolean changeFavorites(final boolean isRemove) {
 		String[][] post = {{"action", isRemove ? "remove" : "add"}, 
 				{"target_type", "change"}, {"target_id", String.valueOf(id)}};
 		
@@ -74,11 +85,20 @@ public class HabraEntry {
 		default: return false;
 		}
 		
-		// TODO: URLClient use only in new thread
-		String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
-				"http://habrahabr.ru/");
-		Log.d("FAV", res);
-		return res.contains("<message>ok</message>");
+		/*String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
+				"http://habrahabr.ru/");*/
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/favorites/", "http://habrahabr.ru/", new OnSendDataFinish() {
+			@Override
+			public void onFinish(String result) {
+				if(result.contains("<message>ok</message>")) 
+					ActivityMain.showToast(isRemove ? R.string.favorite_removed : R.string.favorite_added);
+				else 
+					ActivityMain.showToast(R.string.favorite_failed);
+			}
+		}).execute(post);
+
+		return true; //res.contains("<message>ok</message>");
 	}
 
 	public final boolean changeFavorites() {

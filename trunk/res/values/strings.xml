@@ -89,4 +89,17 @@
     <string name="tags">Тэги</string>
     <string name="need_login">Для использования данной штуки нужно зайти на хабр.</string>
     <string name="not_cache">Эта страница не была добавлена в кэш.</string>
+    <string name="favorite_added">Добавлено в избранное</string>
+    <string name="favorite_removed">Удалено из избранного</string>
+    <string name="favorite_failed">Не удалось изменить избранное</string>
+    <string name="this_is_picture">Здесь была картинка</string>
+    <string name="this_is_video">Здесь был ролик</string>
+    <string name="vote_ok">Проголосовано</string>
+    <string name="vote_failed">Не удалось проголосовать</string>
+    <string name="use_cache">Кэшировать страницы</string>
+    <string name="use_cache_summary">для офлайн просмотра</string>
+    <string name="cant_send_request">Не могу отправить запрос</string>
+    <string name="loading">Идёт загрузка. Пожайлуста подождите.</string>
+    <string name="user_bar_not_update">Обновлять только 1 раз</string>
+    <string name="user_bar_not_update_summary">Позволит экономить трафик с кажой страницей</string>
 </resources>

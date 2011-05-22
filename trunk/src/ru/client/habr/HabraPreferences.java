@@ -1,5 +1,6 @@
 package ru.client.habr;
 
+import ru.client.habr.R;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.Preference;

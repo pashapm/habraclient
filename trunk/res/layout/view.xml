@@ -20,9 +20,9 @@
             <Button android:layout_width="wrap_content" android:text="@string/private_mail" android:id="@+id/buttonPrivateMail" android:layout_height="40dip" android:onClick="onClickPM"/>
         </LinearLayout>
     </HorizontalScrollView>
-    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="match_parent" android:layout_width="match_parent" android:gravity="center_horizontal">
-        <WebView android:layout_height="wrap_content" android:id="@+id/result" android:layout_width="match_parent" android:layout_marginTop="40dip"/>
-        <ProgressBar android:id="@+id/procLoading" android:layout_centerHorizontal="true" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="60dip"/>
+    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="match_parent" android:layout_width="match_parent" android:gravity="right">
+        <WebView android:layout_height="wrap_content" android:id="@+id/result" android:layout_width="match_parent"/>
+        <ProgressBar android:id="@+id/procLoading" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="0px" android:layout_alignParentRight="true"/>
         <HorizontalScrollView android:fillViewport="true" android:id="@+id/scrollNavPanel" android:layout_width="wrap_content" android:layout_height="wrap_content">
             <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/layoutNavPanel">
                 <Button android:id="@+id/buttonNavPost" android:layout_width="wrap_content" android:text="@string/posts" android:layout_height="40dip" android:onClick="onClickNav"/>
