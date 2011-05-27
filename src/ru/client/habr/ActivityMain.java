@@ -166,4 +166,8 @@ public class ActivityMain extends Activity {
 	public static String getStringFromResource(int resId) {
 		return applicationContext.getString(resId);
 	}
+	
+	public static Context getContext() {
+		return applicationContext;
+	}
 }

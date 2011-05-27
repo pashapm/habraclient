@@ -271,7 +271,8 @@ public class HabraUser {
 		return "<div class=\"profile-header\"><h1 class=\"habrauserava\"><img src=\"" 
 		+ avatar + "\"></h1><dl class=\"profile-actions\"><dt><a class=\"habrauser silentlink\" href=\"http://" 
 		+ username + ".habrahabr.ru\">" + username + "</a></dt></dl><div class=\"profile-karma-holder\">" 
-		+ "<dl class=\"karma\"><dt>карма</dt><dd class=\"vote vote_holder\"><span class=\"mark\"><span>" 
+		+ "<dl class=\"karma\" onClick=\"js.onClickKarma('" + username + "', " 
+		+ id + ");\"><dt>карма</dt><dd class=\"vote vote_holder\"><span class=\"mark\"><span>" 
 		+ karma + "</span></span></dd><dd class=\"total\"><em>" + getTotal() 
 		+ "</em></dd></dl><dl class=\"habraforce\"><dt>рейтинг</dt><dd class=\"number\">" 
 		+ force + "</dd></dl></div></div>";

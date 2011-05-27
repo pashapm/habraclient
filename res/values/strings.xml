@@ -102,4 +102,7 @@
     <string name="loading">Идёт загрузка. Пожайлуста подождите.</string>
     <string name="user_bar_not_update">Обновлять только 1 раз</string>
     <string name="user_bar_not_update_summary">Позволит экономить трафик с кажой страницей</string>
+    <string name="my_profile">Мой профиль</string>
+    <string name="options">Опции программы</string>
+    <string name="draw_options">Настройки отображения</string>
 </resources>

@@ -24,6 +24,19 @@ a:hover {
 	text-decoration:underline;
 }
 
+table {
+	border-collapse: collapse;
+}
+
+fieldset {
+	border: 0 solid transparent;
+}
+
+input, select, textarea {
+	font-size: 100%;
+	font-family: verdana, sans-serif;
+}
+
 .hentry {
     width: 100%;
 	margin-bottom:10px;
@@ -346,4 +359,78 @@ h2.nav {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	text-align: center;
+}
+
+.hentry .content table {
+	clear: both;
+	width: 100%;
+	margin: 1.5em 0;
+	border: 1px solid #CCC;
+}
+
+.poll table.answer-container {
+	margin: 0;
+	margin-bottom: 10px;
+	border: none;
+}
+
+.poll .answer-container td.input {
+	width: 25px;
+}
+
+.hentry .content table td, .hentry .content table th {
+	padding: .3em;
+	border: 1px solid #CCC;
+}
+
+.poll .answer-container td.input, .poll .answer-container td.label {
+	border: none;
+	padding: 5px 0;
+}
+
+.poll .answer-container input {
+	padding: 5px 0;
+}
+
+.poll dl {
+	clear: both;
+	width: 100%;
+	border: .5em solid white;
+}
+
+.poll dl dt {
+	float: left;
+	width: 100px;
+	font-size: 97.6%;
+	text-align: right;
+	margin-left: -20px;
+	color: #CCC;
+}
+
+.poll dl dd {
+	float: left;
+	min-width: 50%;
+	width: auto;
+	margin-left: 20px;
+}
+
+.poll dl dt strong {
+	color: #404040;
+	text-align: right;
+}
+
+.poll-item dd div {
+	height: 5px;
+	background: #DADACD;
+}
+
+.poll-item dd div.winner {
+	background: #7FA0B0;
+}
+
+.poll .total {
+	font-size: 97.6%;
+	clear: both;
+	margin-top: 1em;
+	color: #999;
 }

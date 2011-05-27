@@ -1,7 +1,5 @@
 package ru.client.habr;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
@@ -13,13 +11,13 @@ public final class HabraCommentParser {
 	private int mListIndex = 0;
 	private HtmlCleaner mParser = null;
 	private TagNode mMainNode = null;
-	private List<TagNode> mEntryNodeList = new ArrayList<TagNode>();
+	private TagNode mEntryNodes[] = null;
 	
 	/**
 	 * ������ ����������� �� ������
 	 * @param data ������ HTML �������� �����
 	 */
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public HabraCommentParser(String data) {
 		if(data == null) return;
 		
@@ -27,22 +25,27 @@ public final class HabraCommentParser {
 		mMainNode = mParser.clean(data);
 
 		try {
-		mEntryNodeList = mMainNode.findElementByAttValue("id", "comments", true, false)
+		mEntryNodes = mMainNode.findElementByAttValue("id", "comments", true, false)
 				.findElementByName("ul", false)
-				.getElementListByAttValue("class", "comment_holder vote_holder", false, false);
+				.getElementsByAttValue("class", "comment_holder vote_holder", false, false);
 		} catch(NullPointerException e) {
 			mMainNode = null;
 		}
 	}
 	
 	public HabraComment parse() {
-		if(mEntryNodeList.size() <= mListIndex || mMainNode == null) return null;
-		mListIndex++;
-		return parse(mEntryNodeList.get(mListIndex - 1));
+		return parse(0);
 	}
 	
-	private HabraComment parse(TagNode commentNode) {
+	public HabraComment parse(int postID) {
+		if(mEntryNodes.length <= mListIndex || mMainNode == null) return null;
+		mListIndex++;
+		return parse(mEntryNodes[mListIndex - 1], postID);
+	}
+	
+	private HabraComment parse(TagNode commentNode, int postID) {
 		HabraComment comment = new HabraComment();
+		comment.postID = postID;
 		
 		comment.id = Integer.valueOf(commentNode.getAttributeByName("id").substring(8));
 		
@@ -75,7 +78,7 @@ public final class HabraCommentParser {
 			comment.childs = new HabraComment[childNodes.length];
 			
 			for(int i = 0; i < childNodes.length; i++) {
-				comment.childs[i] = parse(childNodes[i]);
+				comment.childs[i] = parse(childNodes[i], postID);
 			}
 		}
 		
