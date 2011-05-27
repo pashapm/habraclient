@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:icon="@android:drawable/ic_menu_recent_history" android:id="@+id/menu_cache" android:title="@string/cache"/>
+	<item android:icon="@android:drawable/ic_menu_compass" 
+		android:id="@+id/menu_nav" 
+		android:title="@string/show_nav"/>
+	<item android:icon="@android:drawable/ic_menu_recent_history" 
+		android:id="@+id/menu_cache" 
+		android:title="@string/cache"/>
 	<item android:title="@string/refresh"
-		  android:icon="@android:drawable/ic_menu_rotate" android:id="@+id/menu_refresh"/>
+		  android:icon="@android:drawable/ic_menu_rotate" 
+		  android:id="@+id/menu_refresh"/>
     <item android:title="@string/preferences"
-		  android:icon="@android:drawable/ic_menu_preferences" android:id="@+id/menu_preferences"/>
+		  android:icon="@android:drawable/ic_menu_preferences" 
+		  android:id="@+id/menu_preferences"/>
     <item android:title="@string/exit"
-		  android:icon="@android:drawable/ic_menu_close_clear_cancel" android:id="@+id/menu_exit"/>
+		  android:icon="@android:drawable/ic_menu_close_clear_cancel" 
+		  android:id="@+id/menu_exit"/>
 </menu>

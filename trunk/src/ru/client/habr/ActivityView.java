@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -26,41 +27,36 @@ import android.widget.Toast;
 import android.view.KeyEvent;
 import ru.client.habr.R;
 import ru.client.habr.AsyncDataLoader.LoaderData;
-
+import ru.client.habr.Dialogs.OnClickMenuItem;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author WNeZRoS
- * TODO poll
  */
 public class ActivityView extends Activity {	
 	private WebView mResultView = null;
 	private SharedPreferences mPreferences = null;
 	private WifiManager mWifi = null;
-	private String mSelectedUri = null;
-	private HabraEntry mSelectedEntry = null;
-	private List<HabraEntry> mLastEntries = new ArrayList<HabraEntry>();
+	private String mLastEntryTitle = null;
+	private Uri mSelectedUri = null;
 	private static boolean userBarWasUpdated = false;
 	
 	private LoaderData mAnyDataLoader = new LoaderData() {
 		public void finish(String data) {
 			switch(pageType) {
 			case POST_LIST: finishLoading("Хабрахабр - " + Uri.parse(url).getPath().replace('/', '@'), data); break;
-			case POST: finishLoading(((HabraTopic)mLastEntries.get(0)).title, data); break;
+			case POST: finishLoading(mLastEntryTitle, data); break;
 			case QUEST_LIST: finishLoading("Хабрахабр QA - " + Uri.parse(url).getPath().replace('/', '@'), data); break; 
-			case QUEST: finishLoading(((HabraQuest)mLastEntries.get(0)).title, data); break;
-			case USER: finishLoading(Uri.parse(url).getHost(), data); break;
+			case QUEST: finishLoading(mLastEntryTitle, data); break;
+			case USER: finishLoading(mLastEntryTitle, data); break;
 			default: finishLoading(url, data); break;
 			}
 		}
 		public String update(String pageData) {
-			mLastEntries.clear(); // XXX May be remove ?
-			
 			String data = "";
 			
 			switch(pageType) {
@@ -77,7 +73,6 @@ public class ActivityView extends Activity {
 				boolean hideComments = mPreferences.getBoolean("prefHidePostComments", false);
 				
 				while((topic = parser.parse()) != null) {
-					mLastEntries.add(topic); // XXX this can be replace on "%url%?a={AUTHOR}&f={FAVS}&v={MARK}" XXX 
 					data += topic.getDataAsHTML(hideContent, hideTags, hideMark, 
 							hideDate, hideFavs, hideAuthor, hideComments);
 				}
@@ -97,16 +92,15 @@ public class ActivityView extends Activity {
 				data = topic.getDataAsHTML();
 				data += "<div id=\"comments\">";
 				
-				mLastEntries.add(topic); // XXX
-				
 				HabraCommentParser commentParser = new HabraCommentParser(pageData);
 				HabraComment comment = null;
 				
 				while((comment = commentParser.parse(topic.id)) != null) {
-					mLastEntries.add(comment); // XXX
 					data += comment.getDataAsHTML();
 				}
 				data += "</div>";
+				
+				mLastEntryTitle = topic.title;
 			} break;
 			case QUEST_LIST: {
 				HabraQuestParser parser = new HabraQuestParser(pageData);
@@ -121,7 +115,6 @@ public class ActivityView extends Activity {
 				boolean hideAnswers = mPreferences.getBoolean("prefHideQuestComments", false);
 				
 				while((quest = parser.parse()) != null) {
-					mLastEntries.add(quest); // XXX
 					data += quest.getDataAsHTML(hideContent, hideTags, hideMark, 
 							hideAnswers, hideDate, hideFavs, hideAuthor);
 				}
@@ -141,20 +134,21 @@ public class ActivityView extends Activity {
 				data = quest.getDataAsHTML();
 				data += quest.getCommentsAsHTML();
 				data += "<div id=\"comments\">";
-				mLastEntries.add(quest); // XXX
 				
 				HabraAnswerParser answerParser = new HabraAnswerParser(pageData);
 				HabraAnswer answer = null;
 				
 				while((answer = answerParser.parse()) != null) {
-					mLastEntries.add(answer); // XXX
 					data += answer.getDataAsHTML();
 					data += answer.getCommentsAsHTML();
 				}
 				data += "</div>";
+				
+				mLastEntryTitle = quest.title;
 			} break;
 			case USER: {
 				HabraUser user = HabraUser.parse(pageData);
+				mLastEntryTitle = user.username;
 				
 				if(user == null) return pageData;
 				return user.getDataAsHTML();
@@ -217,28 +211,50 @@ public class ActivityView extends Activity {
 				switch(wv.getHitTestResult().getType()) {
 				case WebView.HitTestResult.SRC_ANCHOR_TYPE:
 					Log.d("onLongClick", "Click on <a href='" + wv.getHitTestResult().getExtra() + "'...");
-					mSelectedUri = wv.getHitTestResult().getExtra();
+					mSelectedUri = Uri.parse(wv.getHitTestResult().getExtra());
 					
-					if(!Uri.parse(mSelectedUri).getHost().equals("habrahabr.ru")) 
+					if(!mSelectedUri.getHost().contains("habrahabr.ru")) 
 						return false;
 					
-					mSelectedEntry = null;
-					
-					for(int i = 0; i < mLastEntries.size(); i++) {
-						if(mLastEntries.get(i).getUrl(mLastEntries.get(0).id).equals(mSelectedUri)) {
-							mSelectedEntry = mLastEntries.get(i);
-							break;
-						}
+					switch(AsyncDataLoader.getPageTypeByURI(mSelectedUri)) {
+					case POST:
+					case QUEST: {
+						String temp = mSelectedUri.getQueryParameter("infavs");
+						
+						final boolean inFavs = temp != null && temp.equals("true");
+						final String author = mSelectedUri.getQueryParameter("author");
+						final int id = Integer.valueOf(mSelectedUri.getLastPathSegment());
+						
+						final String menuItems[] = getResources().getStringArray(R.array.post_menu);
+						if(inFavs) menuItems[menuItems.length - 2] = getString(R.string.remove_favorites);
+						
+						Log.i("mSelectedUri", mSelectedUri.toString());
+						
+						mSelectedUri = Uri.parse(mSelectedUri.getScheme() + "://" 
+								+ mSelectedUri.getHost() + mSelectedUri.getPath());
+						
+						Log.i("mSelectedUri", mSelectedUri.toString());
+						Log.i("uri", author + " " + id + " " + inFavs);
+						
+						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
+							@Override
+							public void onClick(int item, String itemText) {
+								onMenuItemSelected(item, author, id, inFavs);
+							}
+						});
+					} break;
+					default: {
+						final String menuItems[] = getResources().getStringArray(R.array.default_menu);
+						
+						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
+							@Override
+							public void onClick(int item, String itemText) {
+								onMenuItemSelected(item, null, 0, false);
+							}
+						});
+					}
 					}
 					
-					if(mSelectedEntry == null) return false; // TODO: Menu "Open, Share, Copy"
-					
-					/*if(mSelectedEntry.isFavorite())
-						mResultViewMenu.findItem(R.id.menu_add_rem_fav).setTitle(R.string.remove_favorites);
-					else
-						mResultViewMenu.findItem(R.id.menu_add_rem_fav).setTitle(R.string.add_favorites);
-					*/
-					wv.showContextMenu();
 					return true;
 				case WebView.HitTestResult.IMAGE_TYPE:
 					Log.d("onLongClick", "Click on <img src='" + wv.getHitTestResult().getExtra() + "'...");
@@ -248,7 +264,7 @@ public class ActivityView extends Activity {
 			}
 		});
 		
-		mResultView.addJavascriptInterface(this, "js");
+		mResultView.addJavascriptInterface(new JSInterface(mResultView), "js");
 		
 		mWifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		
@@ -256,8 +272,6 @@ public class ActivityView extends Activity {
 		
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		loadData(getIntent().getData());
-		
-		registerForContextMenu(mResultView);
 	}
 	
 	public void onStart() {
@@ -272,12 +286,15 @@ public class ActivityView extends Activity {
 	public void onResume() {
 		super.onResume();
 		
+		Dialogs.getDialogs().setContext(this);
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		
 		mResultView.getSettings().setBuiltInZoomControls(
 				mPreferences.getBoolean("prefEnableZoom", true));
 		mResultView.getSettings().setPluginsEnabled(
 				mPreferences.getBoolean("prefEnableFlash", false));
+		
+		mResultView.setInitialScale(Integer.valueOf(mPreferences.getString("prefDefaultScale", "150")));
 		
 		if(!mPreferences.getBoolean("prefUserBarNotUpdate", false) 
 				|| !ActivityView.userBarWasUpdated) updateUserBar();
@@ -317,50 +334,43 @@ public class ActivityView extends Activity {
 		return super.onKeyDown(keyCode, event);
 	}
 	
-	public boolean onContextItemSelected(MenuItem item) {
-		Uri uri = Uri.parse(mSelectedUri);
-		
-		if(!uri.getHost().equals("habrahabr.ru")) return super.onContextItemSelected(item);
-		
-		switch(item.getItemId()) {
-		case R.id.menu_open_post:
+	public boolean onMenuItemSelected(int item, String entryAuthor, int entryID, boolean entryInFavs) {	
+		switch(item) {
+		case 0:
 			Intent openIntent = new Intent(Intent.ACTION_VIEW);
-			openIntent.setData(uri);
 			startActivity(openIntent);
 			return true;
-		case R.id.menu_comment: {
-			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
-			return true;
-		}
-		case R.id.menu_author: {
-			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(Uri.parse("http://" 
-							+ mSelectedEntry.author + ".habrahabr.ru/")), 0);
-			return true;
-		}
-		case R.id.menu_share:
+		case 1:
 			Intent sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.setType("text/plain");
 			sendIntent.putExtra(Intent.EXTRA_TEXT, mSelectedUri);
 			startActivity(Intent.createChooser(sendIntent, null));
 			return true;
-		case R.id.menu_copy_link:
+		case 2:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); 
+			clipboard.setText(mSelectedUri.toString());
 			return true;
-		case R.id.menu_add_rem_fav:
-			mSelectedEntry.changeFavorites();
+		case 3: {
+			startActivityForResult(new Intent(getBaseContext(), 
+					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
 			return true;
-		case R.id.menu_vote_up:
-			mSelectedEntry.vote(1, mLastEntries.get(0).id);
+		}
+		case 4:
+			JSInterface.onClickRating(entryID, (mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
 			return true;
-		case R.id.menu_vote_zero:
-			mSelectedEntry.vote(0, mLastEntries.get(0).id);
+		case 5:
+			HabraEntry.changeFavorites(entryID, 
+					(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
+							HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
 			return true;
-		case R.id.menu_vote_down:
-			mSelectedEntry.vote(-1, mLastEntries.get(0).id);
+		case 6: {
+			startActivityForResult(new Intent(getBaseContext(), 
+					ActivityView.class).setData(Uri.parse("http://" 
+							+ entryAuthor + ".habrahabr.ru/")), 0);
 			return true;
-		default: 
-			return super.onContextItemSelected(item);
+		}
+		default:
+			return false;
 		}
 	}
 	
@@ -374,6 +384,10 @@ public class ActivityView extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_nav:
+			findViewById(R.id.scrollNavPanel).setVisibility(
+					findViewById(R.id.scrollNavPanel).getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+			return true;
 		case R.id.menu_cache:
 			final String[] cache = getCacheDir().list(new FilenameFilter() {
 				@Override
@@ -536,7 +550,7 @@ public class ActivityView extends Activity {
 		
 		if(title.length() == 0 || !mPreferences.getBoolean("prefUseCache", true))
 		{
-			mResultView.loadDataWithBaseURL("file:///android_asset/", data, 
+			mResultView.loadDataWithBaseURL(getCacheDir().getAbsolutePath(), data, 
 					"text/html", "utf-8", null);
 			return;
 		}
@@ -551,9 +565,9 @@ public class ActivityView extends Activity {
 		} catch (IOException e) {
 			Log.w("Habrahabr.finishLoading", "IOException: " + e.getMessage());
 			
-			Toast.makeText(getApplicationContext(), getString(R.string.not_cache), Toast.LENGTH_LONG).show();
+			Dialogs.getDialogs().showToast(R.string.not_cache, Toast.LENGTH_LONG);
 			
-			mResultView.loadDataWithBaseURL("file:///android_asset/", data, 
+			mResultView.loadDataWithBaseURL(getCacheDir().getAbsolutePath(), data, 
 					"text/html", "utf-8", null);
 		}
 		

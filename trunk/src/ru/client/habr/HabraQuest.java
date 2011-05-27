@@ -26,6 +26,10 @@ public final class HabraQuest extends HabraEntry {
 		return "http://habrahabr.ru/qa/" + id + "/";
 	}
 	
+	public String getUrlWorkInfo() {
+		return "?id=" + id + "&author=" + author + "&infavs=" + inFavs; 
+	}
+	
 	private String getTagsAsString() {
 		String tagsAsString = "";
 		for(int i = 0; i < tags.length; i++) {
@@ -56,7 +60,7 @@ public final class HabraQuest extends HabraEntry {
 	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, 
 			boolean noAnswersCount, boolean noDate, boolean noFavs, boolean noAuthor) {
 		return "<div class=\"hentry question_hentry\" id=\"" + id 
-		+ "\"><h2 class=\"entry-title\"><a href=\"" + getUrl() 
+		+ "\"><h2 class=\"entry-title\"><a href=\"" + getUrl() + getUrlWorkInfo() 
 		+ "\" class=\"topic\">" + title + "</a></h2>" 
 		+ (noContent ? "" : "<div class=\"content\">" + (content == null ? "" : content) + "</div>")
 		+ (noTags ? "" : "<ul class=\"tags\">" + getTagsAsString() + "</ul>")

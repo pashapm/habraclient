@@ -48,6 +48,10 @@ public final class HabraTopic extends HabraEntry {
 		return blog.getUrl() + id + "/";
 	}
 	
+	public String getUrlWorkInfo() {
+		return "?id=" + id + "&author=" + author + "&infavs=" + inFavs; 
+	}
+	
 	private String getTagsAsString() {
 		String tagsAsString = "";
 		for(int i = 0; i < tags.length; i++) {
@@ -67,9 +71,9 @@ public final class HabraTopic extends HabraEntry {
 	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, 
 			boolean noDate, boolean noFavs, boolean noAuthor, boolean noComments) {
 		return "<div class=\"hentry\" id=\"post_" + id 
-		+ "\"><h2 class=\"entry-title\"><a href=\"" + getUrl() 
+		+ "\"><h2 class=\"entry-title\"><a href=\"" + blog.getUrl()
 		+ "\" class=\"blog\">" + blog.name + "</a> &rarr; <a href=\"" 
-		+ getUrl() + "\" class=\"topic\">" + title + "</a></h2>" 
+		+ getUrl() + getUrlWorkInfo() + "\" class=\"topic\">" + title + "</a></h2>" 
 		+ (noContent ? "" : "<div class=\"content\">" + content + "</div>") 
 		+ (tags.length > 1 && !noTags ? "<ul class=\"tags\">" + getTagsAsString() + "</ul>" : "") 
 		+ (noMark && noDate && noFavs && noAuthor && noComments ? "" 

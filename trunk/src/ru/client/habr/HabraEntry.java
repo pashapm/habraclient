@@ -40,7 +40,7 @@ public class HabraEntry {
 		return getUrl();
 	}
 	
-	public final boolean vote(int id, HabraEntryType type, int mark, int postID) {
+	public final static boolean vote(int id, HabraEntryType type, int mark, int postID) {
 		String[][] post = {{"action", "vote"}, {"signed_id", String.valueOf(postID)}, 
 				{"target_id", String.valueOf(id)}, {"mark", String.valueOf(mark)},
 				{"target_name", "change"}};
@@ -59,9 +59,9 @@ public class HabraEntry {
 			@Override
 			public void onFinish(String result) {
 				if(result.contains("<message>ok</message>")) 
-					ActivityMain.showToast(R.string.vote_ok);
+					Dialogs.getDialogs().showToast(R.string.vote_ok);
 				else 
-					ActivityMain.showToast(R.string.vote_failed);
+					Dialogs.getDialogs().showToast(R.string.vote_failed);
 			}
 		}).execute(post);
 		
@@ -87,9 +87,9 @@ public class HabraEntry {
 			@Override
 			public void onFinish(String result) {
 				if(result.contains("<message>ok</message>")) 
-					ActivityMain.showToast(isRemove ? R.string.favorite_removed : R.string.favorite_added);
+					Dialogs.getDialogs().showToast(isRemove ? R.string.favorite_removed : R.string.favorite_added);
 				else 
-					ActivityMain.showToast(R.string.favorite_failed);
+					Dialogs.getDialogs().showToast(R.string.favorite_failed);
 			}
 		}).execute(post);
 

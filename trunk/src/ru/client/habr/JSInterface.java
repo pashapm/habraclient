@@ -3,6 +3,8 @@
  */
 package ru.client.habr;
 
+import ru.client.habr.Dialogs.OnClickMessage;
+import ru.client.habr.HabraEntry.HabraEntryType;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -18,19 +20,34 @@ public class JSInterface {
 	}
 	
 	public void onClickComment(int commentID, int postID, String author, boolean inFavs) {
-		Toast.makeText(ActivityMain.getContext(), "onClickComment(" + commentID + ", " 
+		Dialogs.getDialogs().showToast("onClickComment(" + commentID + ", " 
 				+ postID + ", '" + author + "', " + inFavs + ");", Toast.LENGTH_LONG);
 		// TODO comment, add in favs, vote
 	}
 	
-	public void onClickKarma(String username, int userID) {
-		Toast.makeText(ActivityMain.getContext(), "onClickKarma('" + username + "', " + userID + ");", Toast.LENGTH_LONG);
-		// TODO change karma
+	public void onClickKarma(final String username, final int userID) {
+		Dialogs.getDialogs().showDialogMessage("Вы хотите влепить ", "-", null, "+", new OnClickMessage() {
+			@Override
+			public void onClick(int rel) {
+				HabraUser.karmaUpdate(userID, username, rel);
+			}
+		});
 	}
 	
-	public void onClickRating(int id, String type, int postID) {
-		Toast.makeText(ActivityMain.getContext(), "onClickRating(" + id + ", '" + type + "', " + postID + ");", Toast.LENGTH_LONG);
-		// TODO change rating
+	public static void onClickRating(final int id, final String type, final int postID) {
+		Dialogs.getDialogs().showDialogMessage("Вы голосуете за ", "-1", "0", "+1", new OnClickMessage() {
+			@Override
+			public void onClick(int rel) {
+				HabraEntryType entryType = HabraEntryType.UNKNOWN;
+				switch(type.charAt(0)) {
+				case 'p': entryType = HabraEntryType.POST; break;
+				case 'c': entryType = HabraEntryType.COMMENT; break;
+				case 'q': entryType = HabraEntryType.QUESTION; break;
+				case 'a': entryType = HabraEntryType.ANSWER; break;
+				}
+				HabraEntry.vote(id, entryType, rel, postID);
+			}
+		});
 	}
 	
 	public void pollVote(int postID, String action, int variants[]) {
