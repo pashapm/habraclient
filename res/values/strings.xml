@@ -105,4 +105,13 @@
     <string name="my_profile">Мой профиль</string>
     <string name="options">Опции программы</string>
     <string name="draw_options">Настройки отображения</string>
+    <string name="friend_added">Предложение о дружбе послано</string>
+    <string name="friend_removed">Друг удалён</string>
+    <string name="friend_failed">Не удалось предложить дружбу</string>
+    <string name="message_sent">Сообщение отправлено</string>
+    <string name="message_failed">Не удалось отправить сообщение</string>
+    <string name="show_nav">Навигация</string>
+    <string name="menu">Меню</string>
+    <string name="default_scale">Масштаб по умолчанию</string>
+    <string name="default_scale_summary"></string>
 </resources>

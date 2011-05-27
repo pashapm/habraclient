@@ -75,15 +75,14 @@ public final class HabraTopicParser {
 			topic.blog.parseIdFromUri(mBlogURI);
 			topic.blog.name = mBlogName;
 			
-			topic.title = titleNodes[0].getText().toString();
-			List<String> pathSegments = null;
+			TagNode titleUriTag = titleNodes[0].getParent().findElementByAttValue("class", "topic", true, true);
+			topic.title = titleUriTag.getText().toString();
+			
 			try {
-				int idx = titleNodes.length == 1 ? 0 : 1;
-				pathSegments = Uri.parse(titleNodes[idx].getAttributeByName("title")).getPathSegments();
+				topic.id = Integer.valueOf(Uri.parse(titleUriTag.getAttributeByName("href")).getLastPathSegment());
 			} catch(NullPointerException e) {
-				pathSegments = Uri.parse(titleNodes[0].getAttributeByName("href")).getPathSegments();
+				topic.id = Integer.valueOf(Uri.parse(titleUriTag.getAttributeByName("title")).getLastPathSegment());
 			}
-			topic.id = Integer.valueOf(pathSegments.get(pathSegments.size() - 1));
 		} else {
 			// Topic in list
 			Uri blogURI = Uri.parse(titleNodes[0].getAttributeByName("href"));

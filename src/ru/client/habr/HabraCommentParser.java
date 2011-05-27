@@ -25,9 +25,9 @@ public final class HabraCommentParser {
 		mMainNode = mParser.clean(data);
 
 		try {
-		mEntryNodes = mMainNode.findElementByAttValue("id", "comments", true, false)
-				.findElementByName("ul", false)
-				.getElementsByAttValue("class", "comment_holder vote_holder", false, false);
+			mEntryNodes = mMainNode.findElementByAttValue("id", "comments", true, false)
+					.findElementByName("ul", false)
+					.getElementsByAttValue("class", "comment_holder vote_holder", false, false);
 		} catch(NullPointerException e) {
 			mMainNode = null;
 		}
@@ -38,7 +38,7 @@ public final class HabraCommentParser {
 	}
 	
 	public HabraComment parse(int postID) {
-		if(mEntryNodes.length <= mListIndex || mMainNode == null) return null;
+		if(mEntryNodes == null || mEntryNodes.length <= mListIndex || mMainNode == null) return null;
 		mListIndex++;
 		return parse(mEntryNodes[mListIndex - 1], postID);
 	}

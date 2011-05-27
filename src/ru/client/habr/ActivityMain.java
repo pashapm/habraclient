@@ -7,7 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import ru.client.habr.R;
 import ru.client.habr.HabraLogin.UserInfoListener;
 import android.app.Activity;
@@ -19,7 +18,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 /**
  * @author WNeZRoS
@@ -158,16 +156,8 @@ public class ActivityMain extends Activity {
 			}
 		}
 	}
-	
-	public static void showToast(int resId) {
-		Toast.makeText(applicationContext, applicationContext.getString(resId), Toast.LENGTH_LONG).show();
-	}
-	
+
 	public static String getStringFromResource(int resId) {
 		return applicationContext.getString(resId);
-	}
-	
-	public static Context getContext() {
-		return applicationContext;
 	}
 }

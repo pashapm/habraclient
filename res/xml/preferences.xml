@@ -46,6 +46,10 @@
 			android:key="prefFullScreen" 
 			android:defaultValue="false" 
 			android:title="@string/fullscreen"/>
+		<EditTextPreference android:key="prefDefaultScale"
+			android:defaultValue="150"
+			android:title="@string/default_scale"
+			android:summary="@string/default_scale_summary"/>
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/draw_options">
 		<PreferenceScreen 

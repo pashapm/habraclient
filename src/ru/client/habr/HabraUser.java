@@ -6,6 +6,8 @@ import java.util.List;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 
+import ru.client.habr.AsyncDataSender.OnSendDataFinish;
+
 import android.net.Uri;
 import android.util.Log;
 
@@ -378,7 +380,25 @@ public class HabraUser {
 	}
 	
 	public boolean karmaUpdate(int mark) {
-		// TODO
+		return karmaUpdate(mark, username, mark);
+	}
+	
+	public static boolean karmaUpdate(int id, String username, int mark) {
+		String post[][] = {{"action", "vote"}, {"target_name", "user"}, 
+				{"target_id", String.valueOf(id)}, {"mark", String.valueOf(mark)}};
+		
+		new AsyncDataSender("http://" + username + ".habrahabr.ru/ajax/voting/", 
+				"http://" + username + ".habrahabr.ru/", new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							Dialogs.getDialogs().showToast(R.string.vote_ok);
+						} else {
+							Dialogs.getDialogs().showToast(R.string.vote_failed);
+						}
+					}
+		}).execute(post);
+		
 		//  URL: http://{USERNAME}.habrahabr.ru/ajax/voting/
 		// DATA: action=vote
 		// DATA: target_name=user
@@ -388,8 +408,25 @@ public class HabraUser {
 		return false;
 	}
 	
-	public boolean addFriend() {
-		// TODO
+	public boolean addFriend(String message) {
+		return addFriend(id, username, message);
+	}
+	
+	public static boolean addFriend(int id, String username, String message) {
+		String post[][] = {{"action", "friend"}, {"friendId", String.valueOf(id)}, {"msg", message}};
+		
+		new AsyncDataSender("http://" + username + ".habrahabr.ru/ajax/users/friends/", 
+				"http://" + username + ".habrahabr.ru/", new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							Dialogs.getDialogs().showToast(R.string.friend_added);
+						} else {
+							Dialogs.getDialogs().showToast(R.string.friend_failed);
+						}
+					}
+		}).execute(post);
+		
 		//  URL: http://{USERNAME}.habrahabr.ru/ajax/users/friends/
 		// DATA: action=friend
 		// DATA: friendId={ID}
@@ -398,8 +435,25 @@ public class HabraUser {
 		return false;
 	}
 	
-	public boolean removeFriend() {
-		// TODO
+	public boolean removeFriend(String message) {
+		return removeFriend(id, username, message);
+	}
+	
+	public static boolean removeFriend(int id, String username, String message) {
+		String post[][] = {{"action", "unfriend"}, {"friendId", String.valueOf(id)}, {"msg", message}};
+		
+		new AsyncDataSender("http://" + username + ".habrahabr.ru/ajax/users/friends/", 
+				"http://" + username + ".habrahabr.ru/", new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							Dialogs.getDialogs().showToast(R.string.friend_removed);
+						} else {
+							Dialogs.getDialogs().showToast(R.string.friend_failed);
+						}
+					}
+		}).execute(post);
+		
 		//  URL: http://{USERNAME}.habrahabr.ru/ajax/users/friends/
 		// DATA: action=unfriend
 		// DATA: friendId={ID}
@@ -408,12 +462,25 @@ public class HabraUser {
 		return false;
 	}
 	
-	public boolean sendMessage(String title, String content) {
-		return HabraUser.sendMessage(username, title, content);
+	public boolean sendMessage(String to, String title, String content) {
+		return HabraUser.sendMessage(username, to, title, content);
 	}
 	
-	public static boolean sendMessage(String to, String title, String content) {
-		// TODO
+	public static boolean sendMessage(String from, String to, String title, String content) {
+		String post[][] = {{"message[recipients]", to}, {"message[title]", title}, {"message[text]", content}};
+		
+		new AsyncDataSender("http://" + from + ".habrahabr.ru/ajax/messages/add/", 
+				"http://" + from + ".habrahabr.ru/", new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							Dialogs.getDialogs().showToast(R.string.message_sent);
+						} else {
+							Dialogs.getDialogs().showToast(R.string.message_failed);
+						}
+					}
+		}).execute(post);
+		
 		// URL: http://{MY_USERNAME}.habrahabr.ru/ajax/messages/add/
 		// DATA: message[recipients]={TO}
 		// DATA: message[title]={TITLE}
