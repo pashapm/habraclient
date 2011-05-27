@@ -1,5 +1,10 @@
 package ru.client.habr;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import ru.client.habr.AsyncDataSender.OnSendDataFinish;
+
 /**
  * @author WNeZRoS
  * ����� �����������
@@ -8,13 +13,16 @@ public final class HabraTopic extends HabraEntry {
 	
 	/**
 	 * @author WNeZRoS
-	 * ��� �����
 	 */
 	protected static enum HabraTopicType {
 		POST,
 		LINK,
 		TRANSLATE,
 		PODCAST,
+	}
+	
+	public static abstract class OnPollResultListener {
+		public abstract void onFinish(String result);
 	}
 	
 	protected HabraTopicType postType = HabraTopicType.POST;
@@ -26,6 +34,7 @@ public final class HabraTopic extends HabraEntry {
 	public int commentsCount = 0;
 	public int commentsDiff = 0;
 	public String additional = null;
+	public String summary = null; // TODO parse
 
 	public HabraBlog blog = null;
 
@@ -35,10 +44,6 @@ public final class HabraTopic extends HabraEntry {
 		type = HabraEntryType.POST;
 	}
 	
-	/**
-	 * �������� ����� �����
-	 * @return ����� �����
-	 */
 	public String getUrl() {
 		return blog.getUrl() + id + "/";
 	}
@@ -59,17 +64,6 @@ public final class HabraTopic extends HabraEntry {
 		return getDataAsHTML(false, false, false, false, false, false, false);
 	}
 	
-	/**
-	 * ���������� HTML ��� ��� �����
-	 * @param noContent �� ���������� �������
-	 * @param noTags �� ���������� ����
-	 * @param noMark �� ���������� ������
-	 * @param noDate �� ���������� ���� ����������
-	 * @param noFavs �� ���������� ���-�� ���������� � ���������
-	 * @param noAuthor �� ���������� ������
-	 * @param noComments �� ���������� ���-�� ������������
-	 * @return HTML ��� �����
-	 */
 	public String getDataAsHTML(boolean noContent, boolean noTags, boolean noMark, 
 			boolean noDate, boolean noFavs, boolean noAuthor, boolean noComments) {
 		return "<div class=\"hentry\" id=\"post_" + id 
@@ -81,7 +75,8 @@ public final class HabraTopic extends HabraEntry {
 		+ (noMark && noDate && noFavs && noAuthor && noComments ? "" 
 				: "<div class=\"entry-info\"><div class=\"corner tl\"></div>" 
 					+ "<div class=\"corner tr\"></div><div class=\"entry-info-wrap\">" 
-					+ (noMark ? "" : "<div class=\"mark\"><span class=\"" 
+					+ (noMark ? "" : "<div class=\"mark\" onClick=\"js.onClickRating(" 
+						+ id + ", 'p', 0);\"><span class=\"" 
 						+ (rating > 0 ? "plus" : (rating < 0 ? "minus" : "zero")) + "\">" 
 						+ (rating == 99999 ? "&#8212;" : (rating > 0 ? "+" : "") + rating) + "</span></div>") 
 					+ (noDate ? "" : "<div class=\"published\"><span>" + date + "</span></div>") 
@@ -98,6 +93,26 @@ public final class HabraTopic extends HabraEntry {
 		+ "</a></div>") 
 		+ "</div><div class=\"corner bl\"></div><div class=\"corner br\"></div>") 
 		+ "</div></div>";
+	}
+	
+	public static void poll(int postID, String action, int variants[], final OnPollResultListener l) {
+		List<String[]> post = new ArrayList<String[]>(); 
+		post.add(new String[] {"action", action});
+		post.add(new String[] {"post_id", String.valueOf(postID)});
+		
+		for(int i = 0; i < variants.length; i++)
+			post.add(new String[] {"variant[]", String.valueOf(variants[i])});
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/poll/", "http://habrahabr.ru/", new OnSendDataFinish() {
+			@Override
+			public void onFinish(String result) {
+				if(l != null) l.onFinish(result);
+			}
+		}).execute(post.toArray(new String[0][]));
+	}
+	
+	public void poll(String action, int variants[], final OnPollResultListener l) {
+		poll(id, action, variants, l);
 	}
 	
 	/* *********************************************************************** *

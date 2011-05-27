@@ -12,13 +12,10 @@ public final class HabraComment extends HabraEntry {
 	public boolean inFavs = false;
 	public HabraComment[] childs = null;
 	public boolean newReply = false;
-	
-	public String getUrl(int postId) {
-		return getUrl() + postId + "/#comment_" + id;
-	}
+	public int postID = 0;
 	
 	public String getUrl() {
-		return "http://habrahabr.ru/post/";
+		return getUrl() + postID + "/#comment_" + id;
 	}
 	
 	/**
@@ -28,10 +25,6 @@ public final class HabraComment extends HabraEntry {
 		return getDataAsHTML(false);
 	}
 	
-	/**
-	 * @param noAvatar ������ ������
-	 * @return ����� ����������� ��� HTML ���
-	 */
 	public String getDataAsHTML(boolean noAvatar) {
 		return "<div id=\"comment_" + id + "\" class=\"comment_holder" 
 		+ "\"><div class=\"msg-meta" + (newReply ? " new-reply" : "") + "\"><ul class=\"menu info author hcard\">" 
@@ -40,10 +33,12 @@ public final class HabraComment extends HabraEntry {
 		+ "</li><li class=\"fn nickname username\"><a href=\"http://" 
 		+ author.replace('_', '-') + ".habrahabr.ru/\" class=\"url\">" + author 
 		+ "</a>,</li><li class=\"date\"><abbr class=\"published\">" + date 
-		+ "</abbr></li><li class=\"mark\"><span class=\"" 
+		+ "</abbr></li><li class=\"mark\" onClick=\"js.onClickRating(" 
+		+ id + ", 'c', " + postID + ");\"><span class=\"" 
 		+ (rating > 0 ? "plus" : (rating < 0 ? "minus" : "zero")) + "\">"
 		+ (rating > 0 ? "+" : "") + rating 
-		+ "</span></li></ul></div><div class=\"entry-content\">" + content 
+		+ "</span></li></ul></div><div class=\"entry-content\" onClick=\"js.onClickComment(" 
+		+ id + ", " + postID + ", '" + author + "', " + inFavs + ");\">" + content 
 		+ "</div><div class=\"child\">" + getChildsDataAsHTML(noAvatar) + "</div></div>";
 	}
 	

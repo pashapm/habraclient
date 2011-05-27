@@ -24,6 +24,10 @@ public final class HabraLogin {
 		public abstract void onFinish(String message);
 	}
 	
+	public static abstract class LogoutListener {
+		public abstract void onFinish(boolean logged); 
+	}
+	
 	public static abstract class KarmaListener {
 		public abstract void onFinish(HabraLogin login);
 	}
@@ -86,26 +90,37 @@ public final class HabraLogin {
 	}
 	
 	/**
-	 * Посылает запрос на выход с сайта. Работает в том же потоке, из которого был вызван.
+	 * Посылает запрос на выход с сайта. Работает в отдельном потоке.
 	 * @return true если удалось разлогиниться
 	 */
-	public boolean logout() {
+	public boolean logout(final LogoutListener l) {
 		if(mUserName == null || mUserID == 0) return false;
 		
-		URLClient.getUrlClient().getURL("http://habrahabr.ru/logout/" + mUserName + "/" + mUserID + "/");
-		Cookie[] cooks = URLClient.getUrlClient().getCookies();
-		
-		for(int i = 0; i < cooks.length; i++) {
-			Log.d("cooks", cooks[i].getName() + " expire for " + cooks[i].getExpiryDate().toGMTString());
+		AsyncDataLoader.getDataLoader().execute("http://habrahabr.ru/logout/" 
+				+ mUserName + "/" + mUserID + "/", false, new LoaderData() {
 			
-			if(cooks[i].getName().equals("PHPSESSID")) {
-				if(cooks[i].getExpiryDate().getTime() > new Date().getTime()) 
-					return false;
+			public String update(String data) { 
+				Cookie[] cooks = URLClient.getUrlClient().getCookies();
+				
+				for(int i = 0; i < cooks.length; i++) {
+					Log.d("cooks", cooks[i].getName() + " expire for " + cooks[i].getExpiryDate().toGMTString());
+					
+					if(cooks[i].getName().equals("PHPSESSID")) {
+						if(cooks[i].getExpiryDate().getTime() > new Date().getTime()) 
+							return "f";
+					}
+				}
+	
+				mUserID = 0;
+				mUserName = null;
+				return "t";
 			}
-		}
+			
+			public void finish(String data) {
+				if(l != null) l.onFinish(data.equals("f"));
+			}
+		});
 
-		mUserID = 0;
-		mUserName = null;
 		return true;
 	}
 	

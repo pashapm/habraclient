@@ -78,7 +78,8 @@ public final class HabraTopicParser {
 			topic.title = titleNodes[0].getText().toString();
 			List<String> pathSegments = null;
 			try {
-				pathSegments = Uri.parse(titleNodes[0].getAttributeByName("title")).getPathSegments();
+				int idx = titleNodes.length == 1 ? 0 : 1;
+				pathSegments = Uri.parse(titleNodes[idx].getAttributeByName("title")).getPathSegments();
 			} catch(NullPointerException e) {
 				pathSegments = Uri.parse(titleNodes[0].getAttributeByName("href")).getPathSegments();
 			}

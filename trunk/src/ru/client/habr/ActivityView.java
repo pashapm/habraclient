@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * @author WNeZRoS
- * �������� �����
+ * TODO poll
  */
 public class ActivityView extends Activity {	
 	private WebView mResultView = null;
@@ -102,7 +102,7 @@ public class ActivityView extends Activity {
 				HabraCommentParser commentParser = new HabraCommentParser(pageData);
 				HabraComment comment = null;
 				
-				while((comment = commentParser.parse()) != null) {
+				while((comment = commentParser.parse(topic.id)) != null) {
 					mLastEntries.add(comment); // XXX
 					data += comment.getDataAsHTML();
 				}
@@ -409,34 +409,18 @@ public class ActivityView extends Activity {
 		}
 	}
 	
-	/**
-	 * ������������ ���� �� ����� ������������ � ���� ����
-	 * @param v
-	 */
 	public void onClickUserName(View v) {
 		loadData(Uri.parse(HabraLogin.getHabraLogin().getProfileURL()));
 	}
 	
-	/**
-	 * ������������ ���� �� ������ "���������" � ���� ����
-	 * @param v
-	 */
 	public void onClickFavorites(View v) {
 		
 	}
 	
-	/**
-	 * ������������ ���� �� ������ "������ �����" � ���� ����
-	 * @param v
-	 */
 	public void onClickPM(View v) {
 		
 	}
 	
-	/**
-	 * ������������ ����� �� ������� ���������
-	 * @param v
-	 */
 	public void onClickNav(View v) {
 		switch(v.getId()) {
 		case R.id.buttonNavPost:
@@ -543,9 +527,12 @@ public class ActivityView extends Activity {
 				&& mWifi.getConnectionInfo().getNetworkId() != -1) ? data 
 						: RemoveNode.removeImage(data);
 		
-		data = "<html>\n<head>\n<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\n" 
-			+ "<link href=\"../files/general.css\" rel=\"stylesheet\"/>\n<title>" + title 
-			+ "</title>\n</head>\n<body>\n<div class=\"main-content\">\n" + data + "\n</div>\n</body>\n</html>";
+		data = "<html>\n<head>\n" 
+			+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\n" 
+			+ "<link href=\"../files/general.css\" rel=\"stylesheet\"/>\n" 
+			+ "<script type=\"text/javascript\" src=\"../files/general.js\"></script>\n" 
+			+ "<title>" + title + "</title>\n</head>\n<body>\n<div class=\"main-content\">\n" 
+			+ data + "\n</div>\n</body>\n</html>";
 		
 		if(title.length() == 0 || !mPreferences.getBoolean("prefUseCache", true))
 		{

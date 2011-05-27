@@ -23,9 +23,6 @@ public class HabraEntry {
 	public String author;
 	public String date;
 	
-	/**
-	 * @return ����� ����������� � HTML
-	 */
 	public String getDataAsHTML() {
 		return "<div id=\"comment_" + id 
 		+ "\" class=\"comment_holder quest_comment\"><div class=\"entry-content\">" 
@@ -43,7 +40,7 @@ public class HabraEntry {
 		return getUrl();
 	}
 	
-	public final boolean vote(int mark, int postID) {
+	public final boolean vote(int id, HabraEntryType type, int mark, int postID) {
 		String[][] post = {{"action", "vote"}, {"signed_id", String.valueOf(postID)}, 
 				{"target_id", String.valueOf(id)}, {"mark", String.valueOf(mark)},
 				{"target_name", "change"}};
@@ -58,9 +55,6 @@ public class HabraEntry {
 		default: return false;
 		}
 		
-		/*String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/voting/", post, 
-				"http://habrahabr.ru/");*/
-		
 		new AsyncDataSender("http://habrahabr.ru/ajax/voting/", "http://habrahabr.ru/", new OnSendDataFinish() {
 			@Override
 			public void onFinish(String result) {
@@ -71,10 +65,14 @@ public class HabraEntry {
 			}
 		}).execute(post);
 		
-		return true; //res.contains("<message>ok</message>");
+		return true;
 	}
 	
-	public final boolean changeFavorites(final boolean isRemove) {
+	public final boolean vote(int mark, int postID) {
+		return vote(id, type, mark, postID);
+	}
+	
+	public final static boolean changeFavorites(int id, HabraEntryType type, final boolean isRemove) {
 		String[][] post = {{"action", isRemove ? "remove" : "add"}, 
 				{"target_type", "change"}, {"target_id", String.valueOf(id)}};
 		
@@ -84,9 +82,6 @@ public class HabraEntry {
 		case QUESTION: post[1][1] = "questions"; break;
 		default: return false;
 		}
-		
-		/*String res = URLClient.getUrlClient().postURL("http://habrahabr.ru/ajax/favorites/", post, 
-				"http://habrahabr.ru/");*/
 		
 		new AsyncDataSender("http://habrahabr.ru/ajax/favorites/", "http://habrahabr.ru/", new OnSendDataFinish() {
 			@Override
@@ -98,20 +93,20 @@ public class HabraEntry {
 			}
 		}).execute(post);
 
-		return true; //res.contains("<message>ok</message>");
+		return true;
 	}
 
 	public final boolean changeFavorites() {
 		switch(type) {
 		case POST: 
 			HabraTopic t = (HabraTopic) this;
-			return t.changeFavorites(t.inFavs);
+			return changeFavorites(id, type, t.inFavs);
 		case COMMENT:
 			HabraComment c = (HabraComment) this;
-			return c.changeFavorites(c.inFavs);
+			return changeFavorites(id, type, c.inFavs);
 		case QUESTION: 
 			HabraQuest q = (HabraQuest) this;
-			return q.changeFavorites(q.inFavs);
+			return changeFavorites(id, type, q.inFavs);
 		default: return false;
 		}
 	}
