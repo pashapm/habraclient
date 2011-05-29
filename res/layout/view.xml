@@ -20,18 +20,29 @@
             <Button android:layout_width="wrap_content" android:text="@string/private_mail" android:id="@+id/buttonPrivateMail" android:layout_height="40dip" android:onClick="onClickPM"/>
         </LinearLayout>
     </HorizontalScrollView>
-    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="match_parent" android:layout_width="match_parent" android:gravity="right">
-        <WebView android:layout_height="wrap_content" android:id="@+id/result" android:layout_width="match_parent"/>
+    <RelativeLayout android:id="@+id/relativeLayout1" android:layout_height="match_parent" android:layout_width="match_parent" android:gravity="right" android:background="@color/userbar_button_text_color">
+        <WebView android:id="@+id/result" android:layout_width="match_parent" android:layout_height="match_parent"/>
         <ProgressBar android:id="@+id/procLoading" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="0px" android:layout_alignParentRight="true"/>
-        <HorizontalScrollView android:fillViewport="true" android:id="@+id/scrollNavPanel" android:layout_width="wrap_content" android:layout_height="wrap_content">
-            <LinearLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/layoutNavPanel">
-                <Button android:id="@+id/buttonNavPost" android:layout_width="wrap_content" android:text="@string/posts" android:layout_height="40dip" android:onClick="onClickNav"/>
-                <Button android:id="@+id/buttonNavQA" android:layout_width="wrap_content" android:text="@string/q_a" android:layout_height="40dip" android:onClick="onClickNav"/>
-                <Button android:id="@+id/buttonNavPeople" android:layout_width="wrap_content" android:text="@string/people" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
-                <Button android:id="@+id/buttonNavBlog" android:layout_width="wrap_content" android:text="@string/blogs" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
-                <Button android:id="@+id/buttonNavCompany" android:layout_width="wrap_content" android:text="@string/companies" android:layout_height="40dip" android:onClick="onClickNav" android:visibility="gone"/>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:id="@+id/layoutAllNavPanels">
+            <LinearLayout android:layout_height="wrap_content" android:id="@+id/layoutNavPanel" android:layout_width="match_parent" android:background="#000">
+                <ToggleButton android:id="@+id/buttonNavPost" android:onClick="onClickNav" android:textOn="@string/posts" android:textOff="@string/posts" style="@style/MenuButton" android:checked="true"/>
+                <ToggleButton android:id="@+id/buttonNavQA" android:onClick="onClickNav" android:textOn="@string/q_a" android:textOff="@string/q_a" style="@style/MenuButton"/>
+                <ToggleButton android:id="@+id/buttonNavPeople" android:onClick="onClickNav" android:textOn="@string/people" android:textOff="@string/people" style="@style/MenuButton"/>
+                <ToggleButton android:id="@+id/buttonNavBlog" android:onClick="onClickNav" android:textOn="@string/blogs" android:textOff="@string/blogs" style="@style/MenuButton"/>
+                <ToggleButton android:id="@+id/buttonNavCompany" android:onClick="onClickNav" android:textOn="@string/companies" android:textOff="@string/companies" style="@style/MenuButton"/>
             </LinearLayout>
-        </HorizontalScrollView>
+            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/layoutNavPanel2" android:layout_marginLeft="15px" android:layout_marginRight="15px">
+				<ToggleButton android:id="@+id/buttonNavSection1" android:onClick="onClickNav" android:textOn="@string/lenta" android:textOff="@string/lenta" style="@style/MenuLeftFlatButton"/>
+				<ToggleButton android:id="@+id/buttonNavSection2" android:onClick="onClickNav" android:textOn="@string/all" android:textOff="@string/all" style="@style/MenuFlatButton" android:checked="true"/>
+				<ToggleButton android:id="@+id/buttonNavSection3" android:onClick="onClickNav" android:textOn="@string/tematic" android:textOff="@string/tematic" style="@style/MenuFlatButton"/>
+				<ToggleButton android:id="@+id/buttonNavSection4" android:onClick="onClickNav" android:textOn="@string/corporative" android:textOff="@string/corporative" style="@style/MenuRightFlatButton"/>
+			</LinearLayout>
+			<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/layoutNavPanel3" android:layout_marginLeft="15px" android:layout_marginRight="15px">
+				<Button android:id="@+id/buttonNavHabred" android:onClick="onClickNav" android:text="@string/nav_habred" style="@style/SubMenuLeftButton"/>
+				<Button android:id="@+id/buttonNavNew" android:onClick="onClickNav" android:text="@string/nav_new" style="@style/SubMenuButton"/>
+				<Button android:id="@+id/buttonNavUnhabred" android:onClick="onClickNav" android:text="@string/nav_unhabred" style="@style/SubMenuRightButton"/>
+			</LinearLayout>
+        </LinearLayout>
     </RelativeLayout>
     <Button android:text="menuPostFromList" android:id="@+id/menuPostFromList" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
 	<Button android:text="menuPostFull" android:id="@+id/menuPostFull" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content"/>

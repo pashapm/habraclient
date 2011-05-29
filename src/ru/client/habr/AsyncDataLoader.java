@@ -108,7 +108,8 @@ public final class AsyncDataLoader {
 		}
 	
 		protected void onPostExecute(Integer result) {
-			if(mLoaderData.pageType != PageType.UNKNOWN) mHistory.add(mLoaderData.url);
+			if(mLoaderData == null || mHistory == null) return;
+			if(mLoaderData.pageType != PageType.UNKNOWN && !mLoaderData.binary) mHistory.add(mLoaderData.url);
 			
 			mIsFinished = true;
 			
@@ -239,7 +240,6 @@ public final class AsyncDataLoader {
 	 * @return AsyncTask.cancel(...)
 	 */
 	public final boolean cancel(boolean mayInterruptIfRunning) {
-		// TODO: correct cancel ??? WTF ???
 		if(mAsyncLoader == null) return false;
 		return mAsyncLoader.cancel(mayInterruptIfRunning);
 	}

@@ -12,18 +12,18 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.ClipboardManager;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnLongClickListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 import android.view.KeyEvent;
 import ru.client.habr.R;
 import ru.client.habr.AsyncDataLoader.LoaderData;
@@ -43,7 +43,11 @@ public class ActivityView extends Activity {
 	private WifiManager mWifi = null;
 	private String mLastEntryTitle = null;
 	private Uri mSelectedUri = null;
+	private Uri mLastLoadedUri = null;
 	private static boolean userBarWasUpdated = false;
+	private ToggleButton mMainMenuButtons[] = null;
+	private ToggleButton mFlatMenuButtons[] = null;
+	private Button mTypeMenuButtons[] = null;
 	
 	private LoaderData mAnyDataLoader = new LoaderData() {
 		public void finish(String data) {
@@ -179,10 +183,29 @@ public class ActivityView extends Activity {
 			findViewById(R.id.scrollUserBar).setVisibility(View.GONE);
 		}
 		
+		mMainMenuButtons = new ToggleButton[5];
+		mMainMenuButtons[0] = (ToggleButton) findViewById(R.id.buttonNavPost);
+		mMainMenuButtons[1] = (ToggleButton) findViewById(R.id.buttonNavQA);
+		mMainMenuButtons[2] = (ToggleButton) findViewById(R.id.buttonNavBlog);
+		mMainMenuButtons[3] = (ToggleButton) findViewById(R.id.buttonNavPeople);
+		mMainMenuButtons[4] = (ToggleButton) findViewById(R.id.buttonNavCompany);
+		
+		mFlatMenuButtons = new ToggleButton[4];
+		mFlatMenuButtons[0] = (ToggleButton) findViewById(R.id.buttonNavSection1);
+		mFlatMenuButtons[1] = (ToggleButton) findViewById(R.id.buttonNavSection2);
+		mFlatMenuButtons[2] = (ToggleButton) findViewById(R.id.buttonNavSection3);
+		mFlatMenuButtons[3] = (ToggleButton) findViewById(R.id.buttonNavSection4);
+		
+		mTypeMenuButtons = new Button[3];
+		mTypeMenuButtons[0] = (Button) findViewById(R.id.buttonNavHabred);
+		mTypeMenuButtons[1] = (Button) findViewById(R.id.buttonNavNew);
+		mTypeMenuButtons[2] = (Button) findViewById(R.id.buttonNavUnhabred);
+		
 		Log.d("onCreate", "Settings");
 		mResultView.getSettings().setAllowFileAccess(true);
 		mResultView.getSettings().setJavaScriptEnabled(true);
 		mResultView.getSettings().setUserAgentString(URLClient.USER_AGENT);
+		
 		mResultView.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -239,7 +262,7 @@ public class ActivityView extends Activity {
 						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
 							@Override
 							public void onClick(int item, String itemText) {
-								onMenuItemSelected(item, author, id, inFavs);
+								onMenuItemSelected(item, R.array.post_menu, author, id, inFavs);
 							}
 						});
 					} break;
@@ -249,7 +272,7 @@ public class ActivityView extends Activity {
 						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
 							@Override
 							public void onClick(int item, String itemText) {
-								onMenuItemSelected(item, null, 0, false);
+								onMenuItemSelected(item, R.array.default_menu, null, 0, false);
 							}
 						});
 					}
@@ -267,8 +290,7 @@ public class ActivityView extends Activity {
 		mResultView.addJavascriptInterface(new JSInterface(mResultView), "js");
 		
 		mWifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-		
-		findViewById(R.id.scrollNavPanel).setVisibility(View.GONE);
+		showNavPanels(false);
 		
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		loadData(getIntent().getData());
@@ -311,30 +333,21 @@ public class ActivityView extends Activity {
 	
 	public void onDestroy() {
 		super.onDestroy();
-		AsyncDataLoader.getDataLoader().cancel(true);
-	}
-	
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
 		
-		switch(v.getId()) {
-		case R.id.result:
-			getMenuInflater().inflate(R.menu.post_list_menu, menu);
-			break;
-		}
+		mAnyDataLoader = null;
+		AsyncDataLoader.getDataLoader().cancel(true);
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch(keyCode) {
 		case KeyEvent.KEYCODE_SEARCH:
-			findViewById(R.id.scrollNavPanel).setVisibility(
-					findViewById(R.id.scrollNavPanel).getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+			showNavPanels();
 			break;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 	
-	public boolean onMenuItemSelected(int item, String entryAuthor, int entryID, boolean entryInFavs) {	
+	public boolean onMenuItemSelected(int item, int menu_id, String entryAuthor, int entryID, boolean entryInFavs) {	
 		switch(item) {
 		case 0:
 			Intent openIntent = new Intent(Intent.ACTION_VIEW);
@@ -350,23 +363,31 @@ public class ActivityView extends Activity {
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); 
 			clipboard.setText(mSelectedUri.toString());
 			return true;
-		case 3: {
-			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
+		case 3: 
+			if(menu_id == R.array.post_menu) {
+				startActivityForResult(new Intent(getBaseContext(), 
+						ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
+			} 
 			return true;
-		}
 		case 4:
-			JSInterface.onClickRating(entryID, (mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
+			if(menu_id == R.array.post_menu) {
+				JSInterface.onClickRating(entryID, 
+						(mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
+			}
 			return true;
 		case 5:
-			HabraEntry.changeFavorites(entryID, 
-					(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
-							HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
+			if(menu_id == R.array.post_menu) {
+				HabraEntry.changeFavorites(entryID, 
+						(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
+								HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
+			}
 			return true;
 		case 6: {
-			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(Uri.parse("http://" 
-							+ entryAuthor + ".habrahabr.ru/")), 0);
+			if(menu_id == R.array.post_menu) {
+				startActivityForResult(new Intent(getBaseContext(), 
+						ActivityView.class).setData(Uri.parse("http://" 
+								+ entryAuthor + ".habrahabr.ru/")), 0);
+			}
 			return true;
 		}
 		default:
@@ -385,8 +406,7 @@ public class ActivityView extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_nav:
-			findViewById(R.id.scrollNavPanel).setVisibility(
-					findViewById(R.id.scrollNavPanel).getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+			showNavPanels();
 			return true;
 		case R.id.menu_cache:
 			final String[] cache = getCacheDir().list(new FilenameFilter() {
@@ -438,25 +458,92 @@ public class ActivityView extends Activity {
 	public void onClickNav(View v) {
 		switch(v.getId()) {
 		case R.id.buttonNavPost:
-			loadData(Uri.parse("http://habrahabr.ru/"));
+			loadData(Uri.parse("http://habrahabr.ru/?hl=all"));
 			break;
 		case R.id.buttonNavQA:
 			loadData(Uri.parse("http://habrahabr.ru/qa/"));
 			break;
 		case R.id.buttonNavPeople:
+			mLastLoadedUri = Uri.parse("http://habrahabr.ru/people/");
 			mResultView.loadData("Coming soon...", "text/html", "utf-8");
 			break;
 		case R.id.buttonNavBlog:
+			mLastLoadedUri = Uri.parse("http://habrahabr.ru/bloglist/");
 			mResultView.loadData("Coming soon...", "text/html", "utf-8");
 			break;
 		case R.id.buttonNavCompany:
+			mLastLoadedUri = Uri.parse("http://habrahabr.ru/companies/");
 			mResultView.loadData("Coming soon...", "text/html", "utf-8");
+			break;
+		case R.id.buttonNavSection1:
+			if(mMainMenuButtons[0].isChecked()) {
+				loadData(Uri.parse("http://habrahabr.ru/?fl=hl"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/"));
+			}
+			break;
+		case R.id.buttonNavSection2:
+			if(mMainMenuButtons[0].isChecked()) {
+				loadData(Uri.parse("http://habrahabr.ru/?fl=all"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/hot/"));
+			}
+			break;
+		case R.id.buttonNavSection3:
+			if(mMainMenuButtons[0].isChecked()) {
+				loadData(Uri.parse("http://habrahabr.ru/?fl=blogs"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/popular/"));
+			}
+			break;
+		case R.id.buttonNavSection4:
+			if(mMainMenuButtons[0].isChecked()) {
+				loadData(Uri.parse("http://habrahabr.ru/?fl=corporative"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/unanswered/"));
+			}
+			break;
+		case R.id.buttonNavHabred:
+			if(mMainMenuButtons[0].isChecked()) {
+				if(mFlatMenuButtons[0].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=hl"));
+				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=all"));
+				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=blogs"));
+				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=corporative"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/"));
+			} else {
+				if(mFlatMenuButtons[0].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/"));
+				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/hot/"));
+				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/popular/"));
+				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/unanswered/"));
+			}
+			break;
+		case R.id.buttonNavNew:
+			if(mMainMenuButtons[0].isChecked()) {
+				if(mFlatMenuButtons[0].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=hl"));
+				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=all"));
+				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=blogs"));
+				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=corporative"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/new/"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/new/"));
+			}
+			break;
+		case R.id.buttonNavUnhabred:
+			if(mMainMenuButtons[0].isChecked()) {
+				if(mFlatMenuButtons[0].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=hl"));
+				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=all"));
+				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=blogs"));
+				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=corporative"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/unhabred/"));
+			} else {
+				loadData(Uri.parse("http://habrahabr.ru/qa/unhabred/"));
+			}
 			break;
 		default: 
 			mResultView.loadData("WTF o_O", "text/html", "utf-8");
 			break;
 		}
-		findViewById(R.id.scrollNavPanel).setVisibility(View.GONE);
+		showNavPanels(false);
 	}
 	
 	private String getNavLinksForUri(Uri uri) {
@@ -487,6 +574,112 @@ public class ActivityView extends Activity {
 		return "<h2 class=\"nav\"><a href=\"" + bpath + "?" + uri.getQuery() 
 			+ "\">&#8592;&nbsp;сюда</a>&nbsp;&nbsp;<a href=\"" + npath 
 			+ "?" + uri.getQuery()  + "\">туда&nbsp;&#8594;</a></h2>" ;
+	}
+	
+	private void showNavPanels(boolean visibility) {
+		findViewById(R.id.layoutAllNavPanels).setVisibility(visibility ? View.VISIBLE : View.GONE);
+		
+		if(visibility) {
+			List<String> pathSegments = mLastLoadedUri.getPathSegments();
+			if(pathSegments.size() == 0 || pathSegments.get(0).equals("new") || pathSegments.get(0).equals("unhabred")) {
+				setActiveMainMenuButton(0);
+				
+				String fl = mLastLoadedUri.getQueryParameter("fl");
+				if(fl == null) setActiveFlatMenuButton(1);
+				else if(fl.equals("hl")) setActiveFlatMenuButton(0);
+				else if(fl.equals("blogs")) setActiveFlatMenuButton(2);
+				else if(fl.equals("corporative")) setActiveFlatMenuButton(3);
+				else setActiveFlatMenuButton(1);
+				
+				setFlatMenuText(false);
+				
+				if(pathSegments.size() == 0) setActiveSubMenuButton(0);
+				else setActiveSubMenuButton(pathSegments.get(0).equals("new") ? 1 
+						: pathSegments.get(0).equals("unhabred") ? 2 : 0);
+			} else if(pathSegments.get(0).equals("qa")) {
+				setActiveMainMenuButton(1);
+				
+				if(pathSegments.size() == 1) {
+					setActiveFlatMenuButton(0);
+				} else {
+					if(pathSegments.get(1).equals("hot")) setActiveFlatMenuButton(1);
+					else if(pathSegments.get(1).equals("popular")) setActiveFlatMenuButton(2);
+					else if(pathSegments.get(1).equals("unanswered")) setActiveFlatMenuButton(3);
+					else setActiveFlatMenuButton(0);
+				}
+				
+				setFlatMenuText(true);
+				
+				if(pathSegments.size() == 1) setActiveSubMenuButton(0);
+				else setActiveSubMenuButton(pathSegments.get(1).equals("new") ? 1 
+						: pathSegments.get(1).equals("unhabred") ? 2 : -1);
+			} else if(pathSegments.get(0).equals("blogs")) {
+				setActiveMainMenuButton(0);
+				setActiveFlatMenuButton(-1);
+				if(pathSegments.size() == 2) setActiveSubMenuButton(0);
+				else setActiveSubMenuButton(pathSegments.get(2).equals("new") ? 1 
+							: pathSegments.get(2).equals("unhabred") ? 2 : 0);
+			} else if(pathSegments.get(0).equals("bloglist")) {
+				setActiveMainMenuButton(2);
+				setActiveFlatMenuButton(-1);
+				setActiveSubMenuButton(-1);
+			} else if(pathSegments.get(0).equals("people")) {
+				setActiveMainMenuButton(3);
+				setActiveFlatMenuButton(-1);
+				setActiveSubMenuButton(-1);
+			} else if(pathSegments.get(0).equals("companies")) {
+				setActiveMainMenuButton(4);
+				setActiveFlatMenuButton(-1);
+				setActiveSubMenuButton(-1);
+			}
+		}
+	}
+	
+	private void setActiveMainMenuButton(int button) {
+		for(int i = 0; i < mMainMenuButtons.length; i++) {
+			if(i == button) mMainMenuButtons[i].setChecked(true);
+			else mMainMenuButtons[i].setChecked(false);
+		}
+	}
+	
+	private void setActiveFlatMenuButton(int button) {
+		if(button == -1)
+			findViewById(R.id.layoutNavPanel2).setVisibility(View.GONE);
+		else findViewById(R.id.layoutNavPanel2).setVisibility(View.VISIBLE);
+		
+		for(int i = 0; i < mFlatMenuButtons.length; i++) {
+			if(i == button) mFlatMenuButtons[i].setChecked(true);
+			else mFlatMenuButtons[i].setChecked(false);
+		}
+	}
+	
+	private void setFlatMenuText(boolean qa) {
+		if(qa) {
+			mFlatMenuButtons[0].setText(R.string.inbox);
+			mFlatMenuButtons[1].setText(R.string.hot);
+			mFlatMenuButtons[2].setText(R.string.popular);
+			mFlatMenuButtons[3].setText(R.string.no_answers);
+		} else {
+			mFlatMenuButtons[0].setText(R.string.lenta);
+			mFlatMenuButtons[1].setText(R.string.all);
+			mFlatMenuButtons[2].setText(R.string.tematic);
+			mFlatMenuButtons[3].setText(R.string.corporative);
+		}
+	}
+	
+	private void setActiveSubMenuButton(int button) {
+		if(button == -1)
+			findViewById(R.id.layoutNavPanel3).setVisibility(View.GONE);
+		else findViewById(R.id.layoutNavPanel3).setVisibility(View.VISIBLE);
+		
+		for(int i = 0; i < mTypeMenuButtons.length; i++) {
+			if(i == button) mTypeMenuButtons[i].setTextColor(getResources().getColor(R.color.menu_button_active));
+			else mTypeMenuButtons[i].setTextColor(getResources().getColor(R.color.menu_button));
+		}
+	}
+	
+	private void showNavPanels() {
+		showNavPanels(findViewById(R.id.layoutAllNavPanels).getVisibility() == View.GONE);
 	}
 	
 	private void exit(int result) {
@@ -578,6 +771,7 @@ public class ActivityView extends Activity {
 		Log.d("onCreate", "Load data"); 
 		
 		if(uri != null) {
+			mLastLoadedUri = uri;
 			AsyncDataLoader.getDataLoader().execute(uri.toString());
 		} else {
 			String url = mPreferences.getString("prefMainScreenContent", "http://habrahabr.ru/?fl=all");
@@ -591,6 +785,7 @@ public class ActivityView extends Activity {
 			}
 			Log.i("ActivityView.loadData", url);
 			
+			mLastLoadedUri = Uri.parse(url);
 			AsyncDataLoader.getDataLoader().execute(url);
 		}
 	}

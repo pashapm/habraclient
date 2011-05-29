@@ -32,17 +32,17 @@
 ##                                                                            ##
 ################################################################################
 
-[ ] Send requests only in Async*
-[ ] Process data only in Async*
-[ ] Optimize cache
-[ ] Interface improvement
-[ ] Split preferences to categories
-[ ] Think about embed parsers
-[ ] Do HabraUser
+[X] Send requests only in Async*
+[X] Process data only in Async*
+[*] Optimize cache
+[*] Interface improvement
+[X] Split preferences to categories
+[*] Think about embed parsers
+[X] Do HabraUser
 [ ] Optimize data process
-[ ] Test parser engine
+[*] Test parser engine
 [ ] HabraTopicWriter or embed
 [ ] HabraCommentWriter or embed
 [ ] HabraQuestWriter or embed
 [ ] HabraAnswerWriter or embed
-[ ] Fix context menu
+[X] Fix context menu

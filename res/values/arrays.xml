@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="name_main_screen_content">
-        <item>Лента</item>
-        <item>Все посты</item>
-        <item>Все новые посты</item>
-        <item>Q&amp;A</item>
-        <item>Мой профиль</item>
+        <item>@string/lenta</item>
+        <item>@string/all_posts</item>
+        <item>@string/all_new_posts</item>
+        <item>@string/q_a</item>
+        <item>@string/my_profile</item>
     </string-array>
     <string-array name="value_main_screen_content">
         <item>http://habrahabr.ru/?fl=hl</item>
@@ -15,9 +15,9 @@
         <item>qwe</item>
     </string-array>
     <string-array name="name_load_images">
-        <item>Загружать</item>
-        <item>Загружать только по Wi-Fi</item>
-        <item>Не загружать</item>
+        <item>@string/load</item>
+        <item>@string/load_on_wifi</item>
+        <item>@string/not_load</item>
     </string-array>
     <string-array name="value_load_images">
         <item>1</item>
@@ -37,5 +37,14 @@
     	<item>@string/open</item>
     	<item>@string/share</item>
 		<item>@string/copy_link</item>
+	</string-array>
+	<string-array name="comment_menu">
+    	<item>@string/open</item>
+    	<item>@string/share</item>
+    	<item>@string/copy_link</item>
+		<item>@string/comment</item>
+		<item>@string/vote</item>
+		<item>@string/add_favorites</item>
+		<item>@string/author</item>
 	</string-array>
 </resources>
