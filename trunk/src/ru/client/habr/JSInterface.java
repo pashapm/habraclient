@@ -5,6 +5,7 @@ package ru.client.habr;
 
 import ru.client.habr.Dialogs.OnClickMessage;
 import ru.client.habr.HabraEntry.HabraEntryType;
+import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -50,7 +51,13 @@ public class JSInterface {
 		});
 	}
 	
+	public void logInfo(String info) {
+		Log.i("JS", info);
+	}
+	
 	public void pollVote(int postID, String action, int variants[]) {
+		for(int i = 0; i < variants.length; i++) Log.d("var", i + ": " + variants[i]);
+		
 		HabraTopic.poll(postID, action, variants, new HabraTopic.OnPollResultListener() {
 			@Override
 			public void onFinish(String result) {

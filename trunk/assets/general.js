@@ -1,26 +1,26 @@
-class pollFormClass {
-	var lastForm = null;
+var pollFormClass = function() {
+	this.lastForm = null;
 	
-	function getResult(form, action, id) {
+	this.sendData = function (form, action, id) {
 		var elems = form.elements;
 		var checked = new Array();
 		var check_idx = 0;
 		for(i = 0; i < elems.length; i++) {
 			if(elems[i].checked) { 
-				checked[check_idx] = elems[i].value;
+				checked[check_idx] = parseInt(elems[i].value);
 				check_idx++;
 			}
 		}
 		
-		lastForm = form;
-	
-		js.pollVote(id, action, checked);
+		this.lastForm = form;
+		js.pollVote(parseInt(id), action, checked);
 	}
 	
-	function updateData(data) {
-		lastForm.parentNode.innerHTML = data;
+	this.updateData = function (data) {
+		this.lastForm.parentNode.innerHTML = data;
 	}
 }
 
 var pollForm = new pollFormClass();
+
 

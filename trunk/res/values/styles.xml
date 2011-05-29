@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="MenuButton" parent="@android:style/Widget.Button.Toggle">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">40dip</item>
+		<item name="android:textColor">#FFFFFF</item>
+		<item name="android:padding">7px</item>
+		<item name="android:background">@drawable/menu_button_background</item>
+	</style>
+	<style name="MenuFlatButton" parent="@style/MenuButton">
+		<item name="android:layout_height">30dip</item>
+		<item name="android:padding">5px</item>
+	</style>
+	<style name="MenuLeftFlatButton" parent="@style/MenuFlatButton">
+		<item name="android:background">@drawable/menu_left_button_background</item>
+	</style>
+	<style name="MenuRightFlatButton" parent="@style/MenuFlatButton">
+		<item name="android:background">@drawable/menu_right_button_background</item>
+	</style>
+	<style name="SubMenuButton" parent="@style/MenuButton">
+		<item name="android:layout_height">30dip</item>
+		<item name="android:padding">5px</item>
+		<item name="android:background">@drawable/menu_button_on</item>
+	</style>
+	<style name="SubMenuLeftButton" parent="@style/SubMenuButton">
+		<item name="android:background">@drawable/menu_left_button_on</item>
+	</style>
+	<style name="SubMenuRightButton" parent="@style/SubMenuButton">
+		<item name="android:background">@drawable/menu_right_button_on</item>
+	</style>
+</resources>

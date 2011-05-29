@@ -3,6 +3,8 @@ package ru.client.habr;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.Log;
+
 import ru.client.habr.AsyncDataSender.OnSendDataFinish;
 
 /**
@@ -107,9 +109,15 @@ public final class HabraTopic extends HabraEntry {
 		for(int i = 0; i < variants.length; i++)
 			post.add(new String[] {"variant[]", String.valueOf(variants[i])});
 		
+		String d[][] = post.toArray(new String[0][]);
+		for(int i = 0; i < d.length; i++)
+			Log.i(d[i][0], d[i][1]);
+		
 		new AsyncDataSender("http://habrahabr.ru/ajax/poll/", "http://habrahabr.ru/", new OnSendDataFinish() {
 			@Override
 			public void onFinish(String result) {
+				Log.i("result", "" + result.length());
+				Log.i("result", result);
 				if(l != null) l.onFinish(result);
 			}
 		}).execute(post.toArray(new String[0][]));
