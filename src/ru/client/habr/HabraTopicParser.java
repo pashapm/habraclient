@@ -27,6 +27,7 @@ public final class HabraTopicParser {
 		if(data == null) return;
 		
 		mParser = new HtmlCleaner();
+		mParser.getProperties().setUseEmptyElementTags(false);
 		mMainNode = mParser.clean(data);
 		
 		TagNode blogHeader = mMainNode.findElementByAttValue("class", "blog-header", true, true);

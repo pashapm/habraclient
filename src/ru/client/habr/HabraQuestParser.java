@@ -24,6 +24,8 @@ public final class HabraQuestParser {
 		if(data == null) return;
 		
 		mParser = new HtmlCleaner();
+		mParser.getProperties().setUseEmptyElementTags(false);
+		
 		mMainNode = mParser.clean(data);
 		
 		TagNode[] divNodes = mMainNode.getElementsByName("div", true);	
