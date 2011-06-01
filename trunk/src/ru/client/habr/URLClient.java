@@ -198,6 +198,11 @@ public final class URLClient {
 		}
 		
 		try {
+			Log.d("postURL", httpPost.getMethod() + " " + httpPost.getURI().toString() + " " + httpPost.getProtocolVersion());
+			org.apache.http.Header[] hs = httpPost.getAllHeaders();
+			for(int i = 0; i < hs.length; i++)
+				Log.d("postURL", "Header: " + hs[i].getName() + " = " + hs[i].getValue());
+			
 			mLocked = true;
 			HttpResponse httpResponse = mHttpClient.execute(httpPost);
 			HttpEntity httpEntity = httpResponse.getEntity();

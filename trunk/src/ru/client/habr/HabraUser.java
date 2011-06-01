@@ -55,6 +55,8 @@ public class HabraUser {
 		if(data == null) return null;
 		
 		HtmlCleaner parser = new HtmlCleaner();
+		parser.getProperties().setUseEmptyElementTags(false);
+		
 		TagNode mainNode = parser.clean(data);
 		TagNode mainContentNode = mainNode.findElementByAttValue("id", "main-content", true, false);
 		if(mainContentNode == null) return null;

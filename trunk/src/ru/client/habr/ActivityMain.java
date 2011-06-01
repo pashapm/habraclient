@@ -21,10 +21,9 @@ import android.view.View;
 
 /**
  * @author WNeZRoS
- * �������� �����
  */
 public class ActivityMain extends Activity {	
-	final int ASSET_REV = 37;
+	final int ASSET_REV = 44;
 	boolean first = false;
 	static String sCacheDir = null;
 	private static Context applicationContext = null;

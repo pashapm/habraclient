@@ -24,6 +24,7 @@ public final class HabraAnswerParser {
 		if(data == null) return;
 		
 		mParser = new HtmlCleaner();
+		mParser.getProperties().setUseEmptyElementTags(false);
 		mMainNode = mParser.clean(data);
 
 		mEntryNodeList = mMainNode.getElementListHavingAttribute("data-id", true);

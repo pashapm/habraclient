@@ -48,6 +48,7 @@ public class ActivityView extends Activity {
 	private ToggleButton mMainMenuButtons[] = null;
 	private ToggleButton mFlatMenuButtons[] = null;
 	private Button mTypeMenuButtons[] = null;
+	private boolean mNoEntries = false;
 	
 	private LoaderData mAnyDataLoader = new LoaderData() {
 		public void finish(String data) {
@@ -62,6 +63,7 @@ public class ActivityView extends Activity {
 		}
 		public String update(String pageData) {
 			String data = "";
+			mNoEntries = false;
 			
 			switch(pageType) {
 			case POST_LIST: {
@@ -83,6 +85,7 @@ public class ActivityView extends Activity {
 				
 				if(data.length() == 0) {
 					data = pageData;
+					mNoEntries = true;
 				} else {
 					data += getNavLinksForUri(Uri.parse(url));
 				}
@@ -91,7 +94,10 @@ public class ActivityView extends Activity {
 				HabraTopicParser parser = new HabraTopicParser(pageData);
 				HabraTopic topic = parser.parse();
 				
-				if(topic == null) return pageData;
+				if(topic == null) {
+					mNoEntries = true;
+					return pageData;
+				}
 				
 				data = topic.getDataAsHTML();
 				data += "<div id=\"comments\">";
@@ -125,6 +131,7 @@ public class ActivityView extends Activity {
 				
 				if(data.length() == 0) {
 					data = pageData;
+					mNoEntries = true;
 				} else {
 					data += getNavLinksForUri(Uri.parse(url));
 				}
@@ -133,7 +140,10 @@ public class ActivityView extends Activity {
 				HabraQuestParser parser = new HabraQuestParser(pageData);
 				HabraQuest quest = parser.parse();
 				
-				if(quest == null) return pageData;
+				if(quest == null) {
+					mNoEntries = true;
+					return pageData;
+				}
 				
 				data = quest.getDataAsHTML();
 				data += quest.getCommentsAsHTML();
@@ -154,7 +164,10 @@ public class ActivityView extends Activity {
 				HabraUser user = HabraUser.parse(pageData);
 				mLastEntryTitle = user.username;
 				
-				if(user == null) return pageData;
+				if(user == null) {
+					mNoEntries = true;
+					return pageData;
+				}
 				return user.getDataAsHTML();
 			}
 			default: return pageData;
@@ -235,9 +248,6 @@ public class ActivityView extends Activity {
 				case WebView.HitTestResult.SRC_ANCHOR_TYPE:
 					Log.d("onLongClick", "Click on <a href='" + wv.getHitTestResult().getExtra() + "'...");
 					mSelectedUri = Uri.parse(wv.getHitTestResult().getExtra());
-					
-					if(!mSelectedUri.getHost().contains("habrahabr.ru")) 
-						return false;
 					
 					switch(AsyncDataLoader.getPageTypeByURI(mSelectedUri)) {
 					case POST:
@@ -351,6 +361,7 @@ public class ActivityView extends Activity {
 		switch(item) {
 		case 0:
 			Intent openIntent = new Intent(Intent.ACTION_VIEW);
+			openIntent.setData(mSelectedUri);
 			startActivity(openIntent);
 			return true;
 		case 1:
@@ -580,11 +591,13 @@ public class ActivityView extends Activity {
 		findViewById(R.id.layoutAllNavPanels).setVisibility(visibility ? View.VISIBLE : View.GONE);
 		
 		if(visibility) {
-			List<String> pathSegments = mLastLoadedUri.getPathSegments();
+			Uri lastLoadedUri = Uri.parse(mLastLoadedUri.toString().replaceAll("/page[0-9]+/", "/"));
+			List<String> pathSegments = lastLoadedUri.getPathSegments();
+			
 			if(pathSegments.size() == 0 || pathSegments.get(0).equals("new") || pathSegments.get(0).equals("unhabred")) {
 				setActiveMainMenuButton(0);
 				
-				String fl = mLastLoadedUri.getQueryParameter("fl");
+				String fl = lastLoadedUri.getQueryParameter("fl");
 				if(fl == null) setActiveFlatMenuButton(1);
 				else if(fl.equals("hl")) setActiveFlatMenuButton(0);
 				else if(fl.equals("blogs")) setActiveFlatMenuButton(2);
@@ -727,17 +740,29 @@ public class ActivityView extends Activity {
 	}
 	
 	private void finishLoading(String title, String data) {	
-		data = mPreferences.getBoolean("prefEnableFlash", false) ? data 
-				: RemoveNode.removeVideo(data);
-		data = mPreferences.getString("prefLoadImages", "2").equals("1") 
+		
+		// Удаляем видеоролики и подкасты со страницы если флеш выключен
+		data = mPreferences.getBoolean("prefEnableFlash", false) 
+		? RemoveNode.replaceAudioScriptToFlash(data) : RemoveNode.removeMultimedia(data);
+		
+		// Если не нужно загружать изображения вырезаем их 
+		boolean loadImages = mPreferences.getString("prefLoadImages", "2").equals("1") 
 				|| (mPreferences.getString("prefLoadImages", "2").equals("2") 
-				&& mWifi.getConnectionInfo().getNetworkId() != -1) ? data 
-						: RemoveNode.removeImage(data);
+				&& mWifi.getConnectionInfo().getNetworkId() != -1);
+		
+		data = loadImages ? data : RemoveNode.removeImage(data);
+		
+		if(mNoEntries) {
+			mResultView.loadDataWithBaseURL("http://habrahabr.ru/", data, 
+					"text/html", "utf-8", null);
+		}
+		
 		
 		data = "<html>\n<head>\n" 
 			+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\n" 
 			+ "<link href=\"../files/general.css\" rel=\"stylesheet\"/>\n" 
 			+ "<script type=\"text/javascript\" src=\"../files/general.js\"></script>\n" 
+			+ "<script type=\"text/javascript\" src=\"../files/swfobject.js\"></script>\n" 
 			+ "<title>" + title + "</title>\n</head>\n<body>\n<div class=\"main-content\">\n" 
 			+ data + "\n</div>\n</body>\n</html>";
 		

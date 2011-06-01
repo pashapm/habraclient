@@ -106,8 +106,10 @@ public final class HabraTopic extends HabraEntry {
 		post.add(new String[] {"action", action});
 		post.add(new String[] {"post_id", String.valueOf(postID)});
 		
-		for(int i = 0; i < variants.length; i++)
-			post.add(new String[] {"variant[]", String.valueOf(variants[i])});
+		if(action.equals("vote")) {
+			for(int i = 0; i < variants.length; i++)
+				post.add(new String[] {"variant[]", String.valueOf(variants[i])});
+		}
 		
 		String d[][] = post.toArray(new String[0][]);
 		for(int i = 0; i < d.length; i++)

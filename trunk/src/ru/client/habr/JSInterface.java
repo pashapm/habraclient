@@ -58,12 +58,12 @@ public class JSInterface {
 	public void pollVote(int postID, String action, int variants[]) {
 		for(int i = 0; i < variants.length; i++) Log.d("var", i + ": " + variants[i]);
 		
-		HabraTopic.poll(postID, action, variants, new HabraTopic.OnPollResultListener() {
+		HabraTopic.poll(postID, action.replace("poll", "vote"), variants, new HabraTopic.OnPollResultListener() {
 			@Override
 			public void onFinish(String result) {
 				if(result.indexOf("<message>ok</message>") != -1) {
 					// TODO on ok
-					jsForView.loadUrl("javascript: pollForm.updateData('" + result + "');");// TODO url encode result
+					jsForView.loadUrl("javascript: pollForm.updateData('" + URLClient.encode(result) + "');");
 				} else {
 					// TODO on error
 				}
