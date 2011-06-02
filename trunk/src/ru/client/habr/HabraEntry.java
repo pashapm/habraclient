@@ -17,6 +17,10 @@ public class HabraEntry {
 		ANSWER,
 	};
 	
+	public static abstract class OnSendFinish {
+		public abstract void onFinish(boolean ok, String data);
+	}
+	
 	protected HabraEntryType type = HabraEntryType.UNKNOWN;
 	public int id;
 	public String content;
@@ -38,6 +42,10 @@ public class HabraEntry {
 	
 	public String getUrl(int parentId) {
 		return getUrl();
+	}
+	
+	public static void send(String content, int parentID) {
+		// TODO
 	}
 	
 	public final static boolean vote(int id, HabraEntryType type, int mark, int postID) {
