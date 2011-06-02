@@ -72,6 +72,8 @@
     <string name="hide_quest_element">Скрыть элементы вопроса</string>
     <string name="hide_quest_element_summary">При отображении в виде списка</string>
     <string name="comments">Комментарии</string>
+    <string name="comment">Комментарий</string>
+    <string name="commenting">Комментировать</string>
     <string name="share">Отправить</string>
     <string name="open">Открыть</string>
     <string name="author">Автор</string>
@@ -117,7 +119,6 @@
     <string name="nav_habred">Захабренные</string>
     <string name="nav_new">Новые</string>
     <string name="nav_unhabred">Отхабренные</string>
-    <string name="comment">Комментировать</string>
     <string name="lenta">Лента</string>
     <string name="all_posts">Все посты</string>
     <string name="all_new_posts">Все новые посты</string>
@@ -132,4 +133,7 @@
     <string name="popular">Популярные</string>
     <string name="no_answers">Без ответа</string>
     <string name="sandbox">Песочница</string>
+    <string name="incorrect_post">Некоректный пост</string>
+    <string name="empty_text">Пустой текст</string>
+    <string name="not_added">Не добавлено</string>
 </resources>

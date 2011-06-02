@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceClickListener;
-import android.widget.Toast;
 
 /**
  * @author WNeZRoS
@@ -36,9 +35,9 @@ public final class HabraPreferences extends PreferenceActivity {
 					@Override
 					public void onFinish(boolean logged) {
 						if(!logged) {
-							Toast.makeText(getApplicationContext(), getString(R.string.logout_success), Toast.LENGTH_LONG).show();
+							Dialogs.getDialogs().showToast(R.string.logout_success);
 						} else {
-							Toast.makeText(getApplicationContext(), getString(R.string.logout_fail), Toast.LENGTH_LONG).show();
+							Dialogs.getDialogs().showToast(R.string.logout_fail);
 						}
 					}
 				});

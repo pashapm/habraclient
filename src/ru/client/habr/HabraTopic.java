@@ -128,14 +128,4 @@ public final class HabraTopic extends HabraEntry {
 	public void poll(String action, int variants[], final OnPollResultListener l) {
 		poll(id, action, variants, l);
 	}
-	
-	/* *********************************************************************** *
-	 * Comments: http://habrahabr.ru/ajax/comments/add/
-	 * comment[target_type]=post
-	 * comment[parent_id]={0|COMMENT_ID}
-	 * timefield={time()}
-	 * comment[target_id]={POST_ID}
-	 * comment[message]={MSG}
-	 * 
-	 */
 }

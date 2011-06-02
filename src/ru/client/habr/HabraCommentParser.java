@@ -17,7 +17,6 @@ public final class HabraCommentParser {
 	 * ������ ����������� �� ������
 	 * @param data ������ HTML �������� �����
 	 */
-	//@SuppressWarnings("unchecked")
 	public HabraCommentParser(String data) {
 		if(data == null) return;
 		
@@ -61,7 +60,7 @@ public final class HabraCommentParser {
 		comment.avatar = avatarNode.getAttributeByName("src");
 		comment.date = titleNodes[2].findElementByName("abbr", false).getText().toString();
 		
-		comment.inFavs = titleNodes[4].findElementByName("a", false)
+		comment.inFavs = !titleNodes[4].findElementByName("a", false)
 				.getAttributeByName("class").contains("js-to_favs_add");
 		
 		String ratings = titleNodes[titleNodes.length - 1].findElementByName(

@@ -1,5 +1,9 @@
 package ru.client.habr;
 
+import java.util.Date;
+
+import ru.client.habr.AsyncDataSender.OnSendDataFinish;
+
 /**
  * @author WNeZRoS
  * ����� ����������� � �����
@@ -49,5 +53,33 @@ public final class HabraComment extends HabraEntry {
 		for(int i = 0; i < childs.length; i++)
 			data += childs[i].getDataAsHTML(noAvatar);
 		return data;
+	}
+	
+	public static void send(String content, int postID, int parentID, final OnSendFinish c) {
+		/* *********************************************************************** *
+		 * Comments: http://habrahabr.ru/ajax/comments/add/
+		 * comment[target_type]=post
+		 * comment[parent_id]={0|COMMENT_ID}
+		 * timefield={time()}
+		 * comment[target_id]={POST_ID}
+		 * comment[message]={MSG}
+		 */
+		String post[][] = {{"comment[target_type]", "post"}, 
+				{"comment[parent_id]", String.valueOf(parentID)}, 
+				{"timefield", String.valueOf(new Date().getTime())}, 
+				{"comment[target_id]", String.valueOf(postID)}, 
+				{"comment[message]", content}};
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/comments/add/", 
+				"http://habrahabr.ru/post/" + postID, new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							if(c != null) c.onFinish(true, result);
+						} else {
+							if(c != null) c.onFinish(false, result);
+						}
+					}
+		}).execute(post);
 	}
 }

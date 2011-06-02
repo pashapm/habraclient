@@ -15,7 +15,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author WNeZRoS
@@ -108,7 +107,7 @@ public final class ActivityLogin extends Activity {
 					preferencesEditor.commit();
 					
 					HabraLogin.getHabraLogin().parseUserData((UserInfoListener) null);
-					Toast.makeText(getApplicationContext(), getString(R.string.logged), Toast.LENGTH_LONG).show();
+					Dialogs.getDialogs().showToast(R.string.logged);
 					
 					onBackPressed();
 				} else {
@@ -133,7 +132,7 @@ public final class ActivityLogin extends Activity {
 	 */
 	public void onClickSkip(View v) {
 		Log.d("HabraLoginForm.onClickSkip", "called");
-		Toast.makeText(getApplicationContext(), getString(R.string.skip_login_text), Toast.LENGTH_LONG).show();
+		Dialogs.getDialogs().showToast(R.string.skip_login_text);
 		onBackPressed();
 	}
 	

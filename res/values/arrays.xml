@@ -42,7 +42,7 @@
     	<item>@string/open</item>
     	<item>@string/share</item>
     	<item>@string/copy_link</item>
-		<item>@string/comment</item>
+		<item>@string/commenting</item>
 		<item>@string/vote</item>
 		<item>@string/add_favorites</item>
 		<item>@string/author</item>

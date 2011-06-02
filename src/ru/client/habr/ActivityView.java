@@ -22,7 +22,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.view.KeyEvent;
 import ru.client.habr.R;
@@ -38,6 +37,9 @@ import java.util.List;
  * @author WNeZRoS
  */
 public class ActivityView extends Activity {	
+	public final static int REQUEST_NEW_VIEW = 1;
+	public final static int REQUEST_NEW_COMMENT = 3;
+	
 	private WebView mResultView = null;
 	private SharedPreferences mPreferences = null;
 	private WifiManager mWifi = null;
@@ -109,6 +111,8 @@ public class ActivityView extends Activity {
 					data += comment.getDataAsHTML();
 				}
 				data += "</div>";
+				data += "<h2><a onClick=\"js.addComment(" + topic.id + ", 0);\">"
+						+ getString(R.string.commenting) + "</a></h2>";
 				
 				mLastEntryTitle = topic.title;
 			} break;
@@ -225,7 +229,7 @@ public class ActivityView extends Activity {
 				if (Uri.parse(url).getHost().contains("habrahabr.ru") 
 						|| Uri.parse(url).getHost().equals("m.habrahabr.ru")) {
 					startActivityForResult(new Intent(getBaseContext(), 
-							ActivityView.class).setData(Uri.parse(url)), 0);
+							ActivityView.class).setData(Uri.parse(url)), REQUEST_NEW_VIEW);
 					return true;
 				}
 				
@@ -297,7 +301,7 @@ public class ActivityView extends Activity {
 			}
 		});
 		
-		mResultView.addJavascriptInterface(new JSInterface(mResultView), "js");
+		mResultView.addJavascriptInterface(new JSInterface(this, mResultView), "js");
 		
 		mWifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		showNavPanels(false);
@@ -333,8 +337,19 @@ public class ActivityView extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(resultCode == RESULT_CANCELED) exit(resultCode);
-		else AsyncDataLoader.getDataLoader().removeLastRequestFromHistory();
+		switch(requestCode) {
+		case REQUEST_NEW_VIEW:
+			if(resultCode == RESULT_CANCELED) exit(resultCode);
+			else AsyncDataLoader.getDataLoader().removeLastRequestFromHistory();
+			break;
+		case REQUEST_NEW_COMMENT:
+			if(resultCode == RESULT_OK) {
+				// TODO if ok
+			} else {
+				// TODO if fail
+			}
+			break;
+		}
 	}
 	
 	public void onBackPressed() {
@@ -367,7 +382,7 @@ public class ActivityView extends Activity {
 		case 1:
 			Intent sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.setType("text/plain");
-			sendIntent.putExtra(Intent.EXTRA_TEXT, mSelectedUri);
+			sendIntent.putExtra(Intent.EXTRA_TEXT, mSelectedUri.toString());
 			startActivity(Intent.createChooser(sendIntent, null));
 			return true;
 		case 2:
@@ -375,30 +390,22 @@ public class ActivityView extends Activity {
 			clipboard.setText(mSelectedUri.toString());
 			return true;
 		case 3: 
-			if(menu_id == R.array.post_menu) {
-				startActivityForResult(new Intent(getBaseContext(), 
-						ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
-			} 
+			startActivityForResult(new Intent(getBaseContext(), 
+					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
 			return true;
 		case 4:
-			if(menu_id == R.array.post_menu) {
-				JSInterface.onClickRating(entryID, 
-						(mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
-			}
+			JSInterface.onClickRating(entryID, 
+					(mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
 			return true;
 		case 5:
-			if(menu_id == R.array.post_menu) {
-				HabraEntry.changeFavorites(entryID, 
-						(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
-								HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
-			}
+			HabraEntry.changeFavorites(entryID, 
+					(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
+							HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
 			return true;
 		case 6: {
-			if(menu_id == R.array.post_menu) {
-				startActivityForResult(new Intent(getBaseContext(), 
-						ActivityView.class).setData(Uri.parse("http://" 
-								+ entryAuthor + ".habrahabr.ru/")), 0);
-			}
+			startActivityForResult(new Intent(getBaseContext(), 
+					ActivityView.class).setData(Uri.parse("http://" 
+							+ entryAuthor + ".habrahabr.ru/")), 0);
 			return true;
 		}
 		default:
@@ -761,14 +768,13 @@ public class ActivityView extends Activity {
 		data = "<html>\n<head>\n" 
 			+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\n" 
 			+ "<link href=\"../files/general.css\" rel=\"stylesheet\"/>\n" 
-			+ "<script type=\"text/javascript\" src=\"../files/general.js\"></script>\n" 
-			+ "<script type=\"text/javascript\" src=\"../files/swfobject.js\"></script>\n" 
+			+ "<script type=\"text/javascript\" src=\"../files/general.js\"></script>\n"
 			+ "<title>" + title + "</title>\n</head>\n<body>\n<div class=\"main-content\">\n" 
 			+ data + "\n</div>\n</body>\n</html>";
 		
 		if(title.length() == 0 || !mPreferences.getBoolean("prefUseCache", true))
 		{
-			mResultView.loadDataWithBaseURL(getCacheDir().getAbsolutePath(), data, 
+			mResultView.loadDataWithBaseURL("file://" + getCacheDir().getAbsolutePath(), data, 
 					"text/html", "utf-8", null);
 			return;
 		}
@@ -783,9 +789,9 @@ public class ActivityView extends Activity {
 		} catch (IOException e) {
 			Log.w("Habrahabr.finishLoading", "IOException: " + e.getMessage());
 			
-			Dialogs.getDialogs().showToast(R.string.not_cache, Toast.LENGTH_LONG);
+			Dialogs.getDialogs().showToast(R.string.not_cache);
 			
-			mResultView.loadDataWithBaseURL(getCacheDir().getAbsolutePath(), data, 
+			mResultView.loadDataWithBaseURL("file://" + getCacheDir().getAbsolutePath(), data, 
 					"text/html", "utf-8", null);
 		}
 		
