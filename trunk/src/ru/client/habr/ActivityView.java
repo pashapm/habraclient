@@ -51,6 +51,7 @@ public class ActivityView extends Activity {
 	private ToggleButton mFlatMenuButtons[] = null;
 	private Button mTypeMenuButtons[] = null;
 	private boolean mNoEntries = false;
+	private boolean mLoadImages = false;
 	
 	private LoaderData mAnyDataLoader = new LoaderData() {
 		public void finish(String data) {
@@ -330,6 +331,12 @@ public class ActivityView extends Activity {
 		mResultView.getSettings().setPluginsEnabled(
 				mPreferences.getBoolean("prefEnableFlash", false));
 		
+		mLoadImages = mPreferences.getString("prefLoadImages", "2").equals("1") 
+		|| (mPreferences.getString("prefLoadImages", "2").equals("2") 
+		&& mWifi.getConnectionInfo().getNetworkId() != -1);
+		
+		mResultView.getSettings().setLoadsImagesAutomatically(mLoadImages);
+		
 		mResultView.setInitialScale(Integer.valueOf(mPreferences.getString("prefDefaultScale", "150")));
 		
 		if(!mPreferences.getBoolean("prefUserBarNotUpdate", false) 
@@ -391,7 +398,7 @@ public class ActivityView extends Activity {
 			return true;
 		case 3: 
 			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), 0);
+					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), REQUEST_NEW_VIEW);
 			return true;
 		case 4:
 			JSInterface.onClickRating(entryID, 
@@ -405,7 +412,7 @@ public class ActivityView extends Activity {
 		case 6: {
 			startActivityForResult(new Intent(getBaseContext(), 
 					ActivityView.class).setData(Uri.parse("http://" 
-							+ entryAuthor + ".habrahabr.ru/")), 0);
+							+ entryAuthor + ".habrahabr.ru/")), REQUEST_NEW_VIEW);
 			return true;
 		}
 		default:
@@ -415,6 +422,7 @@ public class ActivityView extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
 		return true;
@@ -753,11 +761,7 @@ public class ActivityView extends Activity {
 		? RemoveNode.replaceAudioScriptToFlash(data) : RemoveNode.removeMultimedia(data);
 		
 		// Если не нужно загружать изображения вырезаем их 
-		boolean loadImages = mPreferences.getString("prefLoadImages", "2").equals("1") 
-				|| (mPreferences.getString("prefLoadImages", "2").equals("2") 
-				&& mWifi.getConnectionInfo().getNetworkId() != -1);
-		
-		data = loadImages ? data : RemoveNode.removeImage(data);
+		data = mLoadImages ? data : RemoveNode.removeImage(data);
 		
 		if(mNoEntries) {
 			mResultView.loadDataWithBaseURL("http://habrahabr.ru/", data, 
@@ -774,8 +778,21 @@ public class ActivityView extends Activity {
 		
 		if(title.length() == 0 || !mPreferences.getBoolean("prefUseCache", true))
 		{
-			mResultView.loadDataWithBaseURL("file://" + getCacheDir().getAbsolutePath(), data, 
-					"text/html", "utf-8", null);
+			File cacheFile = new File(getCacheDir(), "tmp.htm");
+			
+			try {
+				FileOutputStream outStream = new FileOutputStream(cacheFile);
+				outStream.write(data.getBytes());
+				outStream.close();
+				
+				mResultView.loadUrl("file://" + URLClient.encode(cacheFile.getAbsolutePath()) 
+						+ "#" + mLastLoadedUri.getFragment());
+			} catch (IOException e) {
+				Log.w("ActivityView.finishLoading", "IOException: " + e.getMessage());
+				
+				mResultView.loadDataWithBaseURL("file://" + getCacheDir().getAbsolutePath(), data, 
+						"text/html", "utf-8", null);
+			}
 			return;
 		}
 		
@@ -785,9 +802,10 @@ public class ActivityView extends Activity {
 			outStream.write(data.getBytes());
 			outStream.close();
 			
-			mResultView.loadUrl("file://" + URLClient.encode(cacheFile.getAbsolutePath()));
+			mResultView.loadUrl("file://" + URLClient.encode(cacheFile.getAbsolutePath()) 
+					+ "#" + mLastLoadedUri.getFragment());
 		} catch (IOException e) {
-			Log.w("Habrahabr.finishLoading", "IOException: " + e.getMessage());
+			Log.w("ActivityView.finishLoading", "IOException: " + e.getMessage());
 			
 			Dialogs.getDialogs().showToast(R.string.not_cache);
 			

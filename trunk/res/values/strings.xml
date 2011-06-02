@@ -136,4 +136,6 @@
     <string name="incorrect_post">Некоректный пост</string>
     <string name="empty_text">Пустой текст</string>
     <string name="not_added">Не добавлено</string>
+    <string name="user_data_is_null">Не удалось получить данные от сервера. Возможно отсутствует подключение к Internet.</string>
+    <string name="repeat">Повторить</string>
 </resources>

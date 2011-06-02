@@ -6,7 +6,7 @@ import ru.client.habr.AsyncDataSender.OnSendDataFinish;
 
 /**
  * @author WNeZRoS
- * ����� ����������� � �����
+ * Комментарий к посту
  */
 public final class HabraComment extends HabraEntry {
 	
@@ -23,15 +23,22 @@ public final class HabraComment extends HabraEntry {
 	}
 	
 	/**
-	 * @return ����� ����������� ��� HTML ���
+	 * @return Данные комментария в виде HTML кода.
 	 */
 	public String getDataAsHTML() {
 		return getDataAsHTML(false);
 	}
 	
+	/**
+	 * @param noAvatar убрать аватары
+	 * @return Данные комментария в виде HTML кода.
+	 */
 	public String getDataAsHTML(boolean noAvatar) {
 		return "<div id=\"comment_" + id + "\" class=\"comment_holder" 
-		+ "\"><div class=\"msg-meta" + (newReply ? " new-reply" : "") + "\"><ul class=\"menu info author hcard\">" 
+		+ "\"><div class=\"msg-meta" + (HabraLogin.getHabraLogin().isLogged() 
+				&& author.equals(HabraLogin.getHabraLogin().getUserName()) 
+				? " my-reply" : (newReply ? " new-reply" : "")) 
+				+ "\"><ul class=\"menu info author hcard\">" 
 		+ (noAvatar ? "" : "<li class=\"avatar\">" + "<a href=\"http://" + author.replace('_', '-') 
 		+ ".habrahabr.ru/\"><img src=\"" + avatar + "\"/></a>") 
 		+ "</li><li class=\"fn nickname username\"><a href=\"http://" 
@@ -55,15 +62,14 @@ public final class HabraComment extends HabraEntry {
 		return data;
 	}
 	
+	/**
+	 * Отправляет новый комментарий
+	 * @param content Текст комментария
+	 * @param postID ID поста
+	 * @param parentID ID комментария который комментируем или 0
+	 * @param c Обработчик
+	 */
 	public static void send(String content, int postID, int parentID, final OnSendFinish c) {
-		/* *********************************************************************** *
-		 * Comments: http://habrahabr.ru/ajax/comments/add/
-		 * comment[target_type]=post
-		 * comment[parent_id]={0|COMMENT_ID}
-		 * timefield={time()}
-		 * comment[target_id]={POST_ID}
-		 * comment[message]={MSG}
-		 */
 		String post[][] = {{"comment[target_type]", "post"}, 
 				{"comment[parent_id]", String.valueOf(parentID)}, 
 				{"timefield", String.valueOf(new Date().getTime())}, 

@@ -30,6 +30,8 @@ public final class URLClient {
 	public final static String USER_AGENT = "Mozilla/5.0 (Linux; Android) WebKit (KHTML, like Gecko) HabraClient 1.0";
 	private static URLClient mUrlClient = null;
 	
+	private final int CONNECTION_TIMEOUT = 30000;
+	private final int SOCKET_TIMEOUT = 90000;
 	
 	private DefaultHttpClient mHttpClient = null;
 	private boolean mLocked = false;
@@ -39,8 +41,8 @@ public final class URLClient {
 		Log.d("URLClient.URLClient", "construct");
 		
 		HttpParams httpParams = new BasicHttpParams();
-		HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
-		HttpConnectionParams.setSoTimeout(httpParams, 90000);
+		HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
+		HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
 		
 		mHttpClient = new DefaultHttpClient(httpParams);
 		mHttpClient.getParams().setParameter("http.useragent", USER_AGENT);

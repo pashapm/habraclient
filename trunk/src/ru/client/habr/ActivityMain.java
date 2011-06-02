@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import ru.client.habr.R;
+import ru.client.habr.Dialogs.OnClickMessage;
 import ru.client.habr.HabraLogin.UserInfoListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -23,61 +25,29 @@ import android.view.View;
  * @author WNeZRoS
  */
 public class ActivityMain extends Activity {	
-	final int ASSET_REV = 44;
+	public final static int REQUEST_LOGIN = -1;
+	private final int ASSET_REV = 46;
+	
+	public static Context sAppContext = null;
 	boolean first = false;
-	static String sCacheDir = null;
-	private static Context applicationContext = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		sCacheDir = getCacheDir().getAbsolutePath();
-		
-		if(CookieSaver.getCookieSaver() == null) {
-			first = true;
-			unpackAssets(getFilesDir());
-			
-			applicationContext = getApplicationContext();
-			
-			new CookieSaver(this);
-			URLClient.getUrlClient().insertCookies(CookieSaver.getCookieSaver().getCookies());
-			
-			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-			if(preferences.getBoolean("prefFirstStart", true)) {
-				startActivityForResult(new Intent(getBaseContext(), 
-						ActivityLogin.class), R.layout.first_login);
-			} else {
-				HabraLogin.getHabraLogin().parseUserData(new UserInfoListener() {
-					@Override
-					public void onFinish(String userName) {
-						startActivityForResult(new Intent(getBaseContext(), 
-								ActivityView.class).setData(getIntent().getData()), R.layout.view);
-					}
-				});
-			}
-		} else {
-			startActivityForResult(new Intent(getBaseContext(), 
-					ActivityView.class).setData(getIntent().getData()), R.layout.view);
-		}
-	}
-	
-	public void onStart() {
-		super.onStart();
-	}
-	
-	public void onResume() {
-		super.onResume();
+		Dialogs.getDialogs().setContext(this);
+		initialize();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		findViewById(R.id.layoutLoading).setVisibility(View.GONE);
+		
 		switch(requestCode) {
-		case R.layout.first_login:
-			startActivityForResult(new Intent(getBaseContext(), ActivityView.class), R.layout.view);
+		case REQUEST_LOGIN:
+			startActivityForResult(new Intent(getBaseContext(), ActivityView.class), ActivityView.REQUEST_NEW_VIEW);
 			break;
-		case R.layout.view:
+		case ActivityView.REQUEST_NEW_VIEW:
 			exit();
 			break;
 		default: super.onActivityResult(requestCode, resultCode, data);
@@ -90,6 +60,62 @@ public class ActivityMain extends Activity {
 	
 	public void onDestroy() {
 		super.onDestroy();
+	}
+	
+	private void initialize() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		if(cm.getActiveNetworkInfo() == null || !cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
+			showNoConnectionDialog(null);
+			return;
+		}
+		
+		if(CookieSaver.getCookieSaver() == null) {
+			first = true;
+			unpackAssets(getFilesDir());
+			
+			sAppContext = getApplicationContext();
+			
+			new CookieSaver(this);
+			URLClient.getUrlClient().insertCookies(CookieSaver.getCookieSaver().getCookies());
+			
+			SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+			if(preferences.getBoolean("prefFirstStart", true)) {
+				startActivityForResult(new Intent(getBaseContext(), 
+						ActivityLogin.class), REQUEST_LOGIN);
+			} else {
+				HabraLogin.getHabraLogin().parseUserData(new UserInfoListener() {
+					@Override
+					public void onFinish(String userName) {
+						if(userName.length() == 0) {
+							// Ошибка, данные не получены
+							showNoConnectionDialog(this);
+						} else {
+							startActivityForResult(new Intent(getBaseContext(), ActivityView.class)
+									.setData(getIntent().getData()), ActivityView.REQUEST_NEW_VIEW);
+						}
+					}
+				});
+			}
+		} else {
+			startActivityForResult(new Intent(getBaseContext(), ActivityView.class)
+					.setData(getIntent().getData()), ActivityView.REQUEST_NEW_VIEW);
+		}
+	}
+	
+	private void showNoConnectionDialog(final UserInfoListener l) {
+		Dialogs.getDialogs().showDialogMessage(getString(R.string.user_data_is_null), 
+				getString(R.string.exit), null, getString(R.string.repeat), new OnClickMessage() {
+			@Override
+			public void onClick(int rel) {
+				if(rel == -1) {
+					exit();
+					return;
+				}
+				
+				if(l == null) initialize();
+				else HabraLogin.getHabraLogin().parseUserData(l);
+			}
+		});
 	}
 	
 	private void exit() {
@@ -154,9 +180,5 @@ public class ActivityMain extends Activity {
 				Log.e("Habrahabr.unpackAssets", "Exception: " + e.getMessage());
 			}
 		}
-	}
-
-	public static String getStringFromResource(int resId) {
-		return applicationContext.getString(resId);
 	}
 }
