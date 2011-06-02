@@ -33,7 +33,7 @@ public final class RemoveNode {
 		if(data == null) return null;
 		return data.replaceAll("<object.+<param name=\"(movie|video)\" value=\"([^\"]+)\".+</object>", 
 				"<h3><a href=\"$2\">" + ActivityMain.getStringFromResource(R.string.this_is_video) 
-				+ "</a></h3>").replaceAll("<iframe.+src=\"([^\"]+)\".+/>", "<h3><a href=\"$1\">" 
+				+ "</a></h3>").replaceAll("<iframe.+src=\"([^\"]+)\".+</iframe>", "<h3><a href=\"$1\">" 
 						+ ActivityMain.getStringFromResource(R.string.this_is_video) + "</a></h3>");
 	}
 	
