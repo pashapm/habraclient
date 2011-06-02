@@ -76,7 +76,7 @@ public final class HabraLogin {
 			public void onFinish(String data) {
 				Log.d("login", data);
 		        
-				if(data == null) l.onFinish(ActivityMain.getStringFromResource(R.string.cant_send_request));
+				if(data == null) l.onFinish(ActivityMain.sAppContext.getString(R.string.cant_send_request));
 				
 		        int errorIndex = data.indexOf("<error");
 		        if(errorIndex == -1) {
@@ -132,7 +132,7 @@ public final class HabraLogin {
 		AsyncDataLoader.getDataLoader().execute("http://habrahabr.ru/info/stats/", false, new LoaderData() {
 			public void finish(String data) {
 				parseUserData(data);
-				if(l != null) l.onFinish(mUserName);
+				if(l != null) l.onFinish(data == null ? "" : mUserName);
 			}
 		});
 	}
@@ -209,8 +209,7 @@ public final class HabraLogin {
 			}
 			
 			public byte[] update(byte[] data) {
-				
-				String fileCaptcha = ActivityMain.sCacheDir + "/captcha.png";
+				String fileCaptcha = ActivityMain.sAppContext.getCacheDir().getAbsolutePath() + "/captcha.png";
 				
 				File captcha = new File(fileCaptcha);
 				try {

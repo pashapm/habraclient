@@ -20,7 +20,7 @@ public final class RemoveNode {
 		if(data == null) return null;
 		return data.replaceAll("<img[^>]+src=\"([^\"]+)\"[^>]+>", 
 				"<h4 class=\"ufo\" onClick=\"this.innerHTML='<img src=\\\\'$1\\\\'>';\">" 
-				+ ActivityMain.getStringFromResource(R.string.this_is_picture) + "</h4>");
+				+ ActivityMain.sAppContext.getString(R.string.this_is_picture) + "</h4>");
 	}
 	
 	/**
@@ -32,9 +32,9 @@ public final class RemoveNode {
 	{
 		if(data == null) return null;
 		return data.replaceAll("<object.+<param name=\"(movie|video)\" value=\"([^\"]+)\".+</object>", 
-				"<h3><a href=\"$2\">" + ActivityMain.getStringFromResource(R.string.this_is_video) 
+				"<h3><a href=\"$2\">" + ActivityMain.sAppContext.getString(R.string.this_is_video) 
 				+ "</a></h3>").replaceAll("<iframe.+src=\"([^\"]+)\".+</iframe>", "<h3><a href=\"$1\">" 
-						+ ActivityMain.getStringFromResource(R.string.this_is_video) + "</a></h3>");
+						+ ActivityMain.sAppContext.getString(R.string.this_is_video) + "</a></h3>");
 	}
 	
 	public static String removeAudio(String data) {
