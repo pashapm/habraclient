@@ -2,7 +2,6 @@ package ru.client.habr;
 
 import ru.client.habr.R;
 import ru.client.habr.HabraLogin.LoginListener;
-import ru.client.habr.HabraLogin.UserInfoListener;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -35,6 +34,8 @@ public final class ActivityLogin extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.first_login);
+		
+		//Dialogs.getDialogs().setContext(this);
 		
 		Log.d("HabraLoginForm.onCreate", "called");
 		
@@ -106,7 +107,6 @@ public final class ActivityLogin extends Activity {
 					preferencesEditor.putBoolean("prefSavePassword", mCheckSavePassword.isChecked());
 					preferencesEditor.commit();
 					
-					HabraLogin.getHabraLogin().parseUserData((UserInfoListener) null);
 					Dialogs.getDialogs().showToast(R.string.logged);
 					
 					onBackPressed();
@@ -141,6 +141,7 @@ public final class ActivityLogin extends Activity {
 		preferencesEditor.putBoolean("prefFirstStart", false);
 		preferencesEditor.commit();
 		
+		setResult(RESULT_OK);
 		finish();
 	}
 }

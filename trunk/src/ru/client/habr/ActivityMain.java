@@ -25,32 +25,47 @@ import android.view.View;
  * @author WNeZRoS
  */
 public class ActivityMain extends Activity {	
-	public final static int REQUEST_LOGIN = -1;
+	public final static int REQUEST_LOGIN = 0;
 	private final int ASSET_REV = 46;
 	
 	public static Context sAppContext = null;
 	boolean first = false;
+	
+	UserInfoListener userInfo = new UserInfoListener() {
+		@Override
+		public void onFinish(String userName) {
+			if(userName == null || userName.length() > 0) {
+				startActivityForResult(new Intent(getBaseContext(), ActivityView.class)
+						.setData(getIntent().getData()), ActivityView.REQUEST_NEW_VIEW);
+			} else {
+				// Ошибка, данные не получены
+				showNoConnectionDialog(this);
+			}
+		}
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		Dialogs.getDialogs().setContext(this);
+		Dialogs.getDialogs().setContext(getApplicationContext());
 		initialize();
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		findViewById(R.id.layoutLoading).setVisibility(View.GONE);
+		Log.d("ActivityMain.onActivityResult", "Result to " + requestCode + " is " + resultCode);
 		
 		switch(requestCode) {
 		case REQUEST_LOGIN:
-			startActivityForResult(new Intent(getBaseContext(), ActivityView.class), ActivityView.REQUEST_NEW_VIEW);
+			HabraLogin.getHabraLogin().parseUserData(userInfo);
 			break;
 		case ActivityView.REQUEST_NEW_VIEW:
 			exit();
 			break;
-		default: super.onActivityResult(requestCode, resultCode, data);
+		default: 
+			findViewById(R.id.layoutLoading).setVisibility(View.GONE);
+			super.onActivityResult(requestCode, resultCode, data);
 		}
 	}
 	
@@ -83,18 +98,7 @@ public class ActivityMain extends Activity {
 				startActivityForResult(new Intent(getBaseContext(), 
 						ActivityLogin.class), REQUEST_LOGIN);
 			} else {
-				HabraLogin.getHabraLogin().parseUserData(new UserInfoListener() {
-					@Override
-					public void onFinish(String userName) {
-						if(userName.length() == 0) {
-							// Ошибка, данные не получены
-							showNoConnectionDialog(this);
-						} else {
-							startActivityForResult(new Intent(getBaseContext(), ActivityView.class)
-									.setData(getIntent().getData()), ActivityView.REQUEST_NEW_VIEW);
-						}
-					}
-				});
+				HabraLogin.getHabraLogin().parseUserData(userInfo);
 			}
 		} else {
 			startActivityForResult(new Intent(getBaseContext(), ActivityView.class)
