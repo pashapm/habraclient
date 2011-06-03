@@ -323,7 +323,7 @@ public class ActivityView extends Activity {
 	public void onResume() {
 		super.onResume();
 		
-		Dialogs.getDialogs().setContext(this);
+		//Dialogs.getDialogs().setContext(this);
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		
 		mResultView.getSettings().setBuiltInZoomControls(
@@ -344,6 +344,8 @@ public class ActivityView extends Activity {
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("ActivityMain.onActivityResult", "Result to " + requestCode + " is " + resultCode);
+		
 		switch(requestCode) {
 		case REQUEST_NEW_VIEW:
 			if(resultCode == RESULT_CANCELED) exit(resultCode);
@@ -535,7 +537,7 @@ public class ActivityView extends Activity {
 				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=all"));
 				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=blogs"));
 				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/?fl=corporative"));
-				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(1) + "/"));
 			} else {
 				if(mFlatMenuButtons[0].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/"));
 				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/qa/hot/"));
@@ -549,7 +551,7 @@ public class ActivityView extends Activity {
 				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=all"));
 				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=blogs"));
 				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/new/?fl=corporative"));
-				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/new/"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(1) + "/new/"));
 			} else {
 				loadData(Uri.parse("http://habrahabr.ru/qa/new/"));
 			}
@@ -560,7 +562,7 @@ public class ActivityView extends Activity {
 				else if(mFlatMenuButtons[1].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=all"));
 				else if(mFlatMenuButtons[2].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=blogs"));
 				else if(mFlatMenuButtons[3].isChecked()) loadData(Uri.parse("http://habrahabr.ru/unhabred/?fl=corporative"));
-				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(2) + "/unhabred/"));
+				else loadData(Uri.parse("http://habrahabr.ru/blogs/" + mLastLoadedUri.getPathSegments().get(1) + "/unhabred/"));
 			} else {
 				loadData(Uri.parse("http://habrahabr.ru/qa/unhabred/"));
 			}
