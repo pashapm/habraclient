@@ -67,6 +67,8 @@ public final class ActivityLogin extends Activity {
 		mTextPassword.setText(preferences.getString("prefPassword", ""));
 		mCheckSavePassword.setChecked(preferences.getBoolean("prefSavePassword", false));
 		
+		Dialogs.setContext(this);
+		
 		HabraLogin.getHabraLogin().loadCaptcha(mImageCaptcha);
 	}
 	
@@ -107,7 +109,7 @@ public final class ActivityLogin extends Activity {
 					preferencesEditor.putBoolean("prefSavePassword", mCheckSavePassword.isChecked());
 					preferencesEditor.commit();
 					
-					Dialogs.getDialogs().showToast(R.string.logged);
+					Dialogs.showToast(R.string.logged);
 					
 					onBackPressed();
 				} else {
@@ -132,7 +134,7 @@ public final class ActivityLogin extends Activity {
 	 */
 	public void onClickSkip(View v) {
 		Log.d("HabraLoginForm.onClickSkip", "called");
-		Dialogs.getDialogs().showToast(R.string.skip_login_text);
+		Dialogs.showToast(R.string.skip_login_text);
 		onBackPressed();
 	}
 	

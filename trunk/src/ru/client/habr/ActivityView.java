@@ -185,6 +185,8 @@ public class ActivityView extends Activity {
 		}
 	};
 	
+	private static JSInterface sJSInterface;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -274,7 +276,7 @@ public class ActivityView extends Activity {
 						Log.i("mSelectedUri", mSelectedUri.toString());
 						Log.i("uri", author + " " + id + " " + inFavs);
 						
-						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
+						Dialogs.showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
 							@Override
 							public void onClick(int item, String itemText) {
 								onMenuItemSelected(item, R.array.post_menu, author, id, inFavs);
@@ -284,7 +286,7 @@ public class ActivityView extends Activity {
 					default: {
 						final String menuItems[] = getResources().getStringArray(R.array.default_menu);
 						
-						Dialogs.getDialogs().showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
+						Dialogs.showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
 							@Override
 							public void onClick(int item, String itemText) {
 								onMenuItemSelected(item, R.array.default_menu, null, 0, false);
@@ -302,7 +304,8 @@ public class ActivityView extends Activity {
 			}
 		});
 		
-		mResultView.addJavascriptInterface(new JSInterface(this, mResultView), "js");
+		sJSInterface = new JSInterface(this, mResultView);
+		mResultView.addJavascriptInterface(sJSInterface, "js");
 		
 		mWifi = (WifiManager)getSystemService(Context.WIFI_SERVICE);
 		showNavPanels(false);
@@ -323,7 +326,7 @@ public class ActivityView extends Activity {
 	public void onResume() {
 		super.onResume();
 		
-		//Dialogs.getDialogs().setContext(this);
+		Dialogs.setContext(this);
 		AsyncDataLoader.getDataLoader().setLoaderData(mAnyDataLoader);
 		
 		mResultView.getSettings().setBuiltInZoomControls(
@@ -403,7 +406,7 @@ public class ActivityView extends Activity {
 					ActivityView.class).setData(Uri.parse(mSelectedUri + "#comments")), REQUEST_NEW_VIEW);
 			return true;
 		case 4:
-			JSInterface.onClickRating(entryID, 
+			sJSInterface.onClickRating(entryID, 
 					(mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
 			return true;
 		case 5:
@@ -809,7 +812,7 @@ public class ActivityView extends Activity {
 		} catch (IOException e) {
 			Log.w("ActivityView.finishLoading", "IOException: " + e.getMessage());
 			
-			Dialogs.getDialogs().showToast(R.string.not_cache);
+			Dialogs.showToast(R.string.not_cache);
 			
 			mResultView.loadDataWithBaseURL("file://" + getCacheDir().getAbsolutePath(), data, 
 					"text/html", "utf-8", null);

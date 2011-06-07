@@ -49,8 +49,12 @@ public class ActivityMain extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-		Dialogs.getDialogs().setContext(getApplicationContext());
 		initialize();
+	}
+	
+	public void onStart() {
+		super.onStart();
+		Dialogs.setContext(this);
 	}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -107,7 +111,7 @@ public class ActivityMain extends Activity {
 	}
 	
 	private void showNoConnectionDialog(final UserInfoListener l) {
-		Dialogs.getDialogs().showDialogMessage(getString(R.string.user_data_is_null), 
+		Dialogs.showDialogMessage(getString(R.string.user_data_is_null), 
 				getString(R.string.exit), null, getString(R.string.repeat), new OnClickMessage() {
 			@Override
 			public void onClick(int rel) {

@@ -394,9 +394,9 @@ public class HabraUser {
 					@Override
 					public void onFinish(String result) {
 						if(result.contains("<message>ok</message>")) {
-							Dialogs.getDialogs().showToast(R.string.vote_ok);
+							Dialogs.showToast(R.string.vote_ok);
 						} else {
-							Dialogs.getDialogs().showToast(R.string.vote_failed);
+							Dialogs.showToast(R.string.vote_failed);
 						}
 					}
 		}).execute(post);
@@ -422,9 +422,9 @@ public class HabraUser {
 					@Override
 					public void onFinish(String result) {
 						if(result.contains("<message>ok</message>")) {
-							Dialogs.getDialogs().showToast(R.string.friend_added);
+							Dialogs.showToast(R.string.friend_added);
 						} else {
-							Dialogs.getDialogs().showToast(R.string.friend_failed);
+							Dialogs.showToast(R.string.friend_failed);
 						}
 					}
 		}).execute(post);
@@ -449,9 +449,9 @@ public class HabraUser {
 					@Override
 					public void onFinish(String result) {
 						if(result.contains("<message>ok</message>")) {
-							Dialogs.getDialogs().showToast(R.string.friend_removed);
+							Dialogs.showToast(R.string.friend_removed);
 						} else {
-							Dialogs.getDialogs().showToast(R.string.friend_failed);
+							Dialogs.showToast(R.string.friend_failed);
 						}
 					}
 		}).execute(post);
@@ -476,9 +476,9 @@ public class HabraUser {
 					@Override
 					public void onFinish(String result) {
 						if(result.contains("<message>ok</message>")) {
-							Dialogs.getDialogs().showToast(R.string.message_sent);
+							Dialogs.showToast(R.string.message_sent);
 						} else {
-							Dialogs.getDialogs().showToast(R.string.message_failed);
+							Dialogs.showToast(R.string.message_failed);
 						}
 					}
 		}).execute(post);

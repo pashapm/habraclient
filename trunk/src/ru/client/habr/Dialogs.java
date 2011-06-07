@@ -23,22 +23,14 @@ public class Dialogs {
 		public abstract void onClick(int rel);
 	}
 	
-	private Context mApplicationContext = null;
-	private static Dialogs dialog = null;
+	private static Context sApplicationContext = null;
 	
-	public static Dialogs getDialogs() {
-		if(dialog == null) {
-			dialog = new Dialogs();
-		}
-		return dialog;
+	public static void setContext(Context applicationContext) {
+		sApplicationContext = applicationContext;
 	}
 	
-	public void setContext(Context applicationContext) {
-		mApplicationContext = applicationContext;
-	}
-	
-	public void showDialogMenu(String title, final String[] items, final OnClickMenuItem l) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(mApplicationContext);
+	public static void showDialogMenu(String title, final String[] items, final OnClickMenuItem l) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(sApplicationContext);
 		builder.setTitle(title);
 		builder.setItems(items, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
@@ -50,8 +42,8 @@ public class Dialogs {
 		alert.show();
 	}
 	
-	public void showDialogMessage(String message, String neg, String neu, String pos, final OnClickMessage l) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(mApplicationContext);
+	public static void showDialogMessage(String message, String neg, String neu, String pos, final OnClickMessage l) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(sApplicationContext);
 		builder.setMessage(message);
 		
 		if(neg != null) builder.setNegativeButton(neg, new OnClickListener() {
@@ -79,19 +71,19 @@ public class Dialogs {
 		alert.show();
 	}
 	
-	public void showToast(CharSequence text, int duration) {
-		Toast.makeText(mApplicationContext, text, duration).show();
+	public static void showToast(CharSequence text, int duration) {
+		Toast.makeText(sApplicationContext, text, duration).show();
 	}
 	
-	public void showToast(CharSequence text) {
+	public static void showToast(CharSequence text) {
 		showToast(text, Toast.LENGTH_LONG);
 	}
 	
-	public void showToast(int resId, int duration) {
-		Toast.makeText(mApplicationContext, resId, duration).show();
+	public static void showToast(int resId, int duration) {
+		Toast.makeText(sApplicationContext, resId, duration).show();
 	}
 	
-	public void showToast(int resId) {
+	public static void showToast(int resId) {
 		showToast(resId, Toast.LENGTH_LONG);
 	}
 }

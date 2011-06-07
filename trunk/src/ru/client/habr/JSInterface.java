@@ -38,7 +38,7 @@ public class JSInterface {
 		
 		Log.d("js", "comment 2");
 		
-		Dialogs.getDialogs().showDialogMenu(mParent.getString(R.string.comment), items, new OnClickMenuItem() {
+		Dialogs.showDialogMenu(mParent.getString(R.string.comment), items, new OnClickMenuItem() {
 			@Override
 			public void onClick(int item, String itemText) {
 				Uri selectedUri = Uri.parse("http://habrahabr.ru/post/" 
@@ -65,7 +65,7 @@ public class JSInterface {
 					addComment(postID, commentID);
 					return;
 				case 4:
-					JSInterface.onClickRating(commentID, "c", postID);
+					onClickRating(commentID, "c", postID);
 					return;
 				case 5:
 					HabraEntry.changeFavorites(commentID, HabraEntry.HabraEntryType.COMMENT, inFavs);
@@ -82,7 +82,7 @@ public class JSInterface {
 	}
 	
 	public void onClickKarma(final String username, final int userID) {
-		Dialogs.getDialogs().showDialogMessage("Вы хотите влепить ", "-", null, "+", new OnClickMessage() {
+		Dialogs.showDialogMessage("Вы хотите влепить ", "-", null, "+", new OnClickMessage() {
 			@Override
 			public void onClick(int rel) {
 				HabraUser.karmaUpdate(userID, username, rel);
@@ -90,8 +90,8 @@ public class JSInterface {
 		});
 	}
 	
-	public static void onClickRating(final int id, final String type, final int postID) {
-		Dialogs.getDialogs().showDialogMessage("Вы голосуете за ", "-1", "0", "+1", new OnClickMessage() {
+	public void onClickRating(final int id, final String type, final int postID) {
+		Dialogs.showDialogMessage("Вы голосуете за ", "-1", "0", "+1", new OnClickMessage() {
 			@Override
 			public void onClick(int rel) {
 				HabraEntryType entryType = HabraEntryType.UNKNOWN;
@@ -113,7 +113,13 @@ public class JSInterface {
 	public void pollVote(int postID, String action, int variants[]) {
 		for(int i = 0; i < variants.length; i++) Log.d("var", i + ": " + variants[i]);
 		
-		HabraTopic.poll(postID, action.replace("poll", "vote"), variants, new HabraTopic.OnPollResultListener() {
+		if(action.equals("poll")) {
+			action = "vote";
+		} else {
+			action = "pass";
+		}
+		
+		HabraTopic.poll(postID, action, variants, new HabraTopic.OnPollResultListener() {
 			@Override
 			public void onFinish(String result) {
 				if(result.indexOf("<message>ok</message>") != -1) {

@@ -15,7 +15,7 @@
 			android:title="@string/main_screen_content"
 			android:summary="@string/main_screen_content_summary"
 			android:key="prefMainScreenContent"
-			android:defaultValue="2"
+			android:defaultValue="http://habrahabr.ru/?fl=all"
 			android:dialogTitle="@string/main_screen_content"
 			android:entries="@array/name_main_screen_content"
 			android:entryValues="@array/value_main_screen_content" />        

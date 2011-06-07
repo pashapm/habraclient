@@ -17,6 +17,8 @@ public final class HabraPreferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
+		
+		Dialogs.setContext(this);
 
 		Preference prefLoginForm = findPreference("prefLoginForm");
 		prefLoginForm.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -35,9 +37,9 @@ public final class HabraPreferences extends PreferenceActivity {
 					@Override
 					public void onFinish(boolean logged) {
 						if(!logged) {
-							Dialogs.getDialogs().showToast(R.string.logout_success);
+							Dialogs.showToast(R.string.logout_success);
 						} else {
-							Dialogs.getDialogs().showToast(R.string.logout_fail);
+							Dialogs.showToast(R.string.logout_fail);
 						}
 					}
 				});
