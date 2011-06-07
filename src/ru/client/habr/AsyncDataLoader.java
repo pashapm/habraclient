@@ -250,6 +250,8 @@ public final class AsyncDataLoader {
 	 * @return тип страницы
 	 */
 	public static PageType getPageTypeByURI(Uri uri) {
+		if(uri == null) return PageType.UNKNOWN;
+		if(uri.getHost() == null) return PageType.UNKNOWN;
 		if(uri.getHost().indexOf("habrahabr.ru") < 0) return PageType.UNKNOWN;
 		if(uri.getHost().indexOf("habrahabr.ru") > 0) return PageType.USER;
 		

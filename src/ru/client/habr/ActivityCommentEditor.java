@@ -31,8 +31,10 @@ public class ActivityCommentEditor extends Activity {
 		mPostID = getIntent().getIntExtra("post", 0);
 		mParentID = getIntent().getIntExtra("parent", 0);
 		
+		Dialogs.setContext(this);
+		
 		if(mPostID == 0) {
-			Dialogs.getDialogs().showToast(R.string.incorrect_post);
+			Dialogs.showToast(R.string.incorrect_post);
 			setResult(RESULT_CANCELED);
 			finish(); 
 		}
@@ -50,7 +52,7 @@ public class ActivityCommentEditor extends Activity {
 	
 	public void onClickPreview(View v) {
 		if(mText.getText().length() == 0) {
-			Dialogs.getDialogs().showToast(R.string.empty_text);
+			Dialogs.showToast(R.string.empty_text);
 			return;
 		}
 		
@@ -75,7 +77,7 @@ public class ActivityCommentEditor extends Activity {
 	
 	public void onClickSend(View v) {
 		if(mText.getText().length() == 0) {
-			Dialogs.getDialogs().showToast(R.string.empty_text);
+			Dialogs.showToast(R.string.empty_text);
 			return;
 		}
 		
@@ -86,7 +88,7 @@ public class ActivityCommentEditor extends Activity {
 					setResult(RESULT_OK);
 					finish();
 				} else {
-					Dialogs.getDialogs().showToast(R.string.not_added);
+					Dialogs.showToast(R.string.not_added);
 				}
 			}
 		});

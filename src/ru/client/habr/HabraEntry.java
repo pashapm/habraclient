@@ -67,9 +67,9 @@ public class HabraEntry {
 			@Override
 			public void onFinish(String result) {
 				if(result.contains("<message>ok</message>")) 
-					Dialogs.getDialogs().showToast(R.string.vote_ok);
+					Dialogs.showToast(R.string.vote_ok);
 				else 
-					Dialogs.getDialogs().showToast(R.string.vote_failed);
+					Dialogs.showToast(R.string.vote_failed);
 			}
 		}).execute(post);
 		
@@ -95,9 +95,9 @@ public class HabraEntry {
 			@Override
 			public void onFinish(String result) {
 				if(result.contains("<message>ok</message>")) 
-					Dialogs.getDialogs().showToast(isRemove ? R.string.favorite_removed : R.string.favorite_added);
+					Dialogs.showToast(isRemove ? R.string.favorite_removed : R.string.favorite_added);
 				else 
-					Dialogs.getDialogs().showToast(R.string.favorite_failed);
+					Dialogs.showToast(R.string.favorite_failed);
 			}
 		}).execute(post);
 
