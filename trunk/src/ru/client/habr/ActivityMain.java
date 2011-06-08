@@ -49,11 +49,12 @@ public class ActivityMain extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
+		Dialogs.setContext(this);
 		initialize();
 	}
 	
-	public void onStart() {
-		super.onStart();
+	public void onResume() {
+		super.onResume();
 		Dialogs.setContext(this);
 	}
 	

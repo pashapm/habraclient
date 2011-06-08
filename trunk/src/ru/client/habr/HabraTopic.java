@@ -21,6 +21,7 @@ public final class HabraTopic extends HabraEntry {
 		LINK,
 		TRANSLATE,
 		PODCAST,
+		SANDBOX,
 	}
 	
 	public static abstract class OnPollResultListener {

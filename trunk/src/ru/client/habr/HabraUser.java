@@ -30,6 +30,9 @@ public class HabraUser {
 	public int karmaMarks = 0;
 	public float force = 0.0f;
 	
+	public String lastPostName = null;
+	public String lastPostURL = null;
+	
 	// profile info
 	public String name = null;
 	public int ratingPlace = 0;
@@ -207,7 +210,7 @@ public class HabraUser {
 			user.workIn = new HabraCompany[companies.length];
 			for(int i = 0; i < companies.length; i++) {
 				user.workIn[i] = new HabraCompany();
-				user.workIn[i].id = Uri.parse(
+				user.workIn[i].id_text = Uri.parse(
 						companies[i].getAttributeByName("href")).getPathSegments().get(1);
 				user.workIn[i].name = companies[i].getText().toString();
 			}
@@ -220,7 +223,7 @@ public class HabraUser {
 			user.favoriteCompanies = new HabraCompany[companies.length];
 			for(int i = 0; i < companies.length; i++) {
 				user.favoriteCompanies[i] = new HabraCompany();
-				user.favoriteCompanies[i].id = Uri.parse(
+				user.favoriteCompanies[i].id_text = Uri.parse(
 						companies[i].getAttributeByName("href")).getPathSegments().get(1);
 				user.favoriteCompanies[i].name = companies[i].getText().toString();
 			}
@@ -267,8 +270,19 @@ public class HabraUser {
 		return user;
 	}
 	
+	public static HabraUser[] parseList(String data) {
+		return null; //TODO
+	}
+	
 	public String getDataAsHTML() {
+		if(lastPostName != null && lastPostURL != null) 
+			return getListElementAsHTML();
+		
 		return getHeaderAsHTML() + getInfoAsHTML();
+	}
+	
+	private String getListElementAsHTML() {
+		return ""; // TODO
 	}
 	
 	private String getHeaderAsHTML() {

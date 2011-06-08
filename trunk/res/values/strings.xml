@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_favorites">Добавить в избранного</string>
+    <string name="add_favorites">Добавить в избранное</string>
     <string name="app_name">HabraClient</string>
     <string name="captcha">Капча</string>
     <string name="exit">Выход</string>
@@ -21,16 +21,16 @@
     <string name="private_mail">Личная почта</string>
     <string name="rating">Рейтинг</string>
     <string name="refresh">Обновить</string>
-    <string name="save_password">Сохранять пароль</string>
+    <string name="save_password">Сохранить пароль?</string>
     <string name="skip">Пропустить</string>
     <string name="user_bar">Пользовательский бар</string>
-    <string name="user_bar_summary">Настройки польовательского бара</string>
+    <string name="user_bar_summary">Настройки пользовательского бара</string>
     <string name="user_bar_hide">Скрыть UserBar</string>
     <string name="user_bar_hide_summary">Скрыть пользовательский бар</string>
     <string name="user_mark">Карма</string>
     <string name="user_name">Имя пользователя</string>
     <string name="user_bar_hide_mark">Скрыть карму</string>
-    <string name="user_bar_hide_force">Скрыть ХабраСилу</string>
+    <string name="user_bar_hide_force">Скрыть рейтинг</string>
     <string name="user_bar_hide_favorites">Скрыть избранное</string>
     <string name="user_bar_hide_pm">Скрыть личную почту</string>
     <string name="user_bar_hide_mark_summary"></string>
@@ -64,9 +64,9 @@
     <string name="hide_post_author_summary"></string>
     <string name="hide_post_comments_summary"></string>
     <string name="enable_flash">Включить флеш</string>
-    <string name="enable_flash_summary">Если флеш будет выключен, вместо него будет ссылка на видео, которую можно открыть в плеере или брузере.</string>
-    <string name="enable_zoom">Включть маштабирование</string>
-    <string name="enable_zoom_summary">Стандартный механизм маштабирования мультитачем или кнопками.</string>
+    <string name="enable_flash_summary">Если флеш будет выключен, вместо него будет ссылка на видео, которую можно открыть в плеере или браузере.</string>
+    <string name="enable_zoom">Включть масштабирование</string>
+    <string name="enable_zoom_summary">Стандартный механизм масштабирования мультитачем или кнопками.</string>
     <string name="hide_quest_answers">Скрыть кол-во ответов</string>
     <string name="hide_quest_answers_summary"></string>
     <string name="hide_quest_element">Скрыть элементы вопроса</string>
@@ -88,7 +88,7 @@
     <string name="send">Отправить</string>
     <string name="enter_text">Введите текст здесь</string>
     <string name="title">Заголовок</string>
-    <string name="tags">Тэги</string>
+    <string name="tags">Теги</string>
     <string name="need_login">Для использования данной штуки нужно зайти на хабр.</string>
     <string name="not_cache">Эта страница не была добавлена в кэш.</string>
     <string name="favorite_added">Добавлено в избранное</string>
@@ -101,9 +101,9 @@
     <string name="use_cache">Кэшировать страницы</string>
     <string name="use_cache_summary">для офлайн просмотра</string>
     <string name="cant_send_request">Не могу отправить запрос</string>
-    <string name="loading">Идёт загрузка. Пожайлуста подождите.</string>
+    <string name="loading">Идёт загрузка. Пожалуйста подождите.</string>
     <string name="user_bar_not_update">Обновлять только 1 раз</string>
-    <string name="user_bar_not_update_summary">Позволит экономить трафик с кажой страницей</string>
+    <string name="user_bar_not_update_summary">Позволит экономить трафик с каждой страницей</string>
     <string name="my_profile">Мой профиль</string>
     <string name="options">Опции программы</string>
     <string name="draw_options">Настройки отображения</string>
@@ -133,9 +133,9 @@
     <string name="popular">Популярные</string>
     <string name="no_answers">Без ответа</string>
     <string name="sandbox">Песочница</string>
-    <string name="incorrect_post">Некоректный пост</string>
+    <string name="incorrect_post">Некорректный пост</string>
     <string name="empty_text">Пустой текст</string>
     <string name="not_added">Не добавлено</string>
-    <string name="user_data_is_null">Не удалось получить данные от сервера. Возможно отсутствует подключение к Internet.</string>
+    <string name="user_data_is_null">Не удалось получить данные от сервера. Возможно отсутствует подключение к  интернет.</string>
     <string name="repeat">Повторить</string>
 </resources>
