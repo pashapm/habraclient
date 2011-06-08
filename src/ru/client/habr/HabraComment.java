@@ -18,6 +18,12 @@ public final class HabraComment extends HabraEntry {
 	public boolean newReply = false;
 	public int postID = 0;
 	
+	// For favorites
+	public String postBlogID = null;
+	public String postBlogName = null;
+	public String postName = null;
+	public int postCommentsCount = 0;
+	
 	public String getUrl() {
 		return getUrl() + postID + "/#comment_" + id;
 	}

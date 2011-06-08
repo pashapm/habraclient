@@ -36,6 +36,12 @@ import java.util.List;
 /**
  * @author WNeZRoS
  */
+
+/*
+ * TODO Show navigation when press MENU and hide with options menu
+ * TODO Make light border for navigations background
+ */
+
 public class ActivityView extends Activity {	
 	public final static int REQUEST_NEW_VIEW = 1;
 	public final static int REQUEST_NEW_COMMENT = 3;
