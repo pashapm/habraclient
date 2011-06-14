@@ -44,10 +44,6 @@ public class HabraEntry {
 		return getUrl();
 	}
 	
-	public static void send(String content, int parentID) {
-		// TODO
-	}
-	
 	public final static boolean vote(int id, HabraEntryType type, int mark, int postID) {
 		String[][] post = {{"action", "vote"}, {"signed_id", String.valueOf(postID)}, 
 				{"target_id", String.valueOf(id)}, {"mark", String.valueOf(mark)},
@@ -142,5 +138,29 @@ public class HabraEntry {
 		case ANSWER: return HabraAnswer.class;
 		default: return HabraEntry.class;
 		}
+	}
+	
+	public static void send(int questionID, int answerID, String message, final OnSendFinish c) {
+		/*
+		 * Comment to answer: http://habrahabr.ru/ajax/qa/comment
+		 * question_id={ID}
+		 * answer_id={ANSWER_ID|0?}
+		 * text={MSG}
+		 */
+		String post[][] = {{"question_id", String.valueOf(questionID)}, 
+				{"answer_id", String.valueOf(answerID)},
+				{"text", message}};
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/qa/comment", 
+				"http://habrahabr.ru/qa/" + questionID, new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							if(c != null) c.onFinish(true, result);
+						} else {
+							if(c != null) c.onFinish(false, result);
+						}
+					}
+		}).execute(post);
 	}
 }

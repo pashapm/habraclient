@@ -138,4 +138,5 @@
     <string name="not_added">Не добавлено</string>
     <string name="user_data_is_null">Не удалось получить данные от сервера. Возможно отсутствует подключение к  интернет.</string>
     <string name="repeat">Повторить</string>
+    <string name="answers">Ответы</string>
 </resources>

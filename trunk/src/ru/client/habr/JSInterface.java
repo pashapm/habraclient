@@ -23,10 +23,11 @@ public class JSInterface {
 		mJsForView = v;
 	}
 	
-	public void addComment(int postID, int commentID) {
+	public void addComment(int postID, int commentID, char type) {
 		Intent intent = new Intent(mParent, ActivityCommentEditor.class);
 		intent.putExtra("post", postID);
 		intent.putExtra("parent", commentID);
+		intent.putExtra("type", type);
 		mParent.startActivityForResult(intent, ActivityView.REQUEST_NEW_COMMENT);
 	}
 	
@@ -62,7 +63,7 @@ public class JSInterface {
 					clipboard.setText(selectedUri.toString());
 					return;
 				case 3: 
-					addComment(postID, commentID);
+					addComment(postID, commentID, 'c');
 					return;
 				case 4:
 					onClickRating(commentID, "c", postID);
@@ -71,6 +72,49 @@ public class JSInterface {
 					HabraEntry.changeFavorites(commentID, HabraEntry.HabraEntryType.COMMENT, inFavs);
 					return;
 				case 6: {
+					mParent.startActivityForResult(new Intent(mParent.getBaseContext(), 
+							ActivityView.class).setData(Uri.parse("http://" 
+									+ author + ".habrahabr.ru/")), 0);
+					return;
+				}
+				}
+			}
+		});
+	}
+	
+	public void onClickAnswer(final int commentID, final int postID, final String author) {
+		String items[] = mParent.getResources().getStringArray(R.array.answer_menu);
+		
+		Dialogs.showDialogMenu(mParent.getString(R.string.comment), items, new OnClickMenuItem() {
+			@Override
+			public void onClick(int item, String itemText) {
+				Uri selectedUri = Uri.parse("http://habrahabr.ru/post/" 
+						+ postID + "/#comment_" + commentID);
+				
+				switch(item) {
+				case 0:
+					Intent openIntent = new Intent(Intent.ACTION_VIEW);
+					openIntent.setData(selectedUri);
+					mParent.startActivity(openIntent);
+					return;
+				case 1:
+					Intent sendIntent = new Intent(Intent.ACTION_SEND);
+					sendIntent.setType("text/plain");
+					sendIntent.putExtra(Intent.EXTRA_TEXT, selectedUri.toString());
+					mParent.startActivity(Intent.createChooser(sendIntent, null));
+					return;
+				case 2:
+					ClipboardManager clipboard = (ClipboardManager) 
+							mParent.getSystemService(Activity.CLIPBOARD_SERVICE); 
+					clipboard.setText(selectedUri.toString());
+					return;
+				case 3: 
+					addComment(postID, commentID, 'u');
+					return;
+				case 4:
+					onClickRating(commentID, "a", postID);
+					return;
+				case 5: {
 					mParent.startActivityForResult(new Intent(mParent.getBaseContext(), 
 							ActivityView.class).setData(Uri.parse("http://" 
 									+ author + ".habrahabr.ru/")), 0);
