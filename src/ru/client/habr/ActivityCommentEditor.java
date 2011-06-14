@@ -22,6 +22,7 @@ public class ActivityCommentEditor extends Activity {
 	private EditText mText;
 	private int mPostID;
 	private int mParentID;
+	private char mType = 'c';
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class ActivityCommentEditor extends Activity {
 		
 		mPostID = getIntent().getIntExtra("post", 0);
 		mParentID = getIntent().getIntExtra("parent", 0);
+		mType = getIntent().getCharExtra("type", 'c');
 		
 		Dialogs.setContext(this);
 		
@@ -81,7 +83,7 @@ public class ActivityCommentEditor extends Activity {
 			return;
 		}
 		
-		HabraComment.send(mText.getText().toString(), mPostID, mParentID, new OnSendFinish() {
+		OnSendFinish onSendFinish = new OnSendFinish() {
 			@Override
 			public void onFinish(boolean ok, String data) {
 				if(ok) {
@@ -91,6 +93,18 @@ public class ActivityCommentEditor extends Activity {
 					Dialogs.showToast(R.string.not_added);
 				}
 			}
-		});
+		};
+		
+		switch(mType) {
+		case 'A': 
+			HabraAnswer.send(mPostID, mText.getText().toString(), onSendFinish); 
+			break;
+		case 'U': 
+			HabraAnswer.send(mPostID, mParentID, mText.getText().toString(), onSendFinish);
+			break;
+		case 'C':
+			HabraComment.send(mText.getText().toString(), mPostID, mParentID, onSendFinish);
+			break;
+		}
 	}
 }

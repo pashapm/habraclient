@@ -7,7 +7,7 @@ import org.htmlcleaner.TagNode;
 
 /**
  * @author WNeZRoS
- * ������ �������
+ * 
  */
 public final class HabraAnswerParser {
 	private int mListIndex = 0;
@@ -15,10 +15,6 @@ public final class HabraAnswerParser {
 	private TagNode mMainNode = null;
 	private List<TagNode> mEntryNodeList = new ArrayList<TagNode>();
 	
-	/**
-	 * ������ ������ �� �������
-	 * @param data ������ HTML ��������
-	 */
 	@SuppressWarnings("unchecked")
 	public HabraAnswerParser(String data) {
 		if(data == null) return;

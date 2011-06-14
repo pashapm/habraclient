@@ -26,6 +26,7 @@ import android.widget.ToggleButton;
 import android.view.KeyEvent;
 import ru.client.habr.R;
 import ru.client.habr.AsyncDataLoader.LoaderData;
+import ru.client.habr.AsyncDataLoader.PageType;
 import ru.client.habr.Dialogs.OnClickMenuItem;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -118,7 +119,7 @@ public class ActivityView extends Activity {
 					data += comment.getDataAsHTML();
 				}
 				data += "</div>";
-				data += "<h2><a onClick=\"js.addComment(" + topic.id + ", 0);\">"
+				data += "<h2><a onClick=\"js.addComment(" + topic.id + ", 0, 'c');\">"
 						+ getString(R.string.commenting) + "</a></h2>";
 				
 				mLastEntryTitle = topic.title;
@@ -168,6 +169,8 @@ public class ActivityView extends Activity {
 					data += answer.getCommentsAsHTML();
 				}
 				data += "</div>";
+				data += "<h2><a onClick=\"js.addComment(" + quest.id + ", 0, 'a');\">"
+				+ getString(R.string.commenting) + "</a></h2>";
 				
 				mLastEntryTitle = quest.title;
 			} break;
@@ -262,7 +265,8 @@ public class ActivityView extends Activity {
 					Log.d("onLongClick", "Click on <a href='" + wv.getHitTestResult().getExtra() + "'...");
 					mSelectedUri = Uri.parse(wv.getHitTestResult().getExtra());
 					
-					switch(AsyncDataLoader.getPageTypeByURI(mSelectedUri)) {
+					final PageType type = AsyncDataLoader.getPageTypeByURI(mSelectedUri);
+					switch(type) {
 					case POST:
 					case QUEST: {
 						String temp = mSelectedUri.getQueryParameter("infavs");
@@ -271,21 +275,18 @@ public class ActivityView extends Activity {
 						final String author = mSelectedUri.getQueryParameter("author");
 						final int id = Integer.valueOf(mSelectedUri.getLastPathSegment());
 						
-						final String menuItems[] = getResources().getStringArray(R.array.post_menu);
+						final String menuItems[] = getResources().getStringArray(
+								type == PageType.QUEST ? R.array.quest_menu : R.array.post_menu);
 						if(inFavs) menuItems[menuItems.length - 2] = getString(R.string.remove_favorites);
-						
-						Log.i("mSelectedUri", mSelectedUri.toString());
 						
 						mSelectedUri = Uri.parse(mSelectedUri.getScheme() + "://" 
 								+ mSelectedUri.getHost() + mSelectedUri.getPath());
-						
-						Log.i("mSelectedUri", mSelectedUri.toString());
-						Log.i("uri", author + " " + id + " " + inFavs);
-						
+
 						Dialogs.showDialogMenu(getString(R.string.menu), menuItems, new OnClickMenuItem() {
 							@Override
 							public void onClick(int item, String itemText) {
-								onMenuItemSelected(item, R.array.post_menu, author, id, inFavs);
+								onMenuItemSelected(item, type == PageType.QUEST ? 
+										R.array.quest_menu : R.array.post_menu, author, id, inFavs);
 							}
 						});
 					} break;
@@ -382,9 +383,14 @@ public class ActivityView extends Activity {
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.i("ActivityView.onKeyDown", "keyCode is " + keyCode);
+
 		switch(keyCode) {
-		case KeyEvent.KEYCODE_SEARCH:
+		/*case KeyEvent.KEYCODE_MENU:
 			showNavPanels();
+			return false;*/
+		case KeyEvent.KEYCODE_BACK:
+			if(hideNavPanels()) return true;
 			break;
 		}
 		return super.onKeyDown(keyCode, event);
@@ -413,11 +419,11 @@ public class ActivityView extends Activity {
 			return true;
 		case 4:
 			sJSInterface.onClickRating(entryID, 
-					(mSelectedUri.getPathSegments().get(0).equals("qa") ? "q" : "p"), 0);
+					(menu_id == R.array.quest_menu ? "q" : "p"), 0);
 			return true;
 		case 5:
 			HabraEntry.changeFavorites(entryID, 
-					(mSelectedUri.getPathSegments().get(0).equals("qa") ? 
+					(menu_id == R.array.quest_menu ? 
 							HabraEntry.HabraEntryType.QUESTION : HabraEntry.HabraEntryType.POST), entryInFavs);
 			return true;
 		case 6: {
@@ -719,6 +725,14 @@ public class ActivityView extends Activity {
 	
 	private void showNavPanels() {
 		showNavPanels(findViewById(R.id.layoutAllNavPanels).getVisibility() == View.GONE);
+	}
+	
+	private boolean hideNavPanels() {
+		if(findViewById(R.id.layoutAllNavPanels).getVisibility() == View.VISIBLE) {
+			showNavPanels(false);
+			return true;
+		}
+		return false;
 	}
 	
 	private void exit(int result) {

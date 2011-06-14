@@ -1,5 +1,7 @@
 package ru.client.habr;
 
+import ru.client.habr.AsyncDataSender.OnSendDataFinish;
+
 /**
  * @author WNeZRoS
  * ����� ������ �� ������
@@ -11,17 +13,11 @@ public final class HabraAnswer extends HabraEntry {
 	public int rating = 0;
 	public boolean isSolution = false;
 	public HabraEntry[] comments = null;
-		
-	/**
-	 * @param questionID ID �������
-	 * @return ������ �� �����
-	 */
-	public String getUrl(int questionID) {
-		return getUrl() + questionID + "/#answer_" + id;
-	}
+	public int questionID = 0;
+	
 	
 	public String getUrl() {
-		return "http://habrahabr.ru/qa/";
+		return getUrl() + questionID + "/#answer_" + id;
 	}
 	
 	/**
@@ -44,9 +40,11 @@ public final class HabraAnswer extends HabraEntry {
 		+ ".habrahabr.ru/\" class=\"url\">" + author + "</a>,</li>" 
 		+ "<li class=\"date\"><abbr class=\"published\">" + date 
 		+ "</abbr></li><li class=\"correct\">" + (isSolution ? "<strong>Решение</strong>" : "") 
-		+ "</li><li class=\"mark\"><span class=\"" + (rating > 0 ? "plus" : 
+		+ "</li><li class=\"mark\" onClick=\"js.onClickRating(" 
+		+ id + ", 'a', " + questionID + ");\"><span class=\"" + (rating > 0 ? "plus" : 
 			(rating < 0 ? "minus" : "zero")) + "\">" + (rating > 0 ? "+" : "") + rating 
-		+ "</span></li></ul></div><div class=\"entry-content\">" + content + "</div></div>";
+		+ "</span></li></ul></div><div class=\"entry-content\" onClick=\"js.onClickAnswer(" 
+		+ id + ", " + questionID + ", '" + author + "');\">" + content + "</div></div>";
 	}
 	
 	/**
@@ -61,5 +59,26 @@ public final class HabraAnswer extends HabraEntry {
 		}
 			
 		return data;
+	}
+	
+	public static void send(int questionID, String message, final OnSendFinish c) {
+		/*
+		 * Answer: http://habrahabr.ru/ajax/qa/answer
+		 * question_id={ID}
+		 * text={MSG}
+		 */
+		String post[][] = {{"question_id", String.valueOf(questionID)}, {"text", message}};
+		
+		new AsyncDataSender("http://habrahabr.ru/ajax/qa/answer", 
+				"http://habrahabr.ru/qa/" + questionID, new OnSendDataFinish() {
+					@Override
+					public void onFinish(String result) {
+						if(result.contains("<message>ok</message>")) {
+							if(c != null) c.onFinish(true, result);
+						} else {
+							if(c != null) c.onFinish(false, result);
+						}
+					}
+		}).execute(post);
 	}
 }

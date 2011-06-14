@@ -81,12 +81,17 @@ public class HabraUser {
 		String karmaStr = karmaAndForce[0].findElementByName("span", 
 				true).findElementByName("span", false).getText().toString();
 		
-		user.karma = Float.valueOf(karmaStr.replace(' ', '0').replace(',', '.'));
+		String tmpFloat = karmaStr.replace(' ', '0').replace(',', '.');
+		user.karma = tmpFloat.charAt(0) == '–' ? -1 : +1;
+		user.karma *= Float.valueOf(tmpFloat.replace('–', '0'));
 		String karmaMarks = karmaAndForce[0].findElementByAttValue("class", 
 				"total", true, false).getChildTags()[0].getText().toString();
 		user.karmaMarks = Integer.valueOf(karmaMarks.substring(0, karmaMarks.indexOf(' ')));
 		user.id = Integer.valueOf(karmaAndForce[0].getChildTags()[1].getAttributeByName("id").substring(4));
-		user.force = Float.valueOf(karmaAndForce[1].getChildTags()[1].getText().toString().replace(',', '.'));
+		
+		tmpFloat = karmaAndForce[1].getChildTags()[1].getText().toString().replace(',', '.');
+		user.force = tmpFloat.charAt(0) == '–' ? -1 : +1;
+		user.force *= Float.valueOf(tmpFloat.replace('–', '0'));
 		
 		// catch(NullPointerException e) для того, чтобы не было ошибок при не заполненом профиле
 		
@@ -99,7 +104,10 @@ public class HabraUser {
 				"rating-place", true, true).getText().toString();
 		
 		try {
-			user.ratingPlace = Integer.valueOf(ratingPlaceStr.substring(0, ratingPlaceStr.indexOf('-')));
+			// –
+			String tmpInt = ratingPlaceStr.substring(0, ratingPlaceStr.indexOf('-'));
+			user.ratingPlace = tmpInt.charAt(0) == '–' ? -1 : +1;
+			user.ratingPlace *= Integer.valueOf(tmpInt.replace('–', '0'));
 		} catch(NumberFormatException e) {
 			Log.w("HabraUser.parse", "NumberFormatException: " + e.getMessage());
 			user.ratingPlace = 0;
